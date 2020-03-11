@@ -1,0 +1,2574 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<root>
+     <!--INIGenerator_GPersonPolLegalDoc.xml 02/10/2020 BexarCounty
+		Version 1.50 James Ma
+			-Added ArrestReport Narrative blob to export to Bexar County Arrest Booking Sheet
+
+		Version 1.51 James Ma
+			- Added Case Number field entity  GOccIDCase__IdNumberG as 'Case_Number'
+			- Added Bexar SID field entity PoliceID3__IdNumberG as 'PoliceID3'
+			- Added Car/Body Video Available entity GPA__VideoTaken as 'VideoAvail'
+			- Added Warrant Details for All Warrants in Arrest Report GPPLDW_
+
+		Version 1.52 James Ma
+			- Added Accused Details Section to correspond with an Arrest Report that is entered
+			using the QEF.
+	-->
+
+	<VersionInfo>
+		<Filename>INIGenerator_GPersonPolLegalDoc.xml</Filename>
+		<Revision>1.40</Revision>
+		<NMLVersion>5.04.11.02.18</NMLVersion>
+		<Developer>Niche</Developer>
+		<NicheBuildName>BexarCounty</NicheBuildName>
+		<BuildTime>2018/07/21 22:08:16</BuildTime>
+	</VersionInfo>
+<!-- $Id: fa1abba783ad20b9f034d78fa37a46fee405ff9e $ -->
+
+<ReportName>INIGenerator_GPersonPolLegalDoc</ReportName>
+<SQLParameter>CurrentLanguage</SQLParameter>
+<XSLTParameter>RestrictedUse</XSLTParameter>
+<SQLSelect>
+----------------------------------------------------------
+--  XML filename: INIGenerator_GPersonPolLegalDoc.xml
+--  File revision: 1.40
+--  NML version: 5.04.11.02.18
+--  Developer: Niche
+--  Niche build name: BexarCounty
+--  Build time: 2018/07/21 22:08:16
+----------------------------------------------------------
+
+
+-- Put Main Query for information here.
+-- Use @Id to represent the Id of the Entity that this report is being passed.
+--
+
+SELECT
+'&lt;&lt;TemplateName&gt;&gt;;uo_templateinigen_legaldoc' as 'Heading-UseAlternateName',
+
+'uo_templateinigen_legaldoc' as 'templategeneratorname',
+'&lt;&lt;Heading&gt;&gt;;Generic legal doc data' as 'Heading-UseAlternateName',
+GPPLD__Id,
+GPPLD__Locked as Locked,
+GPPLD__ReportTimeF(Format="GWithoutOffset") as ReportTime,
+GPPLD__ReportTimeDG as ReportTimeDC,
+GPPLD__LockedTimeF(Format="TF4") as LockedTime,
+GPPLD__CourtRegionNameG as CourtRegionName,
+GPPLD__SuretyAmountG as SuretyAmount,
+GPPLD__SuretyAmountNonResidentG as SuretyAmountNonRes,
+GPPLD__SuretySecurityNonResident as SuretySecurityNonRes,
+GPPLD__GiveEvidence as 'GPPLD__GiveEvidence-I',
+GPPLD__BringItems as 'GPPLD__BringItems-I',
+GPPLD__BringItemsDescription as WitnessItemsDescription,
+
+'&lt;&lt;Heading&gt;&gt;;Legal doc ticket data' as 'Heading-UseAlternateName',
+GPPLD__IdNumberG as IdNumber,
+GPPLD__mvinvolvedG as MotorVehicleInvolved,
+GPPLD__mvcollisioninvolvedG as MotorVehicleCollisionInvolved,
+GPPLD__WitnessesAvailableG as WitnessesAvailable,
+GPPLD__IssueDateG as IssueDate,
+GPPLD__PROTECTIVEMARKINGG as ProtectiveMarking,
+Template__TitleG as TemplateTitle,
+GPPRA__LabelRight as ReportAuthor,
+ReportAuthorEN__UKOfficerFullId as ReportAuthor_FullId,
+ReportAuthUnit__labelname__0 as ReportAuthor_Unit,
+ReportAuthorUnitPAMail__BuildingNameG__0__0 as ReportAuthor_UnitCorrespondenceAddressPremise,
+ReportAuthorUnitPALoc__BuildingNameG__0__0 as ReportAuthor_UnitBusinessAddressPremise,
+ReportAuthorUnitPALoc__LabelUKFullAddressPostalINIGen__0__0 as ReportAuthor_UnitBusinessFullAddressUKPostal,
+ReportAuthorUnitPALoc__LabelUSFullAddressPostalINIGen__0__0 as ReportAuthor_UnitBusinessFullAddressUSPostal,
+ReportAuthorUnitPALoc__LabelUSFullAddressINIGen__0__0 as ReportAuthor_UnitBusinessFullAddressUS,
+ReportAuthor__GPersonEmploySupRId_L as 'ReportAuthor_Supervisor',
+GPPLD__Field1 as Field1,
+GPPLD__Field2 as Field2,
+GPPLD__Field3 as Field3,
+GPPLD__Field4 as Field4,
+GPPLD__Field5 as Field5,
+
+'&lt;&lt;Heading&gt;&gt;;Occurrence data' as 'Heading-UseAlternateName',
+GOcc__OccurrenceFileNoG as OccurrenceFileNo,
+GOccIDCase__IdNumberG as 'Case_Number',
+GOcc__Summary as OccurrenceSummary,
+GOcc__StartTimeF(Format="TF5") as 'OccurrenceDateRange-TF61OccurrenceDateRange',
+GOcc__EndTimeF(Format="TF5") as 'OccurrenceDateRange-TF62OccurrenceDateRange',
+
+GOcc__StartTimeDG as 'OccurrenceDateRangeUK-TF61OccurrenceDateRangeUK',
+GOcc__EndTimeDG as 'OccurrenceDateRangeUK-TF62OccurrenceDateRangeUK',
+
+GOcc__StartTimeF(Format="TF5") as 'OccurrenceStartTimeDC',
+GOcc__StartTimeTimeOfDayG as 'OccurrenceStartTimeTC',
+GOcc__EndTimeF(Format="TF5") as 'OccurrenceEndTimeDC',
+GOcc__EndTimeTimeOfDayG as 'OccurrenceEndTimeTC',
+
+GOcc__ESAreaLevel1G as OccurrenceESAreaLevel1,
+GOcc__ESAreaLevel2G as OccurrenceESAreaLevel2,
+GOcc__ESAreaLevel3G as OccurrenceESAreaLevel3,
+GOcc__ESAreaLevel4G as OccurrenceESAreaLevel4,
+GOcc__ESAreaLevel5G as OccurrenceESAreaLevel5,
+GOcc__ESAreaLevel6G as OccurrenceESAreaLevel6,
+GOcc__ESAreaLevel7G as OccurrenceESAreaLevel7,
+GOcc__UCRClearanceStatusG as UCRClearanceDetails,
+
+@GOccId = GOcc__id,
+POAPA__LabelAddressOnly__0 as OccurrenceFullAddress,
+POAPA__LabelUSFullAddressINIGen__0 as OccurrenceFullAddressUS,
+POAPA__LabelUSFullAddressPostalINIGen__0 as OccurrenceFullAddressUSPostal,
+POAPA__USFullAddressINIGenPart1__0 as 'OccurrenceAddressUSStreetOnly',
+poapa__civicsitestreetnumberg__0 as 'OccurrenceStreetApt-CFSSOccurrenceStreetApt',
+poapa__StreetNameG__0 as 'OccurrenceStreetApt-CFCSOccurrenceStreetApt',
+poapa__StreetTypeG__0 as 'OccurrenceStreetApt-CFCSOccurrenceStreetApt',
+poapa__streetdirectiong__0 as 'OccurrenceStreetApt-CFCSOccurrenceStreetApt',
+poapa__buildingunittypecodeg__0 as 'OccurrenceStreetApt-CFCCOccurrenceStreetApt',
+poapa__buildingunitidentifierG__0 as 'OccurrenceStreetApt-CFCSOccurrenceStreetApt',
+
+poapa__civicsitestreetnumberg__0 as 'OccurrenceStreetNo',
+poapa__StreetNameG__0 as 'OccurrenceStreetName',
+poapa__StreetTypeG__0 as 'OccurrenceStreetType',
+poapa__streetdirectiong__0 as 'OccurrenceStreetDir',
+poapa__streetdirection2g__0 as 'OccurrenceStreetDir2',
+poapa__buildingunittypecodeg__0 as 'OccurrenceTypeCode',
+poapa__buildingunitidentifierG__0 as 'OccurrenceApt',
+poapa__MunicipalityNameG__0 as 'OccurrenceMunicipality',
+poapa__ProvStateCodeG__0 as 'OccurrenceProvState',
+poapa__PostalZipCodeG__0 as 'OccurrencePostalZipCode',
+
+'&lt;&lt;Heading&gt;&gt;;Person data' as 'Heading-UseAlternateName',
+@GP_ID = GP__id,
+GP__LabelNameFML as FullName,
+GP__LabelName as FullNameSF,
+GPName__Surnameg__0 as Surname,
+GPName__Given1g__0 as Given1,
+GPName__Given1g__0 as 'Given1_Initial-S1',
+GPName__Given2g__0 as Given2,
+GPName__Given2g__0 as 'Given2_Initial-S1',
+GPName__Given3g__0 as Given3,
+GPName__Given3g__0 as 'Given3_Initial-S1',
+GPName__DateOfBirthG__0 as DateOfBirth,
+GPName__Age__0 as Age,
+GPName__Gender__0 as Gender,
+GPName__DistinctTitleG__0 as Title,
+
+PDesc__Race__0 as Race,
+PDesc__HeightG__0 as Height,
+PDesc__MassG__0 as Mass,
+PDesc__HairColor__0 as Hair,
+PDesc__EyeColor__0 as Eyes,
+PDesc__EthnicityG__0 as Ethnicity,
+PDesc__Build__0 as Build,
+
+FPS__IdNumberG as FPS,
+SSN__IdNumberG as SSN,
+FBI__IdNumberG as FBI,
+PoliceID2__IdNumberG as 'PoliceId2',
+PoliceID3__IdNumberG as 'PoliceId3',
+
+PA__LabelAddressOnly__0 as FullAddress,
+PA__LabelUSFullAddressINIGen__0 as FullAddressUS,
+PA__LabelUSFullAddressPostalINIGen__0 as FullAddressUSPostal,
+PA__MunicipalityNameG__0 as MunicipalityName,
+PA__ProvStateCodeG__0 as ProvState,
+PA__ProvStateCode__0 as ProvinceStateCode,
+PA__PostalZipCodeG__0 as PostalZipCode,
+PA__civicsitestreetnumberg__0 as StreetNo,
+PA__StreetNameG__0 as Street,
+PA__StreetTypeG__0 as StreetType,
+PA__StreetDirectionG__0 as StreetDir,
+PA__StreetDirection2G__0 as StreetDir2,
+PA__buildingunitidentifierg__0 as Apartment,
+PA__CommonNameG__0 as AddressCommonName,
+PA__BuildingNameG__0 as Premise,
+PA__MunicipalityDistrictNameG__0 as MunicipalityDistrictName,
+PA__RegionNameG__0 as RegionName,
+PA__LabelUKFullAddressINIGen__0 as FullAddressUK,
+PA__LabelUKFullAddressPostalINIGen__0 as FullAddressUKPostal,
+PA__civicsitestreetnumberg__0 as 'StreetApt-CFSSStreetApt',
+PA__StreetNameG__0 as 'StreetApt-CFCSStreetApt',
+PA__StreetTypeG__0 as 'StreetApt-CFCSStreetApt',
+PA__streetdirectiong__0 as 'StreetApt-CFCSStreetApt',
+PA__buildingunittypecodeg__0 as 'StreetApt-CFCCStreetApt',
+PA__buildingunitidentifierG__0 as 'StreetApt-CFCSStreetApt',
+
+T__CommAddressG__0 as Telephone,
+TBus__CommAddressG__0 as BusinessTelephone,
+TCell__CommAddressG__0 as CellularTelephone,
+PInfo__OccupationG as 'PInfo__OccupationG-I',
+PInfo__EmployerG as 'PInfo__EmployerG-I',
+PInfo__MaritalStatusG as MaritalStatus,
+PInfo__BirthPlaceG as PlaceOfBirth,
+PInfo__CitizenshipG as Citizenship,
+DL__IdNumberG as DriversLicenseNumber,
+DL__ClassG as DriversLicenseClass,
+DL__ConditionG as DriversLicenseCondition,
+DL__ProvinceState as DriversLicenseProvince,
+DL__EndorsementsG as DriversLicenseEndorsements,
+
+--'&lt;&lt;Heading&gt;&gt;;Legal doc appearance court data' as 'Heading-UseAlternateName',
+GPPLDAC__TimeDG as AppearanceCourtDate,
+GPPLDAC__TimeF(Format='TF1') as AppearanceCourtTimeTF1,
+GPPLDAC__TimeF(Format='TF1e') as AppearanceCourtTimeTF1e,
+GPPLDAC__TimeF(Format='TF1f') as AppearanceCourtTimeTF1f,
+GPPLDAC__TimeF(Format='TF2') as AppearanceCourtTimeTF2,
+GPPLDAC__TimeF(Format='TF2e') as AppearanceCourtTimeTF2e,
+GPPLDAC__TimeF(Format='TF2f') as AppearanceCourtTimeTF2f,
+GPPLDAC__TimeF(Format='%Y') as AppearanceCourtTimeYear,
+GPPLDAC__TimeF(Format='monthname') as AppearanceCourtTimeMonth,
+GPPLDAC__TimeF(Format='monthnamee') as AppearanceCourtTimeMonthe,
+GPPLDAC__TimeF(Format='monthnamef') as AppearanceCourtTimeMonthf,
+GPPLDAC__TimeF(Format='weekday') as AppearanceCourtTimeWeekday,
+GPPLDAC__TimeF(Format='weekdaye') as AppearanceCourtTimeWeekdaye,
+GPPLDAC__TimeF(Format='weekdayf') as AppearanceCourtTimeWeekdayf,
+GPPLDAC__TimeF(Format='ordinalday') as AppearanceCourtTimeMonthDay,
+GPPLDAC__TimeF(Format='ordinaldaye') as AppearanceCourtTimeMonthDaye,
+GPPLDAC__TimeF(Format='ordinaldayf') as AppearanceCourtTimeMonthDayf,
+GPPLDAC__TimeF(Format="12H") as 'AppearanceCourtTimeTime12H',
+GPPLDAC__TimeF(Format="12He") as 'AppearanceCourtTimeTime12He',
+GPPLDAC__TimeF(Format="12Hf") as 'AppearanceCourtTimeTime12Hf',
+GPPLDAC__TimeF(Format="24H") as 'AppearanceCourtTimeTime24H',
+GPPLDAC__TimeF(Format="24He") as 'AppearanceCourtTimeTime24He',
+GPPLDAC__TimeF(Format="24Hf") as 'AppearanceCourtTimeTime24Hf',
+GPPLDAC__TimeF(Format="AMPMF1") as 'AppearanceCourtTimeTimeAMPMF1',
+GPPLDAC__TimeF(Format="AMPMF2") as 'AppearanceCourtTimeTimeAMPMF2',
+GPPLDAC__TimeF(Format="AMPMF2e") as 'AppearanceCourtTimeTimeAMPMF2e',
+GPPLDAC__TimeF(Format="AMPMF2f") as 'AppearanceCourtTimeTimeAMPMF2f',
+GPPLDAC__TimeF(Format="AMPMF3") as 'AppearanceCourtTimeTimeAMPMF3',
+GPPLDAC__TimeF(Format="AMPMF3e") as 'AppearanceCourtTimeTimeAMPMF3e',
+GPPLDAC__TimeF(Format="AMPMF3f") as 'AppearanceCourtTimeTimeAMPMF3f',
+OJB__LabelName as AppearanceCourtName,
+OC__ETypeG as AppearanceCourtType,
+GPPLDAC__RoomNameG as AppearanceCourtRoom,
+GPPLDACPA__LabelNoESArea__0 as AppearanceCourtFullAddress,
+GPPLDACPA__LabelUSFullAddressINIGen__0 as AppearanceCourtFullAddressUS,
+GPPLDACPA__LabelUSFullAddressPostalINIGen__0 as AppearanceCourtFullAddressUSPostal,
+GPPLDACPA__PostalZipCodeG__0 as AppearanceCourtPostalZipCode,
+GPPLDACPA__PostalZipCodeG__0 as AppearanceCourtPostalCode,
+GPPLDACPA__MunicipalityNameG__0 as AppearanceCourtMunicipalityName,
+GPPLDACPA__LabelUKFullAddressINIGen__0 as AppearanceCourtFullAddressUK,
+GPPLDACPA__LabelUSFullAddressINIGen__0 as AppearanceCourtFullAddressUS,
+GPPLDACPA__LabelUSFullAddressPostalINIGen__0 as AppearanceCourtFullAddressPostalUS,
+
+--'&lt;&lt;Heading&gt;&gt;;Legal doc appearance ident data' as 'Heading-UseAlternateName',
+GPPLDAI__TimeDG as AppearanceIdentDate,
+GPPLDAI__TimeF(Format='TF1') as AppearanceIdentTimeTF1,
+GPPLDAI__TimeF(Format='TF1e') as AppearanceIdentTimeTF1e,
+GPPLDAI__TimeF(Format='TF1f') as AppearanceIdentTimeTF1f,
+GPPLDAI__TimeF(Format='TF2') as AppearanceIdentTimeTF2,
+GPPLDAI__TimeF(Format='TF2e') as AppearanceIdentTimeTF2e,
+GPPLDAI__TimeF(Format='TF2f') as AppearanceIdentTimeTF2f,
+GPPLDAI__TimeF(Format='%Y') as AppearanceIdentTimeYear,
+GPPLDAI__TimeF(Format='monthname') as AppearanceIdentTimeMonth,
+GPPLDAI__TimeF(Format='monthnamee') as AppearanceIdentTimeMonthe,
+GPPLDAI__TimeF(Format='monthnamef') as AppearanceIdentTimeMonthf,
+GPPLDAI__TimeF(Format='weekday') as AppearanceIdentTimeWeekday,
+GPPLDAI__TimeF(Format='weekdaye') as AppearanceIdentTimeWeekdaye,
+GPPLDAI__TimeF(Format='weekdayf') as AppearanceIdentTimeWeekdayf,
+GPPLDAI__TimeF(Format='ordinalday') as AppearanceIdentTimeMonthDay,
+GPPLDAI__TimeF(Format='ordinaldaye') as AppearanceIdentTimeMonthDaye,
+GPPLDAI__TimeF(Format='ordinaldayf') as AppearanceIdentTimeMonthDayf,
+GPPLDAI__TimeF(Format="12H") as 'AppearanceIdentTimeTime12H',
+GPPLDAI__TimeF(Format="12He") as 'AppearanceIdentTimeTime12He',
+GPPLDAI__TimeF(Format="12Hf") as 'AppearanceIdentTimeTime12Hf',
+GPPLDAI__TimeF(Format="24H") as 'AppearanceIdentTimeTime24H',
+GPPLDAI__TimeF(Format="24He") as 'AppearanceIdentTimeTime24He',
+GPPLDAI__TimeF(Format="24Hf") as 'AppearanceIdentTimeTime24Hf',
+GPPLDAI__TimeF(Format="AMPMF1") as 'AppearanceIdentTimeTimeAMPMF1',
+GPPLDAI__TimeF(Format="AMPMF2") as 'AppearanceIdentTimeTimeAMPMF2',
+GPPLDAI__TimeF(Format="AMPMF2e") as 'AppearanceIdentTimeTimeAMPMF2e',
+GPPLDAI__TimeF(Format="AMPMF2f") as 'AppearanceIdentTimeTimeAMPMF2f',
+GPPLDAI__TimeF(Format="AMPMF3") as 'AppearanceIdentTimeTimeAMPMF3',
+GPPLDAI__TimeF(Format="AMPMF3e") as 'AppearanceIdentTimeTimeAMPMF3e',
+GPPLDAI__TimeF(Format="AMPMF3f") as 'AppearanceIdentTimeTimeAMPMF3f',
+GPPLDAIPA__LabelNoESArea__0 as AppearanceIdentFullAddress,
+GPPLDAIPA__LabelUSFullAddressINIGen__0 as AppearanceIdentFullAddressUS,
+GPPLDAIPA__LabelUSFullAddressPostalINIGen__0 as AppearanceIdentFullAddressUSPostal,
+GPPLDAIPA__PostalZipCodeG__0 as AppearanceIdentPostalZipCode,
+GPPLDAIPA__PostalZipCodeG__0 as AppearanceIdentPostalCode,
+GPPLDAIPA__MunicipalityNameG__0 as AppearanceIdentMunicipalityName,
+OP__LabelName as AppearanceIdentName,
+GPPLDAI__RoomNameG as AppearanceIdentRoom,
+GPPLDAIPA__ProvStateCodeG__0 as AppearanceIdentProvinve,
+GPPLDAIPA__ProvStateCodeG__0 as AppearanceIdentProvince,
+GPPLDAIPA__civicsitestreetnumberg__0 as 'GPPLDAIPA_StreetApt-CFSSAppearanceIdentStreetApt',
+GPPLDAIPA__StreetNameG__0 as 'GPPLDAIPA_StreetApt-CFCSAppearanceIdentStreetApt',
+GPPLDAIPA__StreetTypeG__0 as 'GPPLDAIPA_StreetApt-CFCSAppearanceIdentStreetApt',
+GPPLDAIPA__streetdirectiong__0 as 'GPPLDAIPA_StreetApt-CFCSAppearanceIdentStreetApt',
+GPPLDAIPA__buildingunittypecodeg__0 as 'GPPLDAIPA_StreetApt-CFCCAppearanceIdentStreetApt',
+GPPLDAIPA__buildingunitidentifierg__0 as 'GPPLDAIPA_StreetApt-CFCSAppearanceIdentStreetApt',
+
+
+'&lt;&lt;Heading&gt;&gt;;Legal doc accused person data' as 'Heading-UseAlternateName',
+@AccusedId = AGP__id,
+AGP__LabelNameFML as Accused_FullName,
+AGP__LabelName as Accused_FullNameSF,
+AGPT__CommAddressG__0 as Accused_Telephone,
+AccGPName__Surnameg__0 as Accused_Surname,
+AccGPName__Given1g__0 as Accused_Given1,
+AccGPName__Given1g__0 as 'Accused_Given1_Initial-S1',
+AccGPName__Given2g__0 as Accused_Given2,
+AccGPName__Given2g__0 as 'Accused_Given2_Initial-S1',
+AccGPName__Given3g__0 as Accused_Given3,
+AccGPName__Given3g__0 as 'Accused_Given3_Initial-S1',
+AccGPName__DateOfBirthG__0 as Accused_DateOfBirth,
+AccGPName__Age__0 as Accused_Age,
+AccGPName__DistinctTitleG__0 as Accused_Title,
+AccGPName__Gender__0 as Accused_Gender,
+AccPA__LabelAddressOnly__0 as Accused_FullAddress,
+AccPA__LabelUSFullAddressINIGen__0 as Accused_FullAddressUS,
+AccPA__LabelUSFullAddressPostalINIGen__0 as Accused_FullAddressUSPostal,
+AccPA__MunicipalityNameG__0 as Accused_MunicipalityName,
+AccPA__RegionName__0 as Accused_RegionName,
+AccPA__ProvStateCode__0 as Accused_ProvState,
+AccPA__PostalZipCodeG__0 as Accused_PostalZipCode,
+AccPA__civicsitestreetnumberg__0 as 'Accused_StreetApt-CFSSAccused_StreetApt',
+AccPA__StreetNameG__0 as 'Accused_StreetApt-CFCSAccused_StreetApt',
+AccPA__StreetTypeG__0 as 'Accused_StreetApt-CFCSAccused_StreetApt',
+AccPA__streetdirectiong__0 as 'Accused_StreetApt-CFCSAccused_StreetApt',
+AccPA__buildingunittypecodeg__0 as 'Accused_StreetApt-CFCCAccused_StreetApt',
+AccPA__buildingunitidentifierG__0 as 'Accused_StreetApt-CFCSAccused_StreetApt',
+AccDL__IdNumberG as 'Accused_DriversLicenseNumber',
+	AccDL__ClassG as Accused_DriversLicenseClass,
+	AccDL__ConditionG as Accused_DriversLicenseCondition,
+	AccDL__ProvinceState as Accused_DriversLicenseProvince,
+	AccDL__EndorsementsG as Accused_DriversLicenseEndorsements,
+AccSSN__IdNumberG as 'Accused_SSN',
+AccPoliceID3__IdNumberG as 'Accused_SID',
+	AccPDesc__Build as 'Accused_Build',
+	AccPDesc__Ethnicity as 'Accused_Ethnicity',
+	AccPDesc__EyeColor as 'Accused_Eyes',
+	AccPDesc__HairColor as 'Accused_Hair',
+	AccPDesc__HeightG as 'Accused_Height',
+	AccPDesc__MassG as 'Accused_Mass',
+	AccPDesc__Race as 'Accused_Race',
+
+'&lt;&lt;Heading&gt;&gt;;Legal doc victim data' as 'Heading-UseAlternateName',
+VGP__LabelNameFML as Victim_FullName,
+VGP__LabelName as Victim_FullNameSF,
+VicGPName__Surnameg__0 as Victim_Surname,
+VicGPName__Given1g__0 as Victim_Given1,
+VicGPName__GenerationQualifierG__0 as Victim_Suffix,
+VicGPName__DateOfBirthG__0 as Victim_DateOfBirth,
+VicGPName__DistinctTitleG__0 as Victim_DistinctTitle,
+VicGPName__Genderg__0 as Victim_Gender,
+VicPA__LabelAddressOnly__0 as Victim_FullAddress,
+VicPA__LabelUSFullAddressINIGen__0 as Victim_FullAddressUS,
+VicPA__LabelUSFullAddressPostalINIGen__0 as Victim_FullAddressUSPostal,
+VicPA__MunicipalityNameG__0 as Victim_MunicipalityName,
+VicPA__ProvStateCodeG__0 as Victim_ProvState,
+VicPA__PostalZipCodeG__0 as Victim_PostalZipCode,
+VicPA__civicsitestreetnumberg__0 as Victim_StreetNo,
+VicPA__StreetNameG__0 as Victim_StreetName,
+VicPA__buildingunitidentifierg__0 as Victim_Apartment,
+vicpa__buildingnameg__0 as Victim_Premise,
+VicPA__MunicipalityDistrictNameG__0 as Victim_MunicipalityDistrictName,
+VicPA__RegionNameG__0 as Victim_RegionName,
+VicTelephone__CommAddressG__0 as Victim_Telephone,
+VicPA__civicsitestreetnumberg__0 as 'Victim_StreetApt-CFSSVictim_StreetApt',
+VicPA__StreetNameG__0 as 'Victim_StreetApt-CFCSVictim_StreetApt',
+VicPA__StreetTypeG__0 as 'Victim_StreetApt-CFCSVictim_StreetApt',
+VicPA__streetdirectiong__0 as 'Victim_StreetApt-CFCSVictim_StreetApt',
+VicPA__streetdirectiong__0 as Victim_streetDir,
+VicPA__StreetTypeG__0 as Victim_StreetType,
+VicPA__buildingunittypecodeg__0 as 'Victim_StreetApt-CFCCVictim_StreetApt',
+VicPA__buildingunitidentifierG__0 as 'Victim_StreetApt-CFCSVictim_StreetApt',
+
+VicDesc__RaceG__0 as Victim_Race,
+VicDesc__HeightG__0 as Victim_Height,
+VicDesc__MassG__0 as Victim_Mass,
+VicDesc__HairColorG__0 as Victim_Hair,
+VicDesc__EyeColorG__0 as Victim_Eyes,
+VicDesc__EthnicityG__0 as Victim_Ethnicity,
+VicSSN__IdNumberG as Victim_SSN,
+VicFBI__IdNumberG as Victim_FBI,
+VicPoliceId2__IdNumberG as Victim_PoliceId2,
+VicDL__IdNumberG as Victim_DriversLicenseNumber,
+
+'&lt;&lt;Heading&gt;&gt;;Legal doc serving person data' as 'Heading-UseAlternateName',
+GPPLS__ServedAtTimeOfOffense as Serving_ServedAtTimeOfOffense,
+GPPLS__ServedTimeTZV2C as Serving_ServedTime,
+SGP__EmployeeNumber as Serving_EmployeeNumber,
+SGP__LabelNameFML as Serving_FullName,
+
+
+'&lt;&lt;Heading&gt;&gt;;Legal doc vehicle data' as 'Heading-UseAlternateName',
+Veh__LicenseNumberG as Vehicle_LicenseNumber,
+veh__licenseprovincestateg as Vehicle_LicenseProvince,
+veh__platetypeg as Vehicle_PlateType,
+Veh__ModelYearG as Vehicle_Year,
+Veh__MakeG as Vehicle_Make,
+Veh__ModelG as Vehicle_Model,
+Veh__OriginalColor_1G as Vehicle_Color1,
+Veh__OriginalColor_2G as Vehicle_Color2,
+
+GVGP__LabelNameFML__0 as Vehicle_ROFullName,
+GVGPOA__LabelAddressOnly__0__0 as Vehicle_ROFullAddress,
+GVGPOA__LabelUSFullAddressINIGen__0__0 as Vehicle_ROFullAddressUS,
+GVGPOA__LabelUSFullAddressPostalINIGen__0__0 as Vehicle_ROFullAddressUSPostal,
+
+
+AO__LabelName as 'AO__LabelName-I',
+AO__LabelNameFML as Officer_FullName,
+AO__EmployeeNumber as Officer_EmployeeNumber,
+AO__Surname_Cache as Officer_Surname,
+AO__EntityName as 'AO__EntityName-I',
+GPIDEN__Rankg as Officer_Rank,
+GPIDEN__UKOfficerFullId as Officer_FullId,
+Unit__LabelName__0 as 'Unit__LabelName__0-I',
+UPA__BuildingNameG__0__0 as 'UPA__BuildingNameG__0__0-I',
+UPA__ProvStateCodeG__0__0 as 'UPA__ProvStateCodeG__0__0-I',
+UPA__MunicipalityNameG__0__0 as 'UPA__MunicipalityNameG__0__0-I',
+UPA__ESAreaLevel3G__0__0 as 'UPA__ESAreaLevel3G__0__0-I',
+USPA__BuildingNameG__0 as 'USPA__BuildingNameG__0-I',
+USPA__ProvStateCodeG__0 as 'USPA__ProvStateCodeG__0-I',
+USPA__MunicipalityNameG__0 as 'USPA__MunicipalityNameG__0-I',
+USPA__ESAreaLevel3G__0 as 'USPA__ESAreaLevel3G__0-I',
+UPAWP__ProvStateCodeG__0__0 as UnitProvState,
+UTel__CommAddressG__0__0 as 'UTel__CommAddressG__0__0-I',
+USTel__CommAddressG__0 as 'USTel__CommAddressG__0-I',
+Fax__CommAddressG__0__0 as 'Fax__CommAddressG__0__0-I',
+OrgFax__CommAddressG__0 as 'OrgFax__CommAddressG__0-I' ,
+
+'&lt;&lt;Heading&gt;&gt;;Custody Details' as 'Heading-UseAlternateName',
+GPPCE__GPPCAUnitRId_L as GPPCE_UnitName,
+GPPC__CustodyNumberG as GPPC_CustodyNumber,
+GPPCE__gppcdetaineetypeg as GPPCE_DetaineeType,
+CustodyUnit__PhysicalAddress_cacheG as GPPCE_UnitAddress,
+GPPC__StartTimeF(Format="GWithoutOffset") as GPPC_ArrestDate,
+
+GPPC__GPCCustOfficer1RId_l as GPPC_CustodyOfficer1,
+CustOfficer1EmpId__UKOfficerFullId as GPPC_CustodyOfficer1_FullID,
+CustOfficer1EmpId__UKOfficerFullId as GPersonArrest_CustodyOfficer1_FullID,
+CustOfficer1__EmployeeNumber_cache as GPPC_CustodyOfficer1_Number,
+CustOfficer1EmpId__rankofficeronlyg as GPPC_CustodyOfficer1_Rank,
+CustOfficer1GPOMGP__LabelUnit as GPPC_CustodyOfficer1_Unit,
+CustOfficer1__Surname_cache as 'CustOfficer1__Surname_cache-I',
+CustOfficer1__Given1_cache as 'CustOfficer1__Given1_cache-I',
+CustOfficer1__Given2_cache as 'CustOfficer1__Given2_cache-I',
+CustOfficer1__Given3_cache as 'CustOfficer1__Given3_cache-I',
+
+GPPC__GPCCustOfficer2RId_L as GPPC_CustodyOfficer2,
+CustOfficer2EmpId__UKOfficerFullId as GPPC_CustodyOfficer2_FullID,
+CustOfficer2EmpId__UKOfficerFullId as GPersonArrest_CustodyOfficer2_FullID,
+CustOfficer2__EmployeeNumber_cache as GPPC_CustodyOfficer2_Number,
+CustOfficer2EmpId__rankofficeronlyg as GPPC_CustodyOfficer2_Rank,
+CustOfficer2GPOMGP__LabelUnit as GPPC_CustodyOfficer2_Unit,
+CustOfficer2__Surname_cache as 'CustOfficer2__Surname_cache-I',
+CustOfficer2__Given1_cache as 'CustOfficer2__Given1_cache-I',
+CustOfficer2__Given2_cache as 'CustOfficer2__Given2_cache-I',
+CustOfficer2__Given3_cache as 'CustOfficer2__Given3_cache-I',
+
+GPPC__GPCCustOfficer3RId_L as GPPC_CustodyOfficer3,
+CustOfficer3EmpId__UKOfficerFullId as GPPC_CustodyOfficer3_FullID,
+CustOfficer3EmpId__UKOfficerFullId as GPersonArrest_CustodyOfficer3_FullID,
+CustOfficer3__EmployeeNumber_cache as GPPC_CustodyOfficer3_Number,
+CustOfficer3EmpId__rankofficeronlyg as GPPC_CustodyOfficer3_Rank,
+CustOfficer3GPOMGP__LabelUnit as GPPC_CustodyOfficer3_Unit,
+CustOfficer3__Surname_cache as 'CustOfficer3__Surname_cache-I',
+CustOfficer3__Given1_cache as 'CustOfficer3__Given1_cache-I',
+CustOfficer3__Given2_cache as 'CustOfficer3__Given2_cache-I',
+CustOfficer3__Given3_cache as 'CustOfficer3__Given3_cache-I',
+
+GPPC__GPCCustOfficer4RId_L as GPPC_CustodyOfficer4,
+CustOfficer4EmpId__UKOfficerFullId as GPPC_CustodyOfficer4_FullID,
+CustOfficer4EmpId__UKOfficerFullId as GPersonArrest_CustodyOfficer4_FullID,
+CustOfficer4__EmployeeNumber_cache as GPPC_CustodyOfficer4_Number,
+CustOfficer4EmpId__rankofficeronlyg as GPPC_CustodyOfficer4_Rank,
+CustOfficer4GPOMGP__LabelUnit as GPPC_CustodyOfficer4_Unit,
+CustOfficer4__Surname_cache as 'CustOfficer4__Surname_cache-I',
+CustOfficer4__Given1_cache as 'CustOfficer4__Given1_cache-I',
+CustOfficer4__Given2_cache as 'CustOfficer4__Given2_cache-I',
+CustOfficer4__Given3_cache as 'CustOfficer4__Given3_cache-I',
+
+GPPC__RaceG as GPPC_Race,
+GPPC__SelfDefinedRaceG as GPPC_SelfDefinedRace,
+GPPC__RaceGA as GPPC_RaceCode,
+GPPC__SelfDefinedRaceGA as GPPC_SelfDefinedRaceCode,
+AA__LabelNameFML as GPPCE_appropriateadult_fullname,
+AA__GPersonAssocGAddress_cache as GPPCE_appropriateadult_fulladdress,
+@CFID = CF__id,
+CF__idnumberg as CourtFolder_IdNumber,
+GPA__StartTimeF(Format="GWithoutOffset") as 'GPersonArrest_StartTime',
+GPA__GPCCustOfficer1RId_L as GPersonArrest_CustodyOfficer1,
+GPA__GPCCustOfficer2RId_L as GPersonArrest_CustodyOfficer2,
+GPA__GPCCustOfficer3RId_L as GPersonArrest_CustodyOfficer3,
+GPA__VideoTakenG as 'VideoAvail',
+
+GPA__Id as 'BlobData_DocData_GPersonArrest_Id-I',
+GPA__DocData as 'BlobData_DocData_GPersonArrest-I',
+
+@PRIArrestId = GPA__PrimaryArrestID,
+GPPLD__ESSigningPerson1SignNameG as SigningPerson1_SignName,
+GPPLD__ESSigningPerson1SignType as SigningPerson1_SignType,
+GPPLD__ESSigningPerson1SignTimeF(Format="GWithoutOffset") as SigningPerson1_SignTime,
+GPPLD__ESSigningPerson1CSSig as 'ESSigningPerson1CSSig-I',
+SP1__EmployeeNumber as SigningPerson1_EmployeeNumber,
+SP1__LabelNameFML as SigningPerson1_FullName,
+GPPLD__ESSigningPerson2SignNameG as SigningPerson2_SignName,
+GPPLD__ESSigningPerson2SignType as SigningPerson2_SignType,
+GPPLD__ESSigningPerson2SignTimeF(Format="GWithoutOffset") as SigningPerson2_SignTime,
+GPPLD__ESSigningPerson2CSSig as 'ESSigningPerson2CSSig-I',
+SP2__EmployeeNumber as SigningPerson2_EmployeeNumber,
+SP2__LabelNameFML as SigningPerson2_FullName,
+
+
+CustodyUnitPAMail__LabelUKFullAddressPostalINIGen__0 as GPPCE_UnitCorrespondenceAddressUkpostal,
+CustodyUnitPAMail__LabelUSFullAddressPostalINIGen__0 as GPPCE_UnitCorrespondenceAddressUSPostal,
+CustodyUnitPAMail__LabelUSFullAddressINIGen__0 as GPPCE_UnitCorrespondenceAddressUS,
+ESCustOfficerSignNameG as GPPCE_AuthorisingOfficer,
+AuthOffEmpId__UKOfficerFullId as GPPCE_AuthorisingOfficer_FullID,
+
+GPPCE__Cash001 as GPPCE_Cash001,
+GPPCE__Cash002 as GPPCE_Cash002,
+GPPCE__Cash005 as GPPCE_Cash005,
+GPPCE__Cash010 as GPPCE_Cash010,
+GPPCE__Cash020 as GPPCE_Cash020,
+GPPCE__Cash050 as GPPCE_Cash050,
+GPPCE__Cash100 as GPPCE_Cash100,
+GPPCE__CoinG as GPPCE_CoinG,
+GPPCE__CoinSilverG as GPPCE_CoinSilverG,
+GPPCE__TotalValueG as GPPCE_TotalValueG,
+@GPPCE_Id = GPPCE__ID,
+PDI__Id__0__0 as 'PDI__Id__0__0-I',
+GPPLD__Id as 'GPPLD.id-I',
+GPPCE__RADQInterpreterRequiredG as GPPCE_RADQInterpreterRequired,
+GPPCE__RADQInterpreterRequiredDetails as GPPCE_RADQInterpreterRequiredDetails,
+GPPCE__GPPCALawyerCommAddressG as GPPCE_Lawyer_Telephone,
+GPPCE__GPPCALawyerLinked as 'GPPCE__GPPCALawyerLinked-I',
+GPPCE__GPPCALawyerNLAddressG as 'GPPCE__GPPCALawyerNLAddressG-I',
+GPPCE__GPPCALawyerNLNameG as 'GPPCE__GPPCALawyerNLNameG-I',
+GPPCE__GPPCClassificationG as 'GPPCE__Classification',
+GPPCE__GPPCClassificationG as 'GPPCE_Classification',
+Lawyer__labelnamefml as 'Lawyer__labelnamefml-I',
+Lawyer__physicalAddress_cache as 'Lawyer__physicalAddress_cache-I',
+GPSE__OccupationTypeG__0 as 'GPSE__OccupationTypeG__0-I',
+GPSE__OccupationType2G__0 as 'GPSE__OccupationType2G__0-I',
+GPSE__OccupationG__0 as  'GPSE__OccupationG__0-I',
+GPSE__EmployerG__0 as 'GPSE__EmployerG__0-I',
+PPOFlag__Id as 'PPOFlag__Id-I',
+PYOFlag__Id as 'PYOFlag__Id-I',
+GPropertyImage__Id__0 as 'PropertyImage_Id-I',
+
+p1.LabelNameFML as 'Person1_FullName',
+goigp1.classificationg as 'Person1_Classification',
+p1.DistinctTitle_CacheG as 'Person1_Title',
+p1.Given1_cache as 'Person1_Given1',
+p1.Given2_cache as 'Person1_Given2',
+p1.Given3_cache as 'Person1_Given3',
+p1.Surname_cacheG as 'Person1_Surname',
+p1.DateOfBirth_cacheG as 'Person1_DateOfBirth',
+p1.Gender_cacheG as 'Person1_Gender',
+PA1.LabelUKFullAddressINIGen__0 as 'Person1_FullAddressUK',
+PA1.LabelUSFullAddressINIGen__0 as 'Person1_FullAddressUS',
+PA1.LabelUSFullAddressPostalINIGen__0 as 'Person1_FullAddressUSPostal',
+Person1Telephone.CommAddressG__0 as Person1_Telephone,
+GP1Employment__OccupationType2G__0 as 'Person1_Occupation',
+
+p2.LabelNameFML as 'Person2_FullName',
+goigp2.classificationg as 'Person2_Classification',
+p2.DistinctTitle_CacheG as 'Person2_Title',
+p2.Given1_cache as 'Person2_Given1',
+p2.Given2_cache as 'Person2_Given2',
+p2.Given3_cache as 'Person2_Given3',
+p2.Surname_cacheG as 'Person2_Surname',
+p2.DateOfBirth_cacheG as 'Person2_DateOfBirth',
+p2.Gender_cacheG as 'Person2_Gender',
+PA2.LabelUKFullAddressINIGen__0 as 'Person2_FullAddressUK',
+PA2.LabelUSFullAddressINIGen__0 as 'Person2_FullAddressUS',
+PA2.LabelUSFullAddressPostalINIGen__0 as 'Person2_FullAddressUSPostal',
+Person2Telephone.CommAddressG__0 as Person2_Telephone,
+GP2Employment__OccupationType2G__0 as 'Person2_Occupation',
+
+
+p3.LabelNameFML as 'Person3_FullName',
+goigp3.classificationg as 'Person3_Classification',
+p3.DistinctTitle_CacheG as 'Person3_Title',
+p3.Given1_cache as 'Person3_Given1',
+p3.Given2_cache as 'Person3_Given2',
+p3.Given3_cache as 'Person3_Given3',
+p3.Surname_cacheG as 'Person3_Surname',
+p3.DateOfBirth_cacheG as 'Person3_DateOfBirth',
+p3.Gender_cacheG as 'Person3_Gender',
+PA3.LabelUKFullAddressINIGen__0 as 'Person3_FullAddressUK',
+PA3.LabelUSFullAddressINIGen__0 as 'Person3_FullAddressUS',
+PA3.LabelUSFullAddressPostalINIGen__0 as 'Person3_FullAddressUSPostal',
+Person3Telephone.CommAddressG__0 as Person3_Telephone,
+GP3Employment__OccupationType2G__0 as 'Person3_Occupation',
+
+p4.LabelNameFML as 'Person4_FullName',
+goigp4.classificationg as 'Person4_Classification',
+p4.DistinctTitle_CacheG as 'Person4_Title',
+p4.Given1_cache as 'Person4_Given1',
+p4.Given2_cache as 'Person4_Given2',
+p4.Given3_cache as 'Person4_Given3',
+p4.Surname_cacheG as 'Person4_Surname',
+p4.DateOfBirth_cacheG as 'Person4_DateOfBirth',
+p4.Gender_cacheG as 'Person4_Gender',
+PA4.LabelUKFullAddressINIGen__0 as 'Person4_FullAddressUK',
+PA4.LabelUSFullAddressINIGen__0 as 'Person4_FullAddressUS',
+PA4.LabelUSFullAddressPostalINIGen__0 as 'Person4_FullAddressUSPostal',
+Person4Telephone.CommAddressG__0 as Person4_Telephone,
+GP4Employment__OccupationType2G__0 as 'Person4_Occupation',
+
+p5.LabelNameFML as 'Person5_FullName',
+goigp5.classificationg as 'Person5_Classification',
+p5.DistinctTitle_CacheG as 'Person5_Title',
+p5.Given1_cache as 'Person5_Given1',
+p5.Given2_cache as 'Person5_Given2',
+p5.Given3_cache as 'Person5_Given3',
+p5.Surname_cacheG as 'Person5_Surname',
+p5.DateOfBirth_cacheG as 'Person5_DateOfBirth',
+p5.Gender_cacheG as 'Person5_Gender',
+PA5.LabelUKFullAddressINIGen__0 as 'Person5_FullAddressUK',
+PA5.LabelUSFullAddressINIGen__0 as 'Person5_FullAddressUS',
+PA5.LabelUSFullAddressPostalINIGen__0 as 'Person5_FullAddressUSPostal',
+Person5Telephone.CommAddressG__0 as Person5_Telephone,
+GP5Employment__OccupationType2G__0 as 'Person5_Occupation'
+
+
+
+FROM GPersonPolLegalDoc GPPLD
+	left join (GPersonPolTREventESSigningPerson1
+		left join (GPersonESignatureKeyPair
+			left join (GPerson SP1)
+		)
+	)
+	left join (GPersonPolTREventESSigningPerson2
+		left join (GPersonESignatureKeyPair
+			left join (GPerson SP2)
+		)
+	)
+	left join(GPersonPolReportCourtFolder
+		left join(CourtFolder CF)
+	)
+	left join(GPerson AOWP
+		left join (GPersonOrgMemberGPerson GPOMGPWP
+			Left join (OrgPolice UnitWP
+				left join (GPersonAssocGAddress GPAGAOM1
+					left join (PhysicalAddress UPAWP)
+				) on UPAWP.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAOM1.Rid, "PhysicalAddress") = 1 AND ChoiceHasProperty(GPAGAOM1.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAOM1.Rank, "Asc", GPAGAOM1.CreTime, "Desc")=1
+			) on GPOMGPWP.Lid=UnitWP.id
+		) on AOWP.ID=GPOMGPWP.RID and GPOMGPWP.IsEffectiveAssignment = 1
+	)
+
+	left join(GPPLDAssocOfficer
+		left join(GPerson AO
+			left join (GPIDEmployeeNumber GPIDEN)
+			left join (GPersonEmploy GPEMP)
+			left join (GPersonOrgMemberGPerson GPOMGP
+				Left join (OrgPolice Unit
+					left join (GPersonAssocGAddress GPAGAOM2
+						left join (PhysicalAddress UPA)
+					) on UPA.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAOM2.Rid, "PhysicalAddress") = 1 AND ChoiceHasProperty(GPAGAOM2.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAOM2.Rank, "Asc", GPAGAOM2.CreTime, "Desc")=1
+					left join (GPersonAssocGaddress GPAGATel1
+						left join (Telephone UTel)
+					) on isspecialization(GPAGATel1.Rid,"Telephone") = 1 AND ChoiceHasProperty(GPAGATel1.TYPE1,"cl_GPersonAssocGAddressType","clvisbusiness","1") = 1 AND GPAGATel1.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(UTel.Type1,"cl_TelephoneType","clvIsVoice","1") = 1 AND orderby(GPAGATel1.cretime, "desc") = 1
+
+               left join (GPersonAssocGAddress GPAGAF
+                 	left join (Telephone fax)
+					) on ChoiceHasProperty(Fax.Type1,"cl_TelephoneType","clvIsFax","1") = 1 and fax.EffectiveToTimeTZV2I is null AND IsSpecialization(GPAGAF.Rid, "Telephone") = 1 AND ChoiceHasProperty(GPAGAF.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAF.Rank, "Asc", GPAGAF.CreTime, "Desc")=1
+				) on GPOMGP.Lid=Unit.id
+			) on AO.ID=GPOMGP.RID and GPOMGP.IsEffectiveAssignment = 1
+		left join (GPersonAssocGAddress GPAGAOM3
+			left join (physicalAddress USPA)
+		)on USPA.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAOM3.Rid, "PhysicalAddress") = 1 AND ChoiceHasProperty(GPAGAOM3.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAOM3.Rank, "Asc", GPAGAOM3.CreTime, "Desc")=1
+		left join (GPersonAssocGaddress GPAGATel2
+			left join (Telephone USTel)
+		) on isspecialization(GPAGATel2.Rid,"Telephone") = 1 AND ChoiceHasProperty(GPAGATel2.TYPE1,"cl_GPersonAssocGAddressType","clvisbusiness","1") = 1 AND GPAGATel2.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(USTel.Type1,"cl_TelephoneType","clvIsVoice","1") = 1 AND orderby(GPAGATel2.cretime, "desc") = 1
+
+		left join (GPersonAssocGAddress OrgTelephone
+      	left join (Telephone Orgfax)
+		) on ChoiceHasProperty(Orgfax.Type1,"cl_TelephoneType","clvIsFax","1") = 1 and Orgfax.EffectiveToTimeTZV2I is null AND IsSpecialization(OrgTelephone.Rid, "Telephone") = 1 AND ChoiceHasProperty(OrgTelephone.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(OrgTelephone.Rank, "Asc", OrgTelephone.CreTime, "Desc")=1
+
+		)
+
+	)
+	left join(GPersonPolReportAuth GPPRA
+		left join (GPerson ReportAuthor
+			left join (GPIDEmployeeNumber ReportAuthorEN)
+			left join(GPersonOrgMemberGPerson ReportAuthorOrgMember
+				Left join (OrgPoliceUnit ReportAuthUnit
+					left join(GPersonAssocGAddress UnitAssocMail
+						left join (PhysicalAddress ReportAuthorUnitPAMail)
+					) on  IsSpecialization(UnitAssocMail.RId, 'PhysicalAddress') = 1 and ChoiceHasProperty(UnitAssocMail.Type1,'cl_GPersonAssocGAddressType','clvIsCorrespondence','1')=1 AND UnitAssocMail.EffectiveToTimeTZV2I IS NULL
+					left join(GPersonAssocGAddress UnitAssocLocation
+						left join (PhysicalAddress ReportAuthorUnitPALoc)
+					) on  IsSpecialization(UnitAssocLocation.RId, 'PhysicalAddress') = 1 and ChoiceHasProperty(UnitAssocLocation.Type1,'cl_GPersonAssocGAddressType','clvIsBusiness','1')=1 AND UnitAssocLocation.EffectiveToTimeTZV2I IS NULL
+				)on ReportAuthorOrgMember.Lid=ReportAuthUnit.id
+			)on ReportAuthorOrgMember.Rid = ReportAuthor.id and ReportAuthorOrgMember.IsEffectiveAssignment = 1
+		)
+	)
+	left join(GPPEventGOcc
+		left join (GOccurrence GOcc
+			left join (Occurrence Occ
+				left join (GOccIDOccurrenceReportFileNumber GOccIDCase)
+			)
+			left join(GOccIvGVehicle IvVeh)
+			left join(GOccIvPA GIVPA
+				left join (PhysicalAddress POAPA)
+			) on AnyOfSetHasProperty(GIVPA.Classification,"cl_GOccIvPAClassification","clvIsOccurrencePA","1")=1 and POAPA.EffectiveToTimeTZV2I is Null AND OrderBy(GIVPA.CreTime, "Desc")=1
+		)
+	)
+	left join(GPerson GP
+		left join(GPIDFPS FPS)
+		left join(GPersonName GPName) on ChoiceHasProperty(GPName.Type1,"cl_GPersonNameType","clvIsPrimary","1") = 1
+		left join(Person
+			left join(PersonInfo PInfo)
+			left join(PersonDescIdent PDesc) on OrderBy(PDesc.CreTime, "Desc")=1
+			left join(GPersonSubjectEmployment gpse) ON (gpse.StartTimeTZV2I IS NULL OR gpse.StartTimeTZV2I &lt;= 'NOW') AND (gpse.EndTimeTZV2I IS NULL OR gpse.EndTimeTZV2I &gt; 'NOW') AND OrderBy(gpse.IsNotifiableOccupation, "DESC", gpse.CreTime, "DESC") = 1
+		)
+		left join(GPersonAssocGAddress GPAGA
+			left join(PhysicalAddress PA)
+		) on isspecialization(GPAGA.Rid,"PhysicalAddress") = 1 AND GPAGA.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGA.Rank, "Asc", GPAGA.CreTime, "Desc")=1
+		left join(GPersonAssocGAddress GPAGA2
+			left join(Telephone T)
+		) on isspecialization(GPAGA2.Rid,"Telephone") = 1 AND GPAGA2.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(GPAGA2.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND ChoiceHasProperty(GPAGA2.Type1,"cl_GPersonAssocGAddressType","clvisresidence","1") = 1 AND OrderBy(GPAGA2.Rank, "Asc", GPAGA2.CreTime, "Desc")=1
+		left join(GPersonAssocGAddress GPAGATBus
+			left join(Telephone TBus)
+		) on isspecialization(GPAGATBus.Rid,"Telephone") = 1 AND GPAGATBus.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(GPAGATBus.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND ChoiceHasProperty(GPAGATBus.Type1,"cl_GPersonAssocGAddressType","clvisbusiness","1") = 1 AND OrderBy(GPAGATBus.Rank, "Asc", GPAGATBus.CreTime, "Desc")=1
+		left join(GPersonAssocGAddress GPAGATMob
+			left join(Telephone TCell)
+		) on isspecialization(GPAGATMob.Rid,"Telephone") = 1  AND GPAGATMob.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(TCell.Type1,"cl_TelephoneType","clvIsCellular","1") = 1 AND orderby(GPAGATMob.cretime, "desc") = 1
+
+		left join(GPIDDL DL)
+		left join(GPIDUSFBI FBI)
+		left join(GPIDUSSSN SSN)
+		left join(GPIDPoliceID2 PoliceID2)
+		left join(GPIDPoliceID3 PoliceID3)
+		left join(GPersonFlag PPOFlag) on PPOFlag.Active = 1 and ChoiceHasProperty(PPOFlag.Type1,"cl_GPersonFlagType","clvIsPPO","1") = 1
+		left join(GPersonFlag PYOFlag) on PYOFlag.Active = 1 and ChoiceHasProperty(PYOFlag.Type1,"cl_GPersonFlagType","clvIsPYO","1") = 1
+		left join (GPersonArrest Arrest)
+	)
+	left join(GPPLDAppearanceCourt GPPLDAC
+		left join (OrgJusticeBase OJB
+			left join (OrgCourt OC)
+			left join(GPersonAssocGAddress GPAGA4
+				left join(PhysicalAddress GPPLDACPA)
+			)on isspecialization(GPAGA4.Rid,"PhysicalAddress") = 1 AND GPAGA4.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA4.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGA4.Rank, "Asc", GPAGA4.CreTime, "Desc")=1
+		)
+	)
+	left join(GPPLDAppearanceIdent GPPLDAI
+		left join (OrgPolice OP
+			left join(GPersonAssocGAddress GPAGA3
+				left join(PhysicalAddress GPPLDAIPA)
+			)on isspecialization(GPAGA3.Rid,"PhysicalAddress") = 1 AND GPAGA3.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA3.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGA3.Rank, "Asc", GPAGA3.CreTime, "Desc")=1
+		)
+	)
+	left join(GPPLDIssuingGPerson
+		left join (GPerson IGP
+			left join(GPersonName IGPN) on ChoiceHasProperty(IGPN.Type1,"cl_GPersonNameType","clvIsPrimary","1") = 1
+		)
+	)
+	left join(GPPLDServingAddress
+		left join(PhysicalAddress SAPA)
+	)
+	left join(GPPLDAccusedGPerson GPPLDAGP
+		left join (GPerson AGP
+			left join(Person
+				left join (GPIDDL AccDL)
+				left join (GPIDUSSSN AccSSN)
+				left join (GPIDPoliceID2 AccPoliceID2)
+				left join (GPIDPoliceID3 AccPoliceID3)
+				left join (PersonInfo AccPInfo)
+				left join (PersonDescOcc AccPDesc)
+			)
+			left join (GPersonName AccGPName) on ChoiceHasProperty(AccGPName.Type1,"cl_GPersonNameType","clvIsPrimary","1") = 1
+			left join (GPersonAssocGAddress AccGPAGA
+				left join(PhysicalAddress AccPA)
+			) on isspecialization(AccGPAGA.Rid,"PhysicalAddress") = 1 AND AccGPAGA.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(AccGPAGA.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(AccGPAGA.Rank, "Asc", AccGPAGA.CreTime, "Desc")=1
+		left join(GPersonAssocGAddress GPAGAAGPT
+			left join(Telephone AGPT)
+		) on isspecialization(GPAGAAGPT.Rid,"Telephone") = 1 AND GPAGAAGPT.EffectiveToTimeTZV2I IS NULL AND ChoiceHasProperty(GPAGAAGPT.Type1,"cl_GPersonAssocGAddressType","clvisresidence","1") = 1 AND ChoiceHasProperty(AGPT.Type1,"cl_TelephoneType","clvIsVoice","1") = 1 AND OrderBy(GPAGAAGPT.Rank, "Asc", GPAGAAGPT.CreTime, "Desc")=1
+
+		)
+	)
+	left join(GPPLDVictimGPerson GPPLDVGP
+		left join (GPerson VGP
+			left join(Person
+				left join(GPIDUSSSN vICSSN)
+				left join(GPIDPoliceID2 VicPoliceID2)
+				left join(GPIDUSFBI VicFBI)
+
+				left join(GPIDDL VicDL)
+				left join(PersonDescIdent vicDesc) on OrderBy(vicDesc.CreTime, "Desc")=1
+			)
+			left join (GPersonName VicGPName) on ChoiceHasProperty(VicGPName.Type1,"cl_GPersonNameType","clvIsPrimary","1") = 1
+			left join (GPersonAssocGAddress VicGPAGA
+				left join(PhysicalAddress VicPA)
+			) on isspecialization(VicGPAGA.Rid,"PhysicalAddress") = 1 AND VicGPAGA.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(VicGPAGA.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(VicGPAGA.Rank, "Asc", VicGPAGA.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress VicAssocTelephone
+				left join(Telephone VicTelephone)
+			) on isspecialization(VicAssocTelephone.Rid,"Telephone") = 1 AND VicAssocTelephone.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(VicAssocTelephone.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(VicAssocTelephone.Rank, "Asc", VicAssocTelephone.CreTime, "Desc")=1
+
+		)
+	)
+	left join(GPPLDServingGPerson GPPLS
+		left join (GPerson SGP
+			left join(GPersonName SGPN) on ChoiceHasProperty(SGPN.Type1,"cl_GPersonNameType","clvIsPrimary","1") = 1
+		)
+	)
+
+	left join(GPersonPolReportGPersonPolCustody GPersonPolReportGPersonPolCustody1
+		left join(GPersonPolCustody GPPC
+			left join(GPersonArrest gpa)
+			left join (GPersonIdentGPersonPolCustody
+				left join (GPersonIdent
+					left join (PDPSGPPEvent
+						left join (PersonDescIdent
+							left join (PersonDescImage PDI) on ChoiceHasProperty(PDI.MugView, "cl_mugimgView", "clvIsFrontView", "1") = 1 and Orderby(PDI.CreTime, "desc") = 1
+						)
+					)
+				)
+			)
+			left join(GPCCustOfficer1
+				left join(GPerson CustOfficer1
+					left join(GPIDEmployeeNumber CustOfficer1EmpId)
+					left join(GPersonOrgMemberGPerson CustOfficer1GPOMGP) on CustOfficer1.ID = CustOfficer1GPOMGP.RID AND CustOfficer1GPOMGP.IsEffectiveAssignment = 1
+				)
+			)
+			left join(GPCCustOfficer2
+				left join(GPerson CustOfficer2
+					left join(GPIDEmployeeNumber CustOfficer2EmpId)
+					left join(GPersonOrgMemberGPerson CustOfficer2GPOMGP) on CustOfficer2.ID = CustOfficer2GPOMGP.RID AND CustOfficer2GPOMGP.IsEffectiveAssignment = 1
+				)
+			)
+			left join(GPCCustOfficer3
+				left join(GPerson CustOfficer3
+					left join(GPIDEmployeeNumber CustOfficer3EmpId)
+					left join(GPersonOrgMemberGPerson CustOfficer3GPOMGP) on CustOfficer3.ID = CustOfficer3GPOMGP.RID AND CustOfficer3GPOMGP.IsEffectiveAssignment = 1
+				)
+			)
+			left join(GPCCustOfficer4
+				left join(GPerson CustOfficer4
+					left join(GPIDEmployeeNumber CustOfficer4EmpId)
+					left join(GPersonOrgMemberGPerson CustOfficer4GPOMGP) on CustOfficer4.ID = CustOfficer4GPOMGP.RID AND CustOfficer4GPOMGP.IsEffectiveAssignment = 1
+				)
+			)
+			left join(GPPCustodyEvent GPPCE
+				left join(GPPCALawyer
+					left join(GPerson Lawyer)
+				)
+				left join(GPPCAUnit
+					left join (OrgPolice CustodyUnit
+						left join(GPersonAssocGAddress CustodyUnitAssocMail
+							left join (PhysicalAddress CustodyUnitPAMail)
+						) on  IsSpecialization(CustodyUnitAssocMail.RId, "PhysicalAddress") = 1 and ChoiceHasProperty(CustodyUnitAssocMail.Type1,"cl_GPersonAssocGAddressType","clvIsCorrespondence","1")=1 AND CustodyUnitAssocMail.EffectiveToTimeTZV2I IS NULL
+					)
+				)
+				left join(GPPCAAAdult
+					left join(GPerson AA)
+				)
+				left join (GPPCustodyEventESCustOfficer
+					left join (GPersonESignatureKeyPair
+						left join (Person AuthOff
+							left join(GPIDEmployeeNumber AuthOffEmpId)
+						)
+					)
+				)
+			)
+		) on gppc.id = GPersonPolReportGPersonPolCustody1.Rid
+	)
+
+	left join(GPPLDVehicle GPPLDV
+		left join (Vehicle veh
+			left join(GPersonIvGProperty GPIGP
+				left join(GPerson GVGP
+					left join (GPersonAssocGAddress GPAGAO
+						left join (PhysicalAddress GVGPOA)
+					)on isspecialization(GPAGAO.Rid,"PhysicalAddress")=1 AND GPAGAO.EffectiveToTimeTZV2I is NULL and ChoiceHasProperty(GPAGAO.Type1,"cl_GPersonAssocGAddressType","clvisresidence","1") = 1 AND OrderBy(GPAGAO.CreTime, "Desc")=1
+				)
+			) on ChoiceHasProperty(GPIGP.Type1,"cl_GPersonIvGPropertyType","clvIsOwner","1") = 1 AND GPIGP.EffectiveToTimeTZV2I IS NULL
+		)
+	)
+	left join(GPersonPolReportExtDocTemplate
+		left join(ExternalDocumentTemplate template)
+	)
+	left join(GPPLDAssocGProperty1
+		left join (GProperty
+			left join(GPropertyImage) On OrderBy(GPropertyImage.CreTime, "Desc")=1
+		)
+	)
+
+	left join (GPPLDAssocGPerson1 gp1
+ 	left join (GPerson p1
+   left join(GPersonAssocGAddress GPAGA1
+				left join(PhysicalAddress PA1)
+			) on isspecialization(GPAGA1.Rid,"PhysicalAddress") = 1 AND GPAGA1.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA1.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGA1.Rank, "Asc", GPAGA1.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress Person1AssocTelephone
+				left join (Telephone Person1Telephone)
+			) on IsSpecialization(Person1AssocTelephone.Rid, "Telephone") = 1 AND Person1AssocTelephone.EffectiveToTimeTZV2I is NULL AND OrderBy(Person1AssocTelephone.Rank, "Asc", Person1AssocTelephone.CreTime, "Desc") = 1
+
+			Left join goccivgperson goigp1
+    		left join (GPersonSubjectEmployment GP1Employment) on (GP1Employment.StartTimeTZV2I IS NULL OR GP1Employment.StartTimeTZV2I &lt;= 'NOW') AND (GP1Employment.EndTimeTZV2I IS NULL OR GP1Employment.EndTimeTZV2I &gt; 'NOW') AND OrderBy(GP1Employment.IsNotifiableOccupation, "DESC", GP1Employment.CreTime, "DESC") = 1
+       	) on gppld.GPPEventGOccRId = goigp1.lid and exists ( select goccivgp.id from goccivgperson goccivgp where goccivgp.rid = gp1.rid)
+
+    )
+	left join (GPPLDAssocGPerson2 gp2
+ 	left join (GPerson p2
+ 		left join(GPersonAssocGAddress GPAGAP2
+				left join(PhysicalAddress PA2)
+			) on isspecialization(GPAGAP2.Rid,"PhysicalAddress") = 1 AND GPAGAP2.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGAP2.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAP2.Rank, "Asc", GPAGAP2.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress Person2AssocTelephone
+				left join (Telephone Person2Telephone)
+			) on IsSpecialization(Person2AssocTelephone.Rid, "Telephone") = 1 AND Person2AssocTelephone.EffectiveToTimeTZV2I is NULL AND OrderBy(Person2AssocTelephone.Rank, "Asc", Person2AssocTelephone.CreTime, "Desc") = 1
+
+ 		Left join goccivgperson goigp2
+		  left join (GPersonSubjectEmployment GP2Employment) on (GP2Employment.StartTimeTZV2I IS NULL OR GP2Employment.StartTimeTZV2I &lt;= 'NOW') AND (GP2Employment.EndTimeTZV2I IS NULL OR GP2Employment.EndTimeTZV2I &gt; 'NOW') AND OrderBy(GP2Employment.IsNotifiableOccupation, "DESC", GP2Employment.CreTime, "DESC") = 1
+       	) on gppld.GPPEventGOccRId = goigp2.lid and exists ( select goccivgp.id from goccivgperson goccivgp where goccivgp.rid = gp2.rid)
+    )
+	left join (GPPLDAssocGPerson3 gp3
+  left join (GPerson p3
+   left join(GPersonAssocGAddress GPAGAP3
+    left join(PhysicalAddress PA3)
+   ) on isspecialization(GPAGAP3.Rid,"PhysicalAddress") = 1 AND GPAGAP3.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGAP3.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAP3.Rank, "Asc", GPAGAP3.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress Person3AssocTelephone
+				left join (Telephone Person3Telephone)
+			) on IsSpecialization(Person3AssocTelephone.Rid, "Telephone") = 1 AND Person3AssocTelephone.EffectiveToTimeTZV2I is NULL AND OrderBy(Person3AssocTelephone.Rank, "Asc", Person3AssocTelephone.CreTime, "Desc") = 1
+
+		Left join goccivgperson goigp3
+			left join (GPersonSubjectEmployment GP3Employment) on (GP3Employment.StartTimeTZV2I IS NULL OR GP3Employment.StartTimeTZV2I &lt;= 'NOW') AND (GP3Employment.EndTimeTZV2I IS NULL OR GP3Employment.EndTimeTZV2I &gt; 'NOW') AND OrderBy(GP3Employment.IsNotifiableOccupation, "DESC", GP3Employment.CreTime, "DESC") = 1
+			) on gppld.GPPEventGOccRId = goigp3.lid and exists ( select goccivgp.id from goccivgperson goccivgp where goccivgp.rid = gp3.rid)
+    )
+	left join (GPPLDAssocGPerson4 gp4
+  left join (GPerson p4
+   left join(GPersonAssocGAddress GPAGAP4
+    left join(PhysicalAddress PA4)
+   ) on isspecialization(GPAGAP4.Rid,"PhysicalAddress") = 1 AND GPAGAP4.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGAP4.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGAP4.Rank, "Asc", GPAGAP4.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress Person4AssocTelephone
+				left join (Telephone Person4Telephone)
+			) on IsSpecialization(Person4AssocTelephone.Rid, "Telephone") = 1 AND Person4AssocTelephone.EffectiveToTimeTZV2I is NULL AND OrderBy(Person4AssocTelephone.Rank, "Asc", Person4AssocTelephone.CreTime, "Desc") = 1
+
+ 		Left join goccivgperson goigp4
+    		left join (GPersonSubjectEmployment GP4Employment) on (GP4Employment.StartTimeTZV2I IS NULL OR GP4Employment.StartTimeTZV2I &lt;= 'NOW') AND (GP4Employment.EndTimeTZV2I IS NULL OR GP4Employment.EndTimeTZV2I &gt; 'NOW') AND OrderBy(GP4Employment.IsNotifiableOccupation, "DESC", GP4Employment.CreTime, "DESC") = 1
+       	) on gppld.GPPEventGOccRId = goigp4.lid and exists ( select goccivgp.id from goccivgperson goccivgp where goccivgp.rid = gp4.rid)
+    )
+	left join (GPPLDAssocGPerson5 gp5
+		left join (GPerson p5
+			left join(GPersonAssocGAddress GPAGA5
+				left join(PhysicalAddress PA5)
+			) on isspecialization(GPAGA5.Rid,"PhysicalAddress") = 1 AND GPAGA5.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA5.Type1, "cl_GPersonAssocGAddressType", "NotRanked", "1") = 0 AND OrderBy(GPAGA5.Rank, "Asc", GPAGA5.CreTime, "Desc")=1
+			left join (GPersonAssocGAddress Person5AssocTelephone
+				left join (Telephone Person5Telephone)
+			) on IsSpecialization(Person5AssocTelephone.Rid, "Telephone") = 1 AND Person5AssocTelephone.EffectiveToTimeTZV2I is NULL AND OrderBy(Person5AssocTelephone.Rank, "Asc", Person5AssocTelephone.CreTime, "Desc") = 1
+
+			Left join goccivgperson goigp5
+   	left join (GPersonSubjectEmployment GP5Employment) on (GP5Employment.StartTimeTZV2I IS NULL OR GP5Employment.StartTimeTZV2I &lt;= 'NOW') AND (GP5Employment.EndTimeTZV2I IS NULL OR GP5Employment.EndTimeTZV2I &gt; 'NOW') AND OrderBy(GP5Employment.IsNotifiableOccupation, "DESC", GP5Employment.CreTime, "DESC") = 1
+    ) on gppld.GPPEventGOccRId = goigp5.lid and exists ( select goccivgp.id from goccivgperson goccivgp where goccivgp.rid = gp5.rid)
+   )
+
+
+--WHERE GPPLD.id = @id order by GPPCE.Cretime desc, gpa.cretime desc
+WHERE GPPLD.id = @id group by gpersonpollegaldoc.id takemax(gppce.cretime) order by GPPCE.Cretime desc, gpa.cretime
+
+--&lt;!-- Person Caution data --&gt;
+SELECT
+--'&lt;&lt;Heading&gt;&gt;;Person caution data' as 'Heading-UseAlternateName',
+Label AS 'PersonCaution_-P0',
+Label as 'Label-CR-P0XBPersonCautionSummary'
+from GPersonCaution where EffectiveToTimeTZV2I IS NULL AND WId = @GP_ID ORDER by cretime desc
+
+--&lt;!-- Person Flag data --&gt;
+SELECT
+--'&lt;&lt;Heading&gt;&gt;;Person flag data' as 'Heading-UseAlternateName',
+Label as 'PersonFlag_-P0',
+Label as 'Label-CR-P0XBPersonFlagsSummary'
+from GPersonFlag where Active = 1 AND WId = @GP_ID ORDER by cretime desc
+
+--&lt;!--Contact data--&gt;
+Select
+'&lt;&lt;Heading&gt;&gt;;Contact data' as 'Heading-UseAlternateName',
+gpcp__remarks as 'Contact-P0_Remarks',
+gpcp__type1g as 'Contact-P0_Type',
+gp__surname_Cache as 'Contact-P0_Surname',
+gp__given1_cache as 'Contact-P0_Given1',
+gp__given1_cache as 'Contact-P0_Given1_Initial-S1',
+gp__given2_cache as 'Contact-P0_Given2',
+gp__given2_cache as 'Contact-P0_Given2_Initial-S1',
+gp__given3_cache as 'Contact-P0_Given3',
+gp__given3_cache as 'Contact-P0_Given3_Initial-S1',
+pa__labeladdressonly__0 as 'Contact-P0_FullAddress',
+pa__LabelUSFullAddressINIGen__0 as 'Contact-P0_FullAddressUS',
+pa__LabelUSFullAddressPostalINIGen__0 as 'Contact-P0_FullAddressUSPostal',
+pa__postalzipcodeg__0 as 'Contact-P0_PostalZipCode',
+t__commaddressg__0 as 'Contact-P0_Telephone',
+gp__DistinctTitle_cacheg as 'Contact-P0_Title',
+PA__MunicipalityNameG__0 as 'Contact-P0_MunicipalityName',
+PA__ProvStateCodeG__0 as 'Contact-P0_ProvState',
+PA__civicsitestreetnumberg__0 as 'Contact-P0_StreetNo',
+PA__StreetNameG__0 as 'Contact-P0_Street',
+pa__buildingunitidentifierG__0 as 'Contact-P0_Apartment',
+PA__BuildingNameG__0 as 'Contact-P0_Premise',
+PA__MunicipalityDistrictNameG__0 as 'Contact-P0_MunicipalityDistrictName',
+pa__RegionNameG__0 as 'Contact-P0_RegionName',
+SSN__IdNumberG as 'Contact-P0_SSN',
+PoliceID2__IdNumberG as 'Contact-P0_PoliceId2',
+FBI__IdNumberG as 'Contact-P0_FBI'
+from gpersoncontactperson gpcp
+left join (GPerson gp
+	left join (GPersonAssocGAddress GPAGA
+		left join(PhysicalAddress pa)
+	)on IsSpecialization(GPAGA.RId,"PhysicalAddress") = 1 and GPAGA.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGA.Type1,"cl_GPersonAssocGAddressType","clvisresidence","1") = 1  and OrderBy(GPAGA.cretime,"Desc") = 1
+
+	left join (GPersonAssocGAddress GPAGAT
+		left join(Telephone T)
+	)on IsSpecialization(GPAGAT.RId,"Telephone") = 1 and GPAGAT.EffectiveToTimeTZV2I IS NULL and ChoiceHasProperty(GPAGAT.Type1,"cl_GPersonAssocGAddressType","clvisresidence","1") = 1  and ChoiceHasProperty(t.Type1,"cl_TelephoneType","clvIsVoice","1") = 1 and OrderBy(GPAGAT.cretime,"Desc") = 1
+	left join(GPIDUSSSN SSN)
+	left join(GPIDPoliceID2 PoliceID2)
+	left join(GPIDUSFBI FBI)
+) on gp.id = gpcp.rid
+where gpcp.lid = @GP_ID
+
+--&lt;!-- Parent data --&gt;
+select
+contact__labelnamefml as 'Parent-P0_FullName',
+GPersonContactPerson__id as 'Ignore-I',
+ContactPhysAddress__LabelAddressOnly__0 as 'Parent-P0_FullAddress',
+ContactPhysAddress__LabelUSFullAddressPostalINIGen__0 as 'Parent-P0_FullAddressUSPostal',
+ContactPhysAddress__LabelUSFullAddressINIGen__0 as 'Parent-P0_FullAddressUS',
+ContactPhysAddress__PostalZipCodeG__0  as 'Parent-P0_PostalZipCode',
+ContactTelephone__CommAddressG__0 as 'Parent-P0_Telephone'
+from gpersonpollegaldoc legaldoc
+left join (gperson p
+	left join(GPersonContactPerson
+		left join (GPerson contact
+			left join (GPersonAssocGAddress ContactAssocGaddress
+				left join (PhysicalAddress ContactPhysAddress)
+			) on IsSpecialization(ContactAssocGaddress.Rid, "PhysicalAddress") = 1 AND ContactAssocGaddress.EffectiveToTimeTZV2I is NULL AND OrderBy(ContactAssocGaddress.Rank, "Asc", ContactAssocGaddress.CreTime, "Desc") = 1
+			left join (GPersonAssocGAddress ContactAssocTelphone
+				left join (Telephone ContactTelephone)
+			) on IsSpecialization(ContactAssocTelphone.Rid, "Telephone") = 1 AND ContactAssocTelphone.EffectiveToTimeTZV2I is NULL AND OrderBy(ContactAssocTelphone.Rank, "Asc", ContactAssocTelphone.CreTime, "Desc") = 1
+		) on contact.id = GPersonContactPerson.rid
+	) on p.id = GPersonContactPerson.lid and  ChoiceHasProperty(GPersonContactPerson.type1, "cl_GPersonContactPersonType", "clvIsParent", "1") = 1
+)
+where legaldoc.id = @id
+
+--&lt;!-- Disposition result field --&gt;
+Select
+label as 'AccusedChargeLabel-I'
+from gpersoncharge where wid = @AccusedId and GPChargeOccRId = @GOccId order by cretime asc
+
+--&lt;!-- Court Folder Data --&gt;
+select
+'&lt;&lt;Heading&gt;&gt;;Court folder doc ticket data' as 'Heading-UseAlternateName',
+cf__UKCaseURNAgency as UKCaseURNAgency,
+cf__UKCaseURNNumber as UKCaseURNNumber,
+cf__UKCaseURNUnit as UKCaseURNUnit,
+cf__UKCaseURNYear as UKCaseURNYear,
+Officer__LabelNameFML as CourtFolderOIC_FullName,
+Unit__LabelName__0 as CourtFolderOIC_Unit,
+Officer__EmployeeNumber_cache as CourtFolderOIC_EmployeeNumber,
+Officer__Surname_cache as CourtFolderOIC_Surname,
+GPIDEN__RankG as CourtFolderOIC_Rank,
+GPIDEN__UKOfficerFullId as CourtFolderOIC_FullId,
+SupOfficer__LabelNameFML as CourtFolderSupervisor_FullName,
+SupOfficer__EmployeeNumber_cache as CourtFolderSupervisor_EmployeeNumber,
+SupOfficer__Surname_cache as CourtFolderSupervisor_Surname,
+GPIDEN2__RankG as CourtFolderSupervisor_Rank,
+GPIDEN2__UKOfficerFullId as CourtFolderSupervisor_FullId,
+
+CF__CourtFolderProsecutorOfficeRId_L as 'CourtFolderProsecutorOffice',
+CFMunit__LabelNameFML as 'CourtFolderManagingUnit',
+UPA__buildingnameg__0 as 'CourtFolderManagingUnit_BusinessAddressPremise',
+upa__labeladdressonly__0 as 'CourtFolderManagingUnit_BusinessAddress',
+upa__LabelUSFullAddressINIGen__0 as 'CourtFolderManagingUnit_BusinessAddressUS',
+upa__LabelUSFullAddressPostalINIGen__0 as 'CourtFolderManagingUnit_BusinessAddressUSPostal',
+
+CasePrepOfficer__Surname_cache as CourtFolderCasePrep_OfficerSurname,
+CasePrepOfficer__Given1_cache as CourtFolderCasePrep_OfficerGiven1,
+CasePrepEmail__CommAddressG__0__0 as CourtFolderCasePrep_UnitEmail,
+CasePrepUPA__BuildingName__0__0 as CourtFolderCasePrep_UnitBuildingName,
+CasePrepUPA__CivicSiteStreetNumber__0__0 as CourtFolderCasePrep_UnitStreetNumber,
+CasePrepUPA__StreetName__0__0 as CourtFolderCasePrep_UnitStreet,
+CasePrepUPA__MunicipalityName__0__0 as CourtFolderCasePrep_UnitMunicipality,
+CasePrepUPA__PostalZipCode__0__0 as CourtFolderCasePrep_UnitPostalCode,
+CasePrepTelephone__CommAddressG__0__0 as CourtFolderCasePrep_UnitTelephone,
+CasePrepFax__CommAddressG__0__0 as CourtFolderCasePrep_UnitFax,
+GPNCasePrepUnit__SurnameG__0 as CourtFolderCasePrep_UnitAlias
+
+
+From CourtFolder CF
+left join (CourtFolderSupGPerson
+	left join (GPerson SupOfficer
+		left join (GPIDEmployeeNumber GPIDEN2)
+	)
+)
+left join(CourtFolderManagingUnit
+	left join (OrgPoliceUnit CFMunit
+		left join (GPersonAssocGAddress GPAGAU
+			left join (PhysicalAddress UPA)
+		) on UPA.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAU.Rid, "PhysicalAddress") = 1 AND GPAGAU.EffectiveToTimeTZV2I is NULL AND ChoiceHasProperty(GPAGAU.Type1,"cl_GPersonAssocGAddressType","clvIsBusiness","1")=1
+	)
+)
+left join (CourtFolderOIC
+	left join (GPerson Officer
+		left join (GPIDEmployeeNumber GPIDEN)
+		left join (GPersonOrgMemberGPerson GPOMGP
+			left join orgpoliceunit unit on GPOMGP.Lid = Unit.id
+		) on Officer.ID = GPOMGP.RID and GPOMGP.IsEffectiveAssignment = 1
+	)
+)
+left join (CourtFolderCasePreparationOfficer
+	left join (GPerson CasePrepOfficer
+		left join (GPersonOrgMemberGPerson GPOMGPCasePrep
+			left join (orgpoliceunit CasePrepUnit
+				left join(GPersonName GPNCasePrepUnit)on GPNCasePrepUnit.EffectiveToTimeTZV2I IS NULL and choicehasproperty(GPNCasePrepUnit.Type1, "cl_GPersonNameType","clvisalias","1")=1 and OrderBy(GPNCasePrepUnit.cretime, "Desc") = 1
+				left join (GPersonAssocGAddress GPersonAssocGAddressEmailCasePrep
+	        			left join(email CasePrepEmail)
+	        		)on isspecialization(GPersonAssocGAddressEmailCasePrep.Rid, "EMail") = 1 AND ChoiceHasProperty(GPersonAssocGAddressEmailCasePrep.Type1,"cl_GPersonAssocGAddressType","clvIsBusiness","1")=1 AND GPersonAssocGAddressEmailCasePrep.EffectiveToTimeTZV2I IS NULL AND orderby(GPersonAssocGAddressEmailCasePrep.cretime, "desc") = 1
+				left join (GPersonAssocGAddress GPAGAUCasePrep
+					left join (PhysicalAddress CasePrepUPA)
+				) on  CasePrepUPA.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAUCasePrep.Rid, "PhysicalAddress") = 1 AND GPAGAUCasePrep.EffectiveToTimeTZV2I is NULL AND ChoiceHasProperty(GPAGAUCasePrep.Type1,"cl_GPersonAssocGAddressType","clvIsBusiness","1")=1
+				left join (GPersonAssocGAddress GPAGAUCasePrepT
+					left join (telephone CasePrepTelephone)
+				)on CasePrepTelephone.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAUCasePrepT.Rid, "Telephone") = 1 and ChoiceHasProperty(CasePrepTelephone.Type1,"cl_TelephoneType","clvIsVoice","1") = 1 AND ChoiceHasProperty(GPAGAUCasePrepT.TYPE1,"cl_GPersonAssocGAddressType","clvIsBusiness","1") = 1 AND GPAGAUCasePrepT.EffectiveToTimeTZV2I is NULL AND OrderBy(GPAGAUCasePrepT.Rank, "Asc", GPAGAUCasePrepT.CreTime, "Desc")=1
+				left join (GPersonAssocGAddress GPAGAUCasePrepF
+					left join (telephone CasePrepFax)
+				)on CasePrepFax.EffectiveToTimeTZV2I is null and IsSpecialization(GPAGAUCasePrepF.Rid, "Telephone") = 1 and ChoiceHasProperty(CasePrepFax.Type1,"cl_TelephoneType","clvIsFax","1") = 1 AND ChoiceHasProperty(GPAGAUCasePrepF.TYPE1,"cl_GPersonAssocGAddressType","clvIsBusiness","1") = 1 AND GPAGAUCasePrepF.EffectiveToTimeTZV2I is NULL AND OrderBy(GPAGAUCasePrepF.Rank, "Asc", GPAGAUCasePrepF.CreTime, "Desc")=1
+
+			)on GPOMGPCasePrep.Lid = CasePrepUnit.id
+		) on CasePrepOfficer.ID = GPOMGPCasePrep.RID and GPOMGPCasePrep.IsEffectiveAssignment = 1
+	)
+)
+where cf.id = @CFID
+
+--&lt;!-- Court folder court sessions --&gt;
+select
+cfsession__id as 'CourtFolderCourtSession-P0_Number-N0',
+cfsession__type1g as 'CourtFolderCourtSession-P0_Type',
+cfsession__StartTimeDG as 'CourtFolderCourtSession-P0_Date',
+cfsession__starttimeF(Format='%H:%M') as 'CourtFolderCourtSession-P0_Time',
+cfsession__remarks as 'CourtFolderCourtSession-P0_Remarks',
+court__labelnamefml as 'CourtFolderCourtSession-P0_Court'
+from courtfolder cf
+left join(courtfoldercourtsession cfsession
+	left join(CFCSCourt
+		left join(OrgCourt court
+			left join(GPersonAssocGaddress
+				left join(PhysicalAddress CourtAddress)
+			) on IsSpecialization(GPersonAssocGaddress.RId, 'PhysicalAddress') = 1 and ChoiceHasProperty(GPersonAssocGaddress.Type1, 'cl_GPersonAssocGAddressType', 'clvIsBusiness','1')=1 AND GPersonAssocGaddress.EffectiveToTimeTZV2I IS NULL
+ 		)
+	)
+)
+where cfsession.WId = @CFID order by cfsession__starttime asc
+
+--&lt;!-- Court folder court sessions - descending --&gt;
+select
+cfsession__type1g as 'CourtFolderCourtSessionDesc-P0_Type',
+cfsession__StartTimeDG as 'CourtFolderCourtSessionDesc-P0_Date',
+cfsession__starttimeF(Format='%H:%M') as 'CourtFolderCourtSessionDesc-P0_Time',
+court__labelnamefml as 'CourtFolderCourtSessionDesc-P0_Court'
+from courtfolder cf
+left join(courtfoldercourtsession cfsession
+	left join(CFCSCourt
+		left join(OrgCourt court
+			left join(GPersonAssocGaddress
+				left join(PhysicalAddress CourtAddress)
+			) on IsSpecialization(GPersonAssocGaddress.RId, 'PhysicalAddress') = 1 and ChoiceHasProperty(GPersonAssocGaddress.Type1, 'cl_GPersonAssocGAddressType', 'clvIsBusiness','1')=1 AND GPersonAssocGaddress.EffectiveToTimeTZV2I IS NULL
+ 		)
+	)
+)
+where cfsession.WId = @CFID order by cfsession__starttime desc
+
+--&lt;!-- Accused data linked via asdisposition --&gt;
+Select
+GPRCF__id as 'GPRCF__id-I',
+mg04__id as 'mg04__id-I',
+--mg04__PersistentOffenderG as 'mg04__PersistentOffenderG-I',
+GPCGPPUKMG04__id as 'GPCGPPUKMG04__id-I',
+GP__id as 'GP__id-I',
+Gp__labelnamefml as 'Accused-CR-P0XCAccusedNameList'
+from GPersonPolASDisposition mg04
+left join (GPPLDAssocGPersonCharge GPCGPPUKMG04
+	left join (GPersonCharge mg04chg
+		left join GPerson GP))
+left join (GPersonPolReportCourtFolder GPRCF
+	left join (courtfolder cf
+		left join (CourtFolderSupGPerson
+			left join (GPerson SupOfficer
+			left join (GPIDEmployeeNumber GPIDEN2)))
+		left join (CourtFolderOIC
+			left join (GPerson Officer
+			left join (GPIDEmployeeNumber GPIDEN)
+				left join (GPersonOrgMemberGPerson GPOMGP
+					left join orgpoliceunit unit on GPOMGP.Lid = Unit.id
+				) on Officer.ID = GPOMGP.RID and GPOMGP.IsEffectiveAssignment = 1
+			)
+		)
+	)
+)
+where cf.id = @CFID and mg04chg.id is not null order by mg04.cretime desc, mg04chg.cretime asc, gp.id desc
+
+--&lt;!-- Court Folder - ASNumber --&gt;
+Select
+mm.id as 'mm.id-I',
+gpa__ASNumberG as ASNumber
+From GPersonPolReport Report
+	left join(GPersonPolReportCourtFolder
+		left join(CourtFolder CF
+			left join(GPersonPolReportCourtFolder MM
+				left join(GPersonPolASDisposition disp
+					left join (GPersonPolReportGPersonPolCustody
+						left join(GPersonArrest gpa) on GPA.ID =  GPersonPolReportGPersonPolCustody.RId
+					)
+				)
+			)
+		)
+	)
+where Report.id = @id and disp.wid = report.wid and disp.GPPEventGOccRid = report.GPPEventGOccRid and gpa.id is not null group by Gpa.asnumberG takemax(gpa.cretime) order by gpa.cretime desc
+
+--&lt;!-- Bail conditions --&gt;
+select
+cf__id as 'cf__id-I',
+mg04__id as 'mg04__id-I',
+GPRCF__id as 'GPRCF__id-I',
+bailcond__id as 'bailcond__id-I',
+bailcond__SequenceNumber as 'bailcond__SequenceNumber-I',
+bailcond__conditionED as 'bailcond__condition-I',
+bailcond__reasong as 'bailcond__reasong-I',
+bailcond__Grounds as 'bailcond__Grounds-I'
+from courtfolder cf
+left join(GPersonPolReportCourtFolder GPRCF
+	left join (GPersonPolASDisposition mg04
+		left join (GPPLDCondition bailcond)
+	)
+) on IsSpecialization(GPRCF.LId, "GPersonPolASDisposition") = 1
+where cf.id = @CFID and mg04.wid = @GP_ID and bailcond.id is not null order by mg04.cretime desc
+
+-- You can also do other selects for things like system parameters and Names and Numbers of the Current User.
+-- ex.
+-- select SPKey, SPValue from SystemParameterSettingForACC where SPKey = 'Label.AgencyName'
+-- select SPKey, SPValue from SystemParameterSettingForACC where SPKey = 'Label.DivisionName'
+-- select Label, LabelName, EmployeeNumber_Cache from GPerson where id = @currentUserId
+
+--&lt;!--Charge data linked via GPPLDAssocGPersonCharge--&gt;
+SELECT
+GPC__Id as 'GPPLDCharges__id-I',
+GPC__ChargeTimeTZV2GorDG as 'Charge-P0_ChargeDate',
+GPC__OffenseDate1F(Format="TF0") as 'Charge-P0_OffenseDateRangeTF3-TF3C1OffenseDateRangeTF3',
+GPC__OffenseDate2F(Format="TF0") as 'Charge-P0_OffenseDateRangeTF3-TF3C2OffenseDateRangeTF3',
+GPC__OffenseDate1F(Format="TF0e") as 'Charge-P0_OffenseDateRangeTF3e-TF3E1OffenseDateRangeTF3e',
+GPC__OffenseDate2F(Format="TF0e") as 'Charge-P0_OffenseDateRangeTF3e-TF3E2OffenseDateRangeTF3e',
+GPC__OffenseDate1F(Format="TF0f") as 'Charge-P0_OffenseDateRangeTF3f-TF3F1OffenseDateRangeTF3f',
+GPC__OffenseDate2F(Format="TF0f") as 'Charge-P0_OffenseDateRangeTF3f-TF3F2OffenseDateRangeTF3f',
+GPC__OffenseDate1F(Format="TF5") as 'Charge-P0_OffenseDateRangeTF6-TF61OffenseDateRangeTF6',
+GPC__OffenseDate2F(Format="TF5") as 'Charge-P0_OffenseDateRangeTF6-TF62OffenseDateRangeTF6',
+GPC__OffenseDate1F(Format="TF5") as 'GPC__OffenseDate1F-I',
+GPC__OffenseDate2F(Format="TF5") as 'GPC__OffenseDate2F-I',
+GPC__OffenseDateRange as 'Charge-P0_OffenseDateRange',
+GPC__FineG as 'Charge-P0_Fine',
+GPC__FineTotalG as 'Charge-P0_FineTotal',
+GPC__FullChargeWordingED as 'Charge-P0_FullChargeWording',
+GPC__ChargeReadReply as 'Charge-P0_ChargeReadReply',
+GPC__SequenceNumber as 'Charge-P0_SequenceNumber',
+GPC__ChargeOccFileNo as 'Charge-P0_OccurrenceNumber',
+GPC__GPChargeVictimGPRId_labbr as 'Charge-P0_VictimFullName',
+GPC__labelfull as 'GPC__Labelfull-I',
+GPC__JointChargeGPersonName_cache as 'Charge-P0_JointlyChargedPersons',
+GPC__LabelNoDispositionNotes as 'GPC__LabelNoDispositionNotes-I',
+SC__AttemptConspire as 'Charge-P0_AttemptConspire',
+SC__PropertiesG as 'Charge-P0_Properties',
+PA__MunicipalityNameG as 'ChargeOffenseLocationMunicProv-CFSCCharge-P0_OffenseLocationMunicProv',
+PA__ProvStateCodeG as 'ChargeOffenseLocationMunicProv-CFCCCharge-P0_OffenseLocationMunicProv',
+PA__LabelAddressOnly as 'Charge-P0_OffenseLocationAddressOnly',
+PA__ESAreaLevel5G as 'Charge-P0_OffenseLocationESAreaLevel5',
+GPC__SectionMergedEx as 'Charge-P0_Section',
+GPC__chargewordingex as 'Charge-P0_ShortWording',
+co__surname_cacheg as 'Charge-P0_ChargingOfficeer_Surname',
+co__surname_cacheg as 'Charge-P0_ChargingOfficer_Surname',
+unit1__labelnamefml__0 as 'Charge-P0_ChargingOfficer_Unit',
+unit__labelnamefml__0  as 'Charge-P0_AuthorisingOfficer_Unit',
+COEN__rankg as 'Charge-P0_ChargingOfficer_Rank',
+coen__idnumberg as 'Charge-P0_ChargingOfficer_EmployeeNumber',
+COEN__UKOfficerFullId as 'Charge-P0_ChargingOfficer_FullId',
+ao__surname_cacheg  as 'Charge-P0_AuthorisingOfficer_Surname',
+aoEN__rankg  as 'Charge-P0_AuthorisingOfficer_Rank',
+aoen__idnumberg  as 'Charge-P0_AuthorisingOfficer_EmployeeNumber',
+aoen__UKOfficerFullId as 'Charge-P0_AuthorisingOfficer_FullId',
+ESAuthorizeSignTimeDG as 'Charge-P0_AuthorisingOfficer_SignTimeDC',
+ESAuthorizeSignTimeF(Format="GWithoutOffset") as 'Charge-P0_AuthorisingOfficer_SignTimeTC'
+FROM GPPLDAssocGPersonCharge
+	left join(gpersoncharge GPC
+		left join(GPChargeStdCharge
+			left join(StandardCharge SC)
+		)
+		left join(ChgDispUK DispUK)
+		left join(GPChargePA
+			left join(PhysicalAddress PA)
+		)
+		left join(GPChargeOfficer
+			left join(Person CO
+				left join (GPIDEmployeeNumber COEN)
+				left join (GPersonOrgMemberGPerson GPOMGP1
+					Left join (OrgPoliceUnit Unit1)on GPOMGP1.Lid=Unit1.id
+				) on CO.id = GPOMGP1.RID and GPOMGP1.IsEffectiveAssignment = 1
+			)
+		)
+		left join(GPersonChargeESAuthorize
+			left join(GPersonESignatureKeyPair
+				left join (Person AO
+					left join (GPIDEmployeeNumber AOEN)
+					left join (GPersonOrgMemberGPerson GPOMGP
+						Left join (OrgPoliceUnit Unit)on GPOMGP.Lid=Unit.id and GPOMGP.IsEffectiveAssignment = 1
+					) on AO.id = GPOMGP.RID
+				)
+			)
+		)
+	)
+WHERE GPPLDAssocGPersonCharge.lid = @id group by gpc.id takemax(dispuk.cretime)
+
+SELECT
+	'&lt;&lt;Heading&gt;&gt;;Warrant Details' as 'Heading-UseAlternateName',
+
+	GPPLDW__Id as 'GPPLDWARRANTS__Id-I',
+	GPPLDW__EnteredTimeTZV2G as 'Warrant-P0_WarrantDate',
+	GPPLDW__IdNumber as 'Warrant-P0_WarrantNumber',
+	GPPLDW__IdNumber4G as 'Warrant-P0_OffenseCode',
+	GPPLDW__WarrantTypeG as 'Warrant-P0_WarrantType',
+	GPPLDW__GPPLDIssuingGPersonNLNameG as 'Warrant-P0_IssuedBy',
+	GPPLDW__OffenseDetailsG as 'Warrant-P0_OffenseDetails'
+FROM GPersonPolGenericLegalDoc GPPLD
+	LEFT JOIN (GPPLDAccusedGPerson AGP
+		LEFT JOIN (GPerson
+			LEFT JOIN (GPersonArrest GPA)
+			LEFT JOIN (GPersonPolWarrant GPPLDW)
+		)
+	)
+	WHERE GPPLD.Id = @id
+
+
+-- Get list of charge disps for the people linke as accused.
+SELECT
+GPC2__id as 'GPC2__id-I',
+ChgDispUK__Text1 as 'ChgDispUK__Text1-I',
+ChgDispUK__SummaryNoText as 'ChgDispUK__SummaryNoText-I'
+FROM
+GPPLDAssocGPersonCharge
+left join(gpersoncharge GPC2
+	left join(ChgDispUK)
+)
+WHERE GPPLDAssocGPersonCharge.lid = @id and chgdispuk.Superceded = 0
+order by gpc2.cretime, chgdispuk.CreTime desc
+
+--&lt;!-- Custody event property --&gt;
+SELECT
+label as 'GPPCAdmissionDetaineeProperty_-P0',
+label as 'Property-CR-P0XBGPPCAdmissionDetaineeProperty_PropertyList'
+FROM GPPCAdmissionDetaineeProperty
+WHERE WId = @GPPCE_Id
+
+Select
+prop__id as 'prop__id-I',
+prop__GPSLTagNumber_cache as 'Property-P1_TagNumber-I',
+sl__Type1g as 'sl__Type1g-I',
+sl__Type1Property(Property="clvHasLocation") as 'clvHasLocation-I',
+sl__Type1Property(Property="clvIsOut") as 'clvIsOut-I',
+sl__Type1Property(Property="clvIsDisposed") as 'clvIsDisposed-I',
+sl__StartTimeDG as 'sl__StartTimeDG-I',
+sl__wid as 'sl__wid-I',
+sl__GPSStoresEmployeeRId_l as 'sl__GPSStoresEmployeeRId_l-I',
+sl__GPSEmployeeRId_L as 'sl__GPSEmployeeRId_L-I',
+sl__LabelLocation as 'sl__LabelLocation-I',
+sl__StoresIdNumberG as 'sl__StoresIdNumberG-I',
+sl__label as 'sl__label-I',
+sl__currentgpsl as 'sl__currentgpsl-I',
+sl__checkouttypeg as 'sl__checkouttypeg-I',
+sl__Dispositiong as 'sl__Dispositiong-I',
+GOIGNVP.id as 'GOIGNVP.id-I'
+from goccurrence o
+left join (GOccIvGNVProperty GOIGNVP
+	left join (GNVProperty prop
+		left join(GPropertyStoresLog sl) on ChoiceHasProperty(sl.Type1, "cl_GPropertyStoresType", "clvHasLocation", "1") = 1 or ChoiceHasProperty(sl.Type1, "cl_GPropertyStoresType", "clvIsOut", "1") = 1 or ChoiceHasProperty(sl.Type1, "cl_GPropertyStoresType", "clvIsDisposed", "1") = 1
+	)
+) where o.id = @GOccId and HierarchicalResult = 1 Order By sl.StartTimeTZV2I Desc
+
+
+
+-- Most recent Narrative on a Domestic Violence report on the linked occurrence.
+Select
+DVReport.id__0 as 'DVREPORTID-I',
+DVReport.DocData__0 as 'DVREPORTDOCDATA-I'
+from
+Occurrence
+left join(ExtDocOccReport DVReport
+) on AnyOfSetHasProperty(DVReport.TemplateProperties,"cl_ExtDocTemplateProperties","clvIsDomesticViolence","1") = 1 and AnyOfSetHasProperty(DVReport.TemplateProperties,"cl_ExtDocTemplateProperties","clvIsEDORNarrative","1") = 1  and OrderBy(DVReport.CreTime, "Desc")=1
+where Occurrence.id = @GOccId
+
+
+select
+GPPLDAssocGPersonCharge.id as 'LegalDocChargeId-I',
+joint.id as 'GPChargeJointGPChargeID-I',
+joint.labelnameright as 'OtherDefendant-I'
+from
+GPersonPolLegalDoc LegalDoc
+left join (GPPLDAssocGPersonCharge
+	left join(GPersonCharge GPC
+		left join(GPChargeJointGPCharge Joint) on  GPC.id = joint.lid
+	)
+)
+where legaldoc.id = @id and joint.id is not null and joint.lid &lt;&gt; joint.rid order by joint.labelnameright
+
+select
+GPPLDAssocGPersonCharge.id 'LegalDocChargeId-I',
+joint.id as 'GPChargeJointGPChargeID-I',
+joint.labelnameleft as 'OtherDefendant-I'
+from
+GPersonPolLegalDoc LegalDoc
+left join (GPPLDAssocGPersonCharge
+	left join(GPersonCharge GPC
+		left join(GPChargeJointGPCharge Joint) on GPC.id = joint.Rid
+	)
+)
+where legaldoc.id = @id and joint.id is not null and joint.lid &lt;&gt; joint.rid order by joint.labelnameleft
+
+SELECT
+ID as 'InterpreterLog__Id-I',
+Field1 as 'Interpreter_-P0_Language',
+Field2 as 'Interpreter_-P0_RefNumber',
+Field3 as 'Interpreter_-P0_Remarks',
+GTField1TZV2G as 'Interpreter_-P0_RequestTime',
+GTField2TZV2G as 'Interpreter_-P0_StartTime',
+GTField3TZV2G as 'Interpreter_-P0_EndTime',
+GTField4TZV2G as 'Interpreter_-P0_RightsTime',
+LabelGPPCustodyLogAssocGPerson1 as 'Interpreter_-P0_Name',
+GPPCustodyLogAssocGPerson1CommAddressG as 'Interpreter_-P0_CommAddress',
+GPPCustodyLogAssocGPerson1TimeTZV2G as 'Interpreter_-P0_NotifiedTime',
+DocData as 'InterpretorLogDocDataId-I'
+FROM GPPCustodyLog InterpreterLog
+WHERE ChoiceHasProperty(Type1,'cl_GPPCustodyLogType1','clvIsInterpreter','1') = 1 AND  Wid = @PRIArrestId order by cretime asc
+
+
+Select
+PersonDescImage.id as 'IdentMugshot__Id-I'
+From GPersonPolGenericLegalDoc
+Left Join(Person
+	Left Join(PersonDescIdent
+		Left Join(PersonDescImage) on ChoiceHasProperty(PersonDescImage.MugView, "cl_mugimgView", "clvIsFrontView", "1") = 1 --and Orderby(PersonDescImage.CreTime, "desc") = 1
+	) on PersonDescIdent.PDPSGOccRId = @GOccId
+)
+Where GPersonPolGenericLegalDoc.id = @id order by PersonDescIdent.Cretime desc, PersondescImage.CreTime desc
+
+
+
+
+
+Select
+PropertyValue(PropertyName = 'Customization.UseGPersonSubjectEmployment', DefaultValue = '0') as 'UseGPersonSubjectEmployment-I',
+PropertyValue(Propertyname = 'Customization.ExportOccupationType2AsOccupation', DefaultValue = '0') as 'ExportOccupationType2AsOccupation-I'
+from NMLProperty
+
+--&lt;!-- Translations needed for generating fields --&gt;
+Select translation as 'TF3SingleC-I' from TranslationTable where TableEntry = 'str:TF3Single'
+Select translation as 'TF3SingleE-I' from TranslationTable where TableEntry = 'str:TF3Single' and Language = 'ENG'
+Select translation as 'TF3SingleF-I' from TranslationTable where TableEntry = 'str:TF3Single' and Language = 'FRA'
+Select translation as 'TF3RangePart1C-I' from TranslationTable where TableEntry = 'str:TF3RangePart1'
+Select translation as 'TF3RangePart1E-I' from TranslationTable where TableEntry = 'str:TF3RangePart1' and Language = 'ENG'
+Select translation as 'TF3RangePart1F-I' from TranslationTable where TableEntry = 'str:TF3RangePart1' and Language = 'FRA'
+Select translation as 'TF3RangePart2C-I' from TranslationTable where TableEntry = 'str:TF3RangePart2'
+Select translation as 'TF3RangePart2E-I' from TranslationTable where TableEntry = 'str:TF3RangePart2' and Language = 'ENG'
+Select translation as 'TF3RangePart2F-I' from TranslationTable where TableEntry = 'str:TF3RangePart2' and Language = 'FRA'
+
+Select translation as 'RoomString-I' from TranslationTable where TableEntry = 'str:Room'
+
+--&lt;!-- Current date time fields --&gt;
+
+exec pr_getnow 'GWithoutTime', 'sp_todaysdate'
+exec pr_getnow 'GWithoutOffset', 'sp_todaysdatetime'
+exec pr_getnow '%H:%M', 'TimeNow'
+exec pr_getnow '%Y', 'SP_TodaysDateYear'
+exec pr_getnow '%A', 'SP_TodaysDateWeekDay'
+exec pr_getnow '%B', 'SP_TodaysDateMonth'
+exec pr_getnow '%O', 'SP_TodaysDateMonthDay'
+
+exec pr_setlanguage 'FRA'
+exec pr_getnow '%A', 'SP_TodaysDateWeekDayF'
+exec pr_getnow '%B', 'SP_TodaysDateMonthF'
+exec pr_getnow '%O', 'SP_TodaysDateMonthDayF'
+
+exec pr_setlanguage 'ENG'
+exec pr_getnow '%A', 'SP_TodaysDateWeekDayE'
+exec pr_getnow '%B', 'SP_TodaysDateMonthE'
+exec pr_getnow '%O', 'SP_TodaysDateMonthDayE'
+
+exec pr_setlanguage '$CurrentLanguage$'
+
+select
+SPValue as 'SP_AgencyFullName'
+from SystemParameterSettingForACC where SPKey = 'Label.AgencyFullName'
+
+select
+SPValue as 'SP_LegalJurisdiction'
+from SystemParameterSettingForACC where SPKey = 'Label.LegalJurisdiction'
+
+Select
+LabelNameFML as CurrentUser_FullName,
+Surname_cacheG as CurrentUser_Surname,
+RankG as CurrentUser_Rank,
+GPIDEmployeeNumber.IdNumberG as CurrentUser_EmployeeNumber
+from GPerson
+LEFT JOIN GPIDEmployeeNumber WHERE GPerson.Id = @currentUserId
+
+--&lt;!-- Logo from external document --&gt;
+
+SELECT Id as 'Logo_Id-I', Id as 'BlobData_DocData_ExternalDocumentTemplate_Id-I' from ExternalDocumentTemplate WHERE TitleG = 'logo.jpg' AND ACCDomain = 'Current-' ORDER BY ACCDomain DESC
+
+
+</SQLSelect>
+
+<ReportXSL><![CDATA[
+
+
+
+	<?xml version="1.0"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="urn:schemas-microsoft-com:datatypes">
+<xsl:param name="RestrictedUse" />
+<xsl:output method="xml" encoding="UTF-8" />
+
+<!-- Generate an indexed list of elements by the value of the node -->
+<!-- This is generating a list of person names to compare -->
+<xsl:key name="OtherDefendantsKey" match="/DATASETLIST/DATASET/ROW/OtherDefendant-I" use="." />
+
+	<xsl:template match="/">
+
+		<xsl:element name="root">
+			<xsl:call-template name="OutputFlatXML"></xsl:call-template>
+			<xsl:element name="RestrictedUse"><xsl:value-of select="$RestrictedUse" /></xsl:element>
+
+			<!--Special processing for inigenerator-->
+
+			<!-- Logo -->
+			<xsl:element name="Logo">
+				<xsl:if test="string-length(/DATASETLIST/DATASET/ROW/Logo_Id-I) &gt; 0">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">DocData</xsl:attribute>
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/BlobData_DocData_ExternalDocumentTemplate_Id-I"></xsl:value-of>
+					</xsl:element>
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="Interpreter_count">
+				<xsl:value-of select="count(/DATASETLIST/DATASET[contains(@entity,'INTERPRETERLOG')]/ROW)" />
+			</xsl:element>
+
+			<!-- Mugshot -->
+			<xsl:element name="Mugshot">
+				<xsl:if test="string-length(/DATASETLIST/DATASET[contains(@entity,'IDENTMUGSHOT')]/ROW/IdentMugshot__Id-I) &gt; 0">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">imagedata</xsl:attribute>
+						<xsl:value-of select="/DATASETLIST/DATASET[contains(@entity,'IDENTMUGSHOT')]/ROW/IdentMugshot__Id-I"></xsl:value-of>
+					</xsl:element>
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:for-each select="/DATASETLIST/DATASET/ROW/InterpreterLog__Id-I">
+				<xsl:element name="{concat('Interpreter_', position(), '_SignText')}">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">DocData</xsl:attribute>
+						<xsl:attribute name="imageIsInline">1</xsl:attribute>
+						<xsl:attribute name="imageAttributes">required-type=INITXT</xsl:attribute>
+						<xsl:value-of select="." />
+					</xsl:element>
+				</xsl:element>
+			</xsl:for-each>
+
+			<xsl:element name="Interpreter_Summary">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'INTERPRETERLOG')]/ROW">
+					<xsl:text>(</xsl:text><xsl:value-of select="position()" /><xsl:text>) </xsl:text>
+					<xsl:value-of select="Interpreter_-P0_Name"></xsl:value-of>
+					<xsl:text> Notified:</xsl:text><xsl:value-of select="Interpreter_-P0_NotifiedTime"></xsl:value-of>
+					<xsl:text> Language:</xsl:text><xsl:value-of select="Interpreter_-P0_Language"></xsl:value-of>
+					<xsl:text> Language Line Ref:</xsl:text><xsl:value-of select="Interpreter_-P0_RefNumber"></xsl:value-of>
+					<xsl:text> Request time:</xsl:text><xsl:value-of select="Interpreter_-P0_RequestTime"></xsl:value-of>
+					<xsl:text> Start time:</xsl:text><xsl:value-of select="Interpreter_-P0_StartTime"></xsl:value-of>
+					<xsl:text> End time:</xsl:text><xsl:value-of select="Interpreter_-P0_EndTime"></xsl:value-of>
+					<xsl:text> Rights time:</xsl:text><xsl:value-of select="Interpreter_-P0_RightsTime"></xsl:value-of>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="Interpreter_LogsSummary">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'INTERPRETERLOG')]/ROW">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">DocData</xsl:attribute>
+						<xsl:attribute name="imageIsInline">1</xsl:attribute>
+						<xsl:attribute name="imageAttributes">required-type=INITXT</xsl:attribute>
+						<xsl:value-of select="InterpreterLog__Id-I" />
+					</xsl:element>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="Interpreter_LogsWithEndTimeOnly">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'INTERPRETERLOG')]/ROW">
+					<xsl:if test="string-length(Interpreter_-P0_EndTime) &gt; 0">
+						<xsl:text>(</xsl:text><xsl:value-of select="position()" /><xsl:text>) </xsl:text>
+						<xsl:value-of select="Interpreter_-P0_Name"></xsl:value-of>
+						<xsl:text> Notified:</xsl:text><xsl:value-of select="Interpreter_-P0_NotifiedTime"></xsl:value-of>
+						<xsl:text> Language:</xsl:text><xsl:value-of select="Interpreter_-P0_Language"></xsl:value-of>
+						<xsl:text> Language Line Ref:</xsl:text><xsl:value-of select="Interpreter_-P0_RefNumber"></xsl:value-of>
+						<xsl:text> Request time:</xsl:text><xsl:value-of select="Interpreter_-P0_RequestTime"></xsl:value-of>
+						<xsl:text> Start time:</xsl:text><xsl:value-of select="Interpreter_-P0_StartTime"></xsl:value-of>
+						<xsl:text> End time:</xsl:text><xsl:value-of select="Interpreter_-P0_EndTime"></xsl:value-of>
+						<xsl:text> Rights time:</xsl:text><xsl:value-of select="Interpreter_-P0_RightsTime"></xsl:value-of>
+						<xsl:text>&lt;/br&gt;</xsl:text>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+
+
+			<!-- Signature -->
+			<xsl:element name="SigningPerson1_SigImage">
+				<xsl:if test="string-length(/DATASETLIST/DATASET/ROW/ESSigningPerson1CSSig-I) &gt; 0">
+				<xsl:element name="narrative">
+					<xsl:attribute name="column">ESSigningPerson1CSSig</xsl:attribute>
+					<xsl:attribute name="imageAttributes">required-type=SIGBMP/width=293/height=150</xsl:attribute>
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPPLD__Id"></xsl:value-of>
+				</xsl:element>
+				</xsl:if>
+			</xsl:element>
+			<xsl:element name="SigningPerson2_SigImage">
+				<xsl:if test="string-length(/DATASETLIST/DATASET/ROW/ESSigningPerson2CSSig-I) &gt; 0">
+				<xsl:element name="narrative">
+					<xsl:attribute name="column">ESSigningPerson2CSSig</xsl:attribute>
+					<xsl:attribute name="imageAttributes">required-type=SIGBMP/width=293/height=150</xsl:attribute>
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPPLD__Id"></xsl:value-of>
+				</xsl:element>
+				</xsl:if>
+			</xsl:element>
+
+			<!-- PYO and PPO fields -->
+			<xsl:choose>
+				<xsl:when test="string-length(/DATASETLIST/DATASET/ROW/PYOFlag__Id-I) &gt; 0">
+					<xsl:element name="PYOIndicator">
+						<xsl:text>PERSISTENT YOUNG OFFENDER</xsl:text>
+					</xsl:element>
+					<xsl:element name="PYOYesNoIndicator">
+						<xsl:text>YES</xsl:text>
+					</xsl:element>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:element name="PYOIndicator">
+						<xsl:text></xsl:text>
+					</xsl:element>
+					<xsl:element name="PYOYesNoIndicator">
+						<xsl:text>NO</xsl:text>
+					</xsl:element>
+				</xsl:otherwise>
+			</xsl:choose>
+
+			<xsl:choose>
+				<xsl:when test="string-length(/DATASETLIST/DATASET/ROW/PPOFlag__Id-I) &gt; 0">
+					<xsl:element name="PPOIndicator">
+						<xsl:text>PROLIFIC PRIORITY OFFENDER</xsl:text>
+					</xsl:element>
+					<xsl:element name="PPOYesNoIndicator">
+						<xsl:text>YES</xsl:text>
+					</xsl:element>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:element name="PPOIndicator">
+						<xsl:text></xsl:text>
+					</xsl:element>
+					<xsl:element name="PPOYesNoIndicator">
+						<xsl:text>NO</xsl:text>
+					</xsl:element>
+				</xsl:otherwise>
+			</xsl:choose>
+
+			<!-- Employment info -->
+			<xsl:choose>
+				<xsl:when test="/DATASETLIST/DATASET/ROW/UseGPersonSubjectEmployment-I/text() = '1'">
+					<xsl:element name="Occupation">
+						<xsl:choose>
+							<xsl:when test="/DATASETLIST/DATASET/ROW/ExportOccupationType2AsOccupation-I/text() = '1'">
+								<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPSE__OccupationType2G__0-I" />
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPSE__OccupationG__0-I" />
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:element>
+					<xsl:element name="Employer">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPSE__EmployerG__0-I" />
+					</xsl:element>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:element name="Occupation">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/PInfo__OccupationG-I" />
+					</xsl:element>
+					<xsl:element name="Employer">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/PInfo__EmployerG-I" />
+					</xsl:element>
+				</xsl:otherwise>
+			</xsl:choose>
+
+			<!-- Custody event lawyer information -->
+			<xsl:choose>
+				<xsl:when test="contains(/DATASETLIST/DATASET/ROW/GPPCE__GPPCALawyerLinked-I, 'False')">
+					<xsl:element name="GPPCE_Lawyer_FullAddress">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPPCE__GPPCALawyerNLAddressG-I" />
+					</xsl:element>
+					<xsl:element name="GPPCE_Lawyer_FullName">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/GPPCE__GPPCALawyerNLNameG-I" />
+					</xsl:element>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:element name="GPPCE_Lawyer_FullAddress">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/Lawyer__physicalAddress_cache-I" />
+					</xsl:element>
+					<xsl:element name="GPPCE_Lawyer_FullName">
+						<xsl:value-of select="/DATASETLIST/DATASET/ROW/Lawyer__labelnamefml-I" />
+					</xsl:element>
+				</xsl:otherwise>
+			</xsl:choose>
+
+
+			<xsl:element name="DVReport_Narrative">
+				<xsl:for-each select="/DATASETLIST/DATASET/ROW/DVREPORTID-I">
+					<xsl:if test="/DATASETLIST/DATASET/ROW/DVRREPORTDOCDATA-I/text() != ''">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">DocData</xsl:attribute>
+						<xsl:attribute name="imageIsInline">1</xsl:attribute>
+						<xsl:attribute name="imageAttributes">required-type=INITXT</xsl:attribute>
+						<xsl:value-of select="." />
+					</xsl:element>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="ArrestReport_Narrative">
+				<xsl:for-each select="/DATASETLIST/DATASET/ROW/BlobData_DocData_GPersonArrest_Id-I">
+					<xsl:if test="/DATASETLIST/DATASET/ROW/BlobData_DocData_GPersonArrest-I/text() != ''">
+					<xsl:element name="narrative">
+						<xsl:attribute name="column">DocData</xsl:attribute>
+						<xsl:attribute name="imageIsInline">1</xsl:attribute>
+						<xsl:attribute name="imageAttributes">required-type=INITXT</xsl:attribute>
+						<xsl:value-of select="." />
+					</xsl:element>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="OtherDefendantsList">
+				<!-- For each node that matches check if this is the first item in the list generated
+				by the xsl:key with this value.-->
+				<xsl:for-each select="/DATASETLIST/DATASET/ROW/*[name() = 'OtherDefendant-I']">
+					<!-- If this is equivalent to the first then we can output it. -->
+					<xsl:if test="generate-id() = generate-id(key('OtherDefendantsKey', text())[1])">
+						<xsl:if test="position() &gt; 1">
+							<xsl:text>, </xsl:text>
+						</xsl:if>
+
+						<xsl:value-of select="text()" />
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+
+			<xsl:element name="GPPC_CustodyOfficer1_FullName">
+		   		<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Given1_cache-I,1,1)" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Given2_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Given2_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Given3_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Given3_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Surname_cache-I">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW[1]/CustOfficer1__Surname_cache-I" />
+			</xsl:element>
+
+			<xsl:element name="GPPC_CustodyOfficer2_FullName">
+		   		<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Given1_cache-I,1,1)" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Given2_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Given2_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Given3_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Given3_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Surname_cache-I">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW[1]/CustOfficer2__Surname_cache-I" />
+			</xsl:element>
+
+			<xsl:element name="GPPC_CustodyOfficer3_FullName">
+		   		<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Given1_cache-I,1,1)" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Given2_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Given2_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Given3_cache-I/text()">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+				<xsl:value-of select="substring(/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Given3_cache-I,1,1)" />
+
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Surname_cache-I">
+					<xsl:text> </xsl:text>
+				</xsl:if>
+
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW[1]/CustOfficer3__Surname_cache-I" />
+			</xsl:element>
+
+
+
+			<xsl:element name="WitnessBringItems">
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/GPPLD__BringItems-I = 'False'">N</xsl:if>
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/GPPLD__BringItems-I = 'True'">Y</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="WitnessGiveEvidence">
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/GPPLD__GiveEvidence-I = 'False'">N</xsl:if>
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/GPPLD__GiveEvidence-I = 'True'">Y</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="Accused_DispositionResult">
+				<xsl:text>Defendant:</xsl:text>
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/Accused_Title/text()"><xsl:text> </xsl:text></xsl:if>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW[1]/Accused_Title" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW[1]/Accused_FullName/text()"><xsl:text> </xsl:text></xsl:if>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW[1]/Accused_FullName" />
+				<xsl:for-each select="/DATASETLIST/DATASET/ROW/*[contains(name(),'AccusedChargeLabel-I')]">
+					<xsl:text>&lt;/br&gt;Offense/Result(s): </xsl:text>
+					<xsl:value-of select="text()" />
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="BailConditionList">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'BAILCOND')]/ROW">
+					<xsl:for-each select="./*[text()]">
+						<xsl:if test="name()='bailcond__SequenceNumber-I'">
+							<xsl:if test="text() != ''">
+							<xsl:text>(</xsl:text><xsl:value-of select="text()" />)<xsl:text></xsl:text>
+							</xsl:if>
+						</xsl:if>
+						<xsl:if test="name()='bailcond__condition-I'">
+							<xsl:value-of select="text()" />
+						</xsl:if>
+						<xsl:if test="name()='bailcond__reasong-I' and text() != ''">
+							<xsl:text> / </xsl:text><xsl:value-of select="text()" />
+						</xsl:if>
+						<xsl:if test="name()='bailcond__Grounds-I' and text() != ''">
+							<xsl:text> / </xsl:text><xsl:value-of select="text()" />
+						</xsl:if>
+					</xsl:for-each>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+
+			<xsl:element name="ChargeCount">
+				<xsl:value-of select="count(/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW)" />
+			</xsl:element>
+
+			<xsl:element name="TICChargeList">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+					<xsl:text></xsl:text><xsl:value-of select="position()" /><xsl:text></xsl:text>
+					<xsl:if test="Charge-P0_OccurrenceNumber/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_OccurrenceNumber" />
+					</xsl:if>
+					<xsl:if test="Charge-P0_OffenseLocationAddressOnly/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_OffenseLocationAddressOnly" />
+					</xsl:if>
+					<xsl:if test="Charge-P0_FullChargeWording/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_FullChargeWording" />
+					</xsl:if>
+					<xsl:if test="Charge-P0_VictimFullName/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_VictimFullName" />
+					</xsl:if>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="ChargeList">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+					<xsl:text></xsl:text>(<xsl:value-of select="position()" />)<xsl:text></xsl:text>
+					<xsl:if test="Charge-P0_ShortWording/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_ShortWording" />
+					</xsl:if>
+
+					<xsl:if test="Charge-P0_Section/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_Section" />
+					</xsl:if>
+
+
+					<xsl:if test="Charge-P0_OffenseDateRange/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_OffenseDateRange" />
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+
+			<xsl:element name="ChargeListNoOffenseDate">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+					<xsl:text></xsl:text>(<xsl:value-of select="position()" />)<xsl:text></xsl:text>
+					<xsl:if test="Charge-P0_ShortWording/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_ShortWording" />
+					</xsl:if>
+
+					<xsl:if test="Charge-P0_Section/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_Section" />
+					</xsl:if>
+
+				</xsl:for-each>
+			</xsl:element>
+
+
+
+			<xsl:element name="ChargeListJoint">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+					<xsl:text></xsl:text>(<xsl:value-of select="position()" />)<xsl:text></xsl:text>
+					<xsl:if test="Charge-P0_ShortWording/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_ShortWording" />
+					</xsl:if>
+
+					<xsl:if test="Charge-P0_Section/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_Section" />
+					</xsl:if>
+
+
+					<xsl:if test="Charge-P0_OffenseDateRange/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_OffenseDateRange" />
+					</xsl:if>
+
+					<xsl:if test="Charge-P0_JointlyChargedPersons/text() != ''">
+						<xsl:text> Jointly with: </xsl:text><xsl:value-of select="Charge-P0_JointlyChargedPersons" />
+
+					</xsl:if>
+
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="ReadReplies">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+					<xsl:text></xsl:text>(<xsl:value-of select="Charge-P0_SequenceNumber" />)<xsl:text></xsl:text>
+					<xsl:if test="Charge-P0_ChargeReadReply/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_ChargeReadReply" />
+					</xsl:if>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="DetailedChargedList">
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:text>(</xsl:text><xsl:value-of select="position()" /><xsl:text>)</xsl:text>
+					<xsl:if test="Charge-P0_ShortWording/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_ShortWording" />
+					</xsl:if>
+
+					<xsl:if test="Charge-P0_Section/text() != ''">
+						<xsl:text> </xsl:text><xsl:value-of select="Charge-P0_Section" />
+					</xsl:if>
+
+					<xsl:if test="GPC__OffenseDate1F-I/text() != ''">
+							<xsl:text> </xsl:text>
+							<xsl:value-of select="GPC__OffenseDate1F-I/text()" />
+							<xsl:if test="GPC__OffenseDate2F-I/text() != ''">
+								<xsl:text></xsl:text> - <xsl:value-of select="GPC__OffenseDate1F-I/text()" />
+							</xsl:if>
+					</xsl:if>
+					<xsl:if test="Charge-P0_FullChargeWording/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_FullChargeWording" />
+					</xsl:if>
+					<xsl:if test="Charge-P0_ChargeReadReply/text() != ''">
+						<xsl:text> -- </xsl:text><xsl:value-of select="Charge-P0_ChargeReadReply" />
+					</xsl:if>
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="DispositionResult">
+				<xsl:text>Defendant: </xsl:text>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/Title/text()" />
+					<xsl:if test="/DATASETLIST/DATASET/ROW/FullName/text() != ''">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/FullName/text()" />
+				<xsl:text>&lt;/br&gt;</xsl:text>
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:text>Offence/Result(s): </xsl:text>
+					<xsl:value-of select="GPC__Labelfull-I" />
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="DispositionResultExtendedText">
+				<xsl:text>Defendant: </xsl:text>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/Title/text()" />
+					<xsl:if test="/DATASETLIST/DATASET/ROW/FullName/text() != ''">
+						<xsl:text> </xsl:text>
+					</xsl:if>
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/FullName/text()" />
+				<xsl:text>&lt;/br&gt;</xsl:text>
+				<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPPLDCHARGES')]/ROW">
+					<xsl:variable name="GPersonChargeId"><xsl:value-of select="GPPLDCharges__id-I/text()" /></xsl:variable>
+					<xsl:text>Offence/Result(s): </xsl:text>
+					<xsl:value-of select="GPC__LabelNoDispositionNotes-I" />
+
+					<xsl:for-each select="/DATASETLIST/DATASET[contains(@entity,'GPC2')]/ROW/GPC2__id-I[text() = $GPersonChargeId]">
+						<xsl:if test="position()&gt;1">
+							<xsl:text> / </xsl:text>
+						</xsl:if>
+						<xsl:value-of select="../ChgDispUK__SummaryNoText-I" />
+						<xsl:if test="string-length(../ChgDispUK__Text1-I/text()) &gt; 0">
+							<xsl:text>Text:</xsl:text>
+						</xsl:if>
+						<xsl:value-of select="../ChgDispUK__Text1-I" />
+					</xsl:for-each>
+
+					<xsl:text>&lt;/br&gt;</xsl:text>
+				</xsl:for-each>
+			</xsl:element>
+
+			<!--Warrant Details -->
+			<xsl:element name="WarrantCount">
+				<xsl:value-of
+					  select="count(/DATASETLIST/DATASET[contains(@entity,'GPPLDWARRANTS')]/ROW)" />
+			</xsl:element>
+			<xsl:element name="WarrantDetails">
+				<xsl:for-each
+					  select="/DATASETLIST/DATASET[contains(@entity,'GPPLDWARRANTS')]/ROW" >
+					<xsl:if test="Warrant-P0_WarrantDate/text() != ''">
+					<xsl:text> -- </xsl:text><xsl:value-of select="Warrant-P0_WarrantDate" />
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:element>
+
+			<xsl:element name="AppearanceCourtNameFullAddress">
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtName" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceCourtFullAddress/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtFullAddress" />
+				</xsl:if>
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/RoomString-I" /><xsl:text> </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom" />
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="AppearanceCourtFullAddressWithRoom">
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtFullAddress" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/RoomString-I" /><xsl:text> </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom" />
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="AppearanceCourtNameFullAddressUK">
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtName" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceCourtFullAddressUK/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtFullAddressUK" />
+				</xsl:if>
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/RoomString-I" /><xsl:text> </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceCourtRoom" />
+				</xsl:if>
+			</xsl:element>
+
+			<xsl:element name="AppearanceIdentNameFullAddress">
+				<xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceIdentName" />
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceIdentFullAddress/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceIdentFullAddress" />
+				</xsl:if>
+				<xsl:if test="/DATASETLIST/DATASET/ROW/AppearanceIdentRoom/text() != ''">
+					<xsl:text>, </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/RoomString-I" /><xsl:text> </xsl:text><xsl:value-of select="/DATASETLIST/DATASET/ROW/AppearanceIdentRoom" />
+				</xsl:if>
+			</xsl:element>
+
+
+		<!-- Special officer physical address field -->
+		<xsl:choose>
+			<xsl:when test="contains(/DATASETLIST/DATASET/ROW/AO__EntityName-I, 'OrgPoliceUnit')">
+				<xsl:element name="Officer_UnitMunicipalityName">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/USPA__MunicipalityNameG__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitBuildingName">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/USPA__BuildingNameG__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitProvState">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/USPA__ProvStateCodeG__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitName">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/AO__LabelName-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitTelephone">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/USTel__CommAddressG__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitFax">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/OrgFax__CommAddressG__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitESAreaLevel3">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/USPA__ESAreaLevel3G__0-I" />
+				</xsl:element>
+			</xsl:when>
+
+			<xsl:otherwise>
+				<xsl:element name="Officer_UnitMunicipalityName">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/UPA__MunicipalityNameG__0__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitPremise">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/UPA__BuildingNameG__0__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitProvState">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/UPA__ProvStateCodeG__0__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitName">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/Unit__LabelName__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitTelephone">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/UTel__CommAddressG__0__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitFax">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/Fax__CommAddressG__0__0-I" />
+				</xsl:element>
+				<xsl:element name="Officer_UnitESAreaLevel3">
+					<xsl:value-of select="/DATASETLIST/DATASET/ROW/UPA__ESAreaLevel3G__0__0-I" />
+				</xsl:element>
+			</xsl:otherwise>
+		</xsl:choose>
+
+			<!-- Mugshot -->
+			<xsl:if test="/DATASETLIST/DATASET/ROW/PDI__Id__0__0-I/text() != ''">
+				<xsl:element name="DPCustodyImage">
+					<xsl:element name="narrative">
+							<xsl:attribute name="column">imagedata</xsl:attribute>
+							<xsl:value-of select="/DATASETLIST/DATASET/ROW/PDI__Id__0__0-I"></xsl:value-of>
+					</xsl:element>
+				</xsl:element>
+			</xsl:if>
+
+			<!-- GPPLDAssocGProperty1 image -->
+			<xsl:if test="/DATASETLIST/DATASET/ROW/PropertyImage_Id-I/text() != ''">
+				<xsl:element name="GPPLDAssocGProperty1_Image">
+					<xsl:element name="narrative">
+							<xsl:attribute name="column">imagedata</xsl:attribute>
+							<xsl:value-of select="/DATASETLIST/DATASET/ROW/PropertyImage_Id-I"></xsl:value-of>
+					</xsl:element>
+				</xsl:element>
+			</xsl:if>
+
+			<!--Property and storage location data -->
+			<xsl:for-each select="/DATASETLIST/DATASET/ROW/DATASET[contains(@entity,'PROP')]/ROW">
+				<xsl:element name="{concat('Property', position(), '_TagNumber')}">
+					<xsl:value-of select="Property-P1_TagNumber-I" />
+				</xsl:element>
+				<xsl:variable name="PropertyIndex">
+					<xsl:value-of select="position()" />
+				</xsl:variable>
+				<xsl:for-each select="./DATASET/ROW">
+					<xsl:choose>
+						<xsl:when test="clvHasLocation-I=1">
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Location_',position())}">
+								<xsl:value-of select="sl__LabelLocation-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Recipient_',position())}">
+								<xsl:value-of select="sl__GPSStoresEmployeeRId_l-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Date_',position())}">
+								<xsl:value-of select="sl__StartTimeDG-I" />
+							</xsl:element>
+						</xsl:when>
+						<xsl:when test="clvIsOut-I=1">
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Location_',position())}">
+								<xsl:value-of select="sl__checkouttypeg-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Recipient_',position())}">
+								<xsl:value-of select="sl__GPSEmployeeRId_L-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Date_',position())}">
+								<xsl:value-of select="sl__StartTimeDG-I" />
+							</xsl:element>
+						</xsl:when>
+						<xsl:when test="clvIsDisposed-I=1">
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Location_',position())}">
+								<xsl:value-of select="sl__Dispositiong-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Recipient_',position())}">
+								<xsl:value-of select="sl__GPSEmployeeRId_L-I" />
+							</xsl:element>
+							<xsl:element name="{concat('Property',$PropertyIndex,'_Date_',position())}">
+								<xsl:value-of select="sl__StartTimeDG-I" />
+							</xsl:element>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:for-each>
+
+			</xsl:for-each>
+
+			<!--End of special processing for inigenerator-->
+
+		</xsl:element>
+	</xsl:template>
+
+
+			<xsl:template name="OutputFlatXML">
+				<xsl:for-each select="/*">
+					<xsl:call-template name="MatchNode">
+						<xsl:with-param name="DepthPositionMap" />
+						<xsl:with-param name="Depth">0</xsl:with-param>
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:template>
+
+
+			<xsl:template name="MatchNode">
+				<xsl:param name="DepthPositionMap" />
+				<xsl:param name="Depth" />
+				<xsl:variable name="ParentPosition" select="concat(string(number(position())), name())" />
+				<xsl:variable name="ParentPositionString">
+					<xsl:value-of select="string($ParentPosition)" />
+				</xsl:variable>
+
+				<xsl:for-each select="child::*">
+					<xsl:choose>
+						<!-- nothing but text nodes underneath this child node -->
+						<!--<xsl:when test="self::*[count(node()) - count(text()) = 0 and name() != 'DATASET']">-->
+						<xsl:when test="name() != 'ROW' and name() != 'DATASET'">
+							<xsl:call-template name="MatchLeafNode">
+								<xsl:with-param name="DepthPositionMap"><xsl:value-of select="$DepthPositionMap" /></xsl:with-param>
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:when test="name() = 'ROW'">
+							<xsl:call-template name="MatchNode">
+								<xsl:with-param name="DepthPositionMap">
+									<xsl:choose>
+										<xsl:when test="string-length($DepthPositionMap) = 0">
+											<xsl:value-of select="concat($Depth, '-', string(position()))" />
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="concat($DepthPositionMap, '_', $Depth, '-', string(position()))" />
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:with-param>
+
+								<xsl:with-param name="Depth"><xsl:value-of select="$Depth + 1" /></xsl:with-param>
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:when test="name() = 'DATASET' and child::*">
+							<xsl:call-template name="MatchNode">
+								<xsl:with-param name="DepthPositionMap"><xsl:value-of select="$DepthPositionMap" /></xsl:with-param>
+								<xsl:with-param name="Depth"><xsl:value-of select="$Depth" /></xsl:with-param>
+							</xsl:call-template>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:for-each>
+			</xsl:template>
+
+
+
+			<xsl:template name="MatchLeafNode">
+				<xsl:param name="DepthPositionMap" />
+				<xsl:if test="not(contains(name(), '-I'))">
+					<xsl:variable name="PositionFilledName">
+						<xsl:call-template name="AddPositionToName">
+							<xsl:with-param name="OriginalName" select="name()" />
+							<xsl:with-param name="DepthPositionMap" select="$DepthPositionMap" />
+						</xsl:call-template>
+					</xsl:variable>
+
+					<xsl:choose>
+						<!--Alternate name used for headings -->
+						<xsl:when test="contains($PositionFilledName, '-UseAlternateName')">
+							<xsl:element name="{$PositionFilledName}">
+								<xsl:attribute name="AlternateName"><xsl:value-of select="substring-before(text(), ';')" /></xsl:attribute>
+								<xsl:value-of select="normalize-space(substring-after(text(), ';'))" />
+							</xsl:element>
+						</xsl:when>
+
+						<!--Substring -->
+						<xsl:when test="contains($PositionFilledName, '-S')">
+							<xsl:element name="{substring-before($PositionFilledName,'-S')}">
+								<xsl:variable name="SubstringLength" select="number(substring-after($PositionFilledName,'-S'))" />
+								<xsl:value-of select="substring(text(),1,$SubstringLength)" />
+							</xsl:element>
+						</xsl:when>
+
+						<!--Replace with Counter -->
+						<xsl:when test="contains($PositionFilledName, '-N')">
+							<xsl:element name="{substring-before($PositionFilledName,'-N')}">
+								<xsl:variable name="Counter" select="number(substring-after($PositionFilledName,'-N'))" />
+								<xsl:call-template name="AddPositionToName">
+									<xsl:with-param name="OriginalName" select="concat('-P', $Counter)" />
+									<xsl:with-param name="DepthPositionMap" select="$DepthPositionMap" />
+								</xsl:call-template>
+							</xsl:element>
+						</xsl:when>
+
+						<!-- Boolean exported as 1 or 0 -->
+						<xsl:when test="@dt:type='boolean'">
+							<xsl:element name="{$PositionFilledName}">
+								<xsl:choose>
+									<xsl:when test="text()='True'">1</xsl:when>
+									<xsl:when test="text()='False'">0</xsl:when>
+								</xsl:choose>
+							</xsl:element>
+						</xsl:when>
+
+						<!-- Combine fields -->
+						<xsl:when test="contains($PositionFilledName, '-CFS')">
+							<xsl:element name="{substring(substring-after($PositionFilledName,'-CFS'),2)}">
+								<xsl:variable name="CFSName" select="substring(substring-after(name(),'-CFS'),2)" />
+								<xsl:value-of select="normalize-space(text())" />
+								<xsl:for-each select="../*[contains(name(),'-CFC') and  substring(substring-after(name(), '-CFC'),2) = $CFSName]">
+									<xsl:if test="text()!=''">
+										<xsl:variable name="Separator" select="substring(substring-after(name(), '-CFC'),1,1)" />
+										<xsl:text />
+										<xsl:call-template name="GetSeparatorCharacter">
+											<xsl:with-param name="Separator"><xsl:value-of select="$Separator" /></xsl:with-param>
+										</xsl:call-template>
+										<xsl:value-of select="normalize-space(text())" />
+									</xsl:if>
+								</xsl:for-each>
+							</xsl:element>
+						</xsl:when>
+						<xsl:when test="contains($PositionFilledName, '-CFC')">
+							<!-- Do nothing -->
+						</xsl:when>
+
+						<!-- Combine row -->
+						<xsl:when test="contains($PositionFilledName, '-CR1X')">
+							<xsl:value-of select="normalize-space($PositionFilledName)" />
+							<xsl:element name="{substring(substring-after($PositionFilledName,'-CR1X'),2)}">
+								<xsl:variable name="CFSName" select="substring(substring-after($PositionFilledName,'-CR1X'),2)" />
+								<!-- <xsl:value-of select="normalize-space(text())" /> -->
+								<xsl:for-each select="../../ROW/*[contains(name(),'-CR') and substring(substring-after(name(), '-CR'),6) = $CFSName and text()]">
+									<xsl:if test="text()!=''">
+										<xsl:variable name="Separator" select="substring(substring-after(name(), '-CR'),5,1)" />
+										<xsl:text />
+										<xsl:if test="position()!=1">
+											<xsl:call-template name="GetSeparatorCharacter">
+												<xsl:with-param name="Separator"><xsl:value-of select="$Separator" /></xsl:with-param>
+											</xsl:call-template>
+										</xsl:if>
+										<xsl:value-of select="normalize-space(text())" />
+									</xsl:if>
+								</xsl:for-each>
+							</xsl:element>
+						</xsl:when>
+						<xsl:when test="contains($PositionFilledName, '-CR') and not (substring(substring-after($PositionFilledName, '-CR'),1,1)=1)">
+							<!-- Do nothing -->
+						</xsl:when>
+
+						<!--TF3 Date values -->
+						<xsl:when test="contains($PositionFilledName, '-TF3')">
+							<xsl:variable name="Index" select="number(substring(substring-after($PositionFilledName,'-TF3'),2,1))" />
+							<xsl:variable name="Language" select="substring(substring-after($PositionFilledName,'-TF3'),1,1)" />
+							<xsl:variable name="BaseName" select="substring(substring-after($PositionFilledName,'-TF3'),3)" />
+							<xsl:if test="$Index=1">
+								<xsl:element name="{substring-before($PositionFilledName,'-TF3')}">
+									<xsl:if test="text()">
+
+									<!-- Check the for the TF32 value with name-->
+									<xsl:variable name="SecondValue" select="../*[contains(name(),concat(concat(concat('-TF3', $Language), '2'), $BaseName))]" />
+									<xsl:variable name="RangePart1" select="/DATASETLIST/DATASET/ROW/*[concat(concat('TF3RangePart1',$Language),'-I')=name()]" />
+									<xsl:variable name="RangePart2" select="/DATASETLIST/DATASET/ROW/*[concat(concat('TF3RangePart2',$Language),'-I')=name()]" />
+									<xsl:variable name="Single" select="/DATASETLIST/DATASET/ROW/*[concat(concat('TF3Single',$Language),'-I')=name()]" />
+
+
+										<xsl:choose>
+											<xsl:when test="$SecondValue=''">
+												<xsl:choose>
+													<xsl:when test="contains(text(),'le ')">
+														<xsl:value-of select="$Single" /><xsl:value-of select="substring-after(text(),'le ')" />
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:value-of select="$Single" /><xsl:value-of select="text()" />
+													</xsl:otherwise>
+												</xsl:choose>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="$RangePart1" /><xsl:value-of select="text()" /><xsl:value-of select="$RangePart2" /><xsl:value-of select="$SecondValue" />
+											</xsl:otherwise>
+										</xsl:choose>
+
+									</xsl:if>
+								</xsl:element>
+							</xsl:if>
+						</xsl:when>
+
+						<!--TF6 Date values -->
+						<xsl:when test="contains($PositionFilledName, '-TF6')">
+							<xsl:variable name="Index" select="number(substring(substring-after($PositionFilledName,'-TF6'),1,1))" />
+							<xsl:variable name="BaseName" select="substring(substring-after($PositionFilledName,'-TF6'),2)" />
+							<xsl:if test="$Index=1">
+								<xsl:element name="{substring-before($PositionFilledName,'-TF6')}">
+									<xsl:if test="text()">
+
+									<!-- Check the for the TF62 value with basename-->
+									<xsl:variable name="SecondValue" select="../*[contains(name(),concat(concat('-TF6', '2'), $BaseName))]" />
+
+										<xsl:choose>
+											<xsl:when test="$SecondValue=''">
+												<xsl:value-of select="text()" />
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="text()" /> - <xsl:value-of select="$SecondValue" />
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:if>
+								</xsl:element>
+							</xsl:if>
+						</xsl:when>
+
+
+						<!-- No special handling -->
+						<xsl:otherwise>
+							<xsl:element name="{$PositionFilledName}">
+								<xsl:value-of select="normalize-space(text())" />
+							</xsl:element>
+						</xsl:otherwise>
+					</xsl:choose>
+
+					<xsl:text>
+</xsl:text>
+				</xsl:if>
+			</xsl:template>
+
+
+
+			<xsl:template name="GetSeparatorCharacter">
+				<xsl:param name="Separator" />
+				<xsl:choose>
+					<xsl:when test="$Separator='C'">, </xsl:when>
+					<xsl:when test="$Separator='S'"><xsl:text> </xsl:text></xsl:when>
+					<xsl:when test="$Separator='H'"> - </xsl:when>
+					<xsl:when test="$Separator='B'">&lt;/br&gt;</xsl:when>
+					<xsl:when test="$Separator='L'">&lt;/lf&gt;</xsl:when>
+					<xsl:when test="$Separator='N'">; </xsl:when>
+				</xsl:choose>
+			</xsl:template>
+
+
+
+			<xsl:template name="AddPositionToName">
+				<xsl:param name="OriginalName" />
+				<xsl:param name="DepthPositionMap" />
+
+				<xsl:choose>
+					<xsl:when test="string-length($DepthPositionMap) &gt; 0 and contains($OriginalName, '-P')">
+						<xsl:variable name="FirstDepthPositionPair">
+							<xsl:choose>
+								<xsl:when test="contains($DepthPositionMap, '_')">
+									<xsl:value-of select="substring-before($DepthPositionMap, '_')" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="$DepthPositionMap" />
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:variable>
+
+						<xsl:variable name="Depth" select="substring-before($FirstDepthPositionPair, '-')" />
+						<xsl:variable name="Position" select="substring-after($FirstDepthPositionPair, '-')" />
+
+						<xsl:choose>
+							<xsl:when test="contains($OriginalName, concat('-P', $Depth))">
+								<xsl:call-template name="AddPositionToName">
+									<xsl:with-param name="OriginalName" select="concat(substring-before($OriginalName, concat('-P', $Depth)), $Position, substring-after($OriginalName, concat('-P', $Depth)))" />
+									<xsl:with-param name="DepthPositionMap" select="substring-after($DepthPositionMap, '_')" />
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:call-template name="AddPositionToName">
+									<xsl:with-param name="OriginalName" select="$OriginalName" />
+									<xsl:with-param name="DepthPositionMap" select="substring-after($DepthPositionMap, '_')" />
+								</xsl:call-template>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$OriginalName" /><!--xsl:value-of select="$DepthPositionMap"/-->
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:template>
+
+
+			<xsl:template match="*" mode="EscapeSpecialCharacters">
+				<xsl:call-template name="StringReplace">
+					<xsl:with-param name="InitialString">
+						<xsl:call-template name="StringReplace">
+							<xsl:with-param name="InitialString" select="." />
+							<xsl:with-param name="ToReplace"><xsl:text>&amp;</xsl:text></xsl:with-param>
+							<xsl:with-param name="ReplaceWith"><xsl:text>&amp;amp;</xsl:text></xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="ToReplace"><xsl:text>&lt;</xsl:text></xsl:with-param>
+					<xsl:with-param name="ReplaceWith"><xsl:text>&amp;lt;</xsl:text></xsl:with-param>
+				</xsl:call-template>
+			</xsl:template>
+
+
+				<xsl:template name="StringReplace">
+					<xsl:param name="InitialString" />
+					<xsl:param name="ToReplace" />
+					<xsl:param name="ReplaceWith" />
+
+					<xsl:choose>
+						<xsl:when test="contains($InitialString, $ToReplace)">
+							<xsl:value-of select="substring-before($InitialString, $ToReplace)" />
+							<xsl:value-of select="$ReplaceWith" />
+							<xsl:call-template name="StringReplace">
+								<xsl:with-param name="InitialString" select="substring-after($InitialString, $ToReplace)" />
+								<xsl:with-param name="ToReplace" select="$ToReplace" />
+								<xsl:with-param name="ReplaceWith" select="$ReplaceWith" />
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$InitialString" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:template>
+
+
+
+			<xsl:template match="*" mode="EscapeSpecialCharactersNonBlank">
+				<xsl:choose>
+					<xsl:when test="string-length(./text()) &gt; 0 or ./text() !=''">
+						<xsl:apply-templates select="." mode="EscapeSpecialCharacters" />
+					</xsl:when>
+					<xsl:otherwise><xsl:text> -- 	</xsl:text></xsl:otherwise>
+				</xsl:choose>
+			</xsl:template>
+
+
+				<xsl:template name="ReplaceCarriageReturnsWithINIBRTags">
+					<xsl:param name="String" />
+
+					<xsl:if test="string-length($String) &gt; 0">
+						<xsl:choose>
+							<xsl:when test="substring($String, 1, 1) = '&#xD;'"><xsl:text>&lt;/br&gt;</xsl:text></xsl:when>
+							<xsl:otherwise><xsl:value-of select="substring($String, 1, 1)" /></xsl:otherwise>
+						</xsl:choose>
+
+						<xsl:call-template name="ReplaceCarriageReturnsWithINIBRTags">
+							<xsl:with-param name="String" select="substring($String, 2)" />
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:template>
+
+
+
+</xsl:stylesheet>
+
+
+]]></ReportXSL>
+<OutputType>XML</OutputType>
+</root>
