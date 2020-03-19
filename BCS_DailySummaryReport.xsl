@@ -1,6 +1,12 @@
 <root>
 	<!--$Id: DailySummaryReport.xslt, v 2.01 2020/03/11 BCSO James Ma Exp $
-		Version 2.01 Additions 2020/03/11 BCSO James Ma EXP $
+
+
+		Version 2.01.02 Additions 2020/03/18 BCSO James Ma EXP $
+			- Add Search Parameter for Officer/Unit
+			- Added Search Capabilities using Officer # or Unit Name
+
+		Version 2.01.01 Additions 2020/03/11 BCSO James Ma EXP $
 
 			- Add Search Parameter for Incident Type and Incident Classification
 			- Add Datawindow option to choose Incident Type & Incident Classification
@@ -73,16 +79,22 @@
 	<ReportName>Daily Summary Report</ReportName>
 
 	<!-- Can be enclosed in CDATA.  A general description of what the report does -->
-	<Documentation>Provides a list of all occurrences and their summaries in the supplied area in the given date range</Documentation>
+	<Documentation>Provides a list of all occurrences and their summaries in the supplied area in
+		the given date range
+	</Documentation>
 
 	<SQLParameter>ACCDomain</SQLParameter>
 	<SQLParameter>TimeRange</SQLParameter>
 	<SQLParameter>StartTime</SQLParameter>
 	<SQLParameter>EndTime</SQLParameter>
 	<SQLParameter>AreaLevel5</SQLParameter>
-	<SQLParameter>AreaLevel4</SQLParameter>
+	<SQLParameter>AreaLevel3</SQLParameter>
 	<SQLParameter>OccurrenceTypeRId</SQLParameter>
 	<SQLParameter>OccurrenceClassification</SQLParameter>
+	<SQLParameter>ClearanceStatus</SQLParameter>
+	<SQLParameter>TaskStatus</SQLParameter>
+	<SQLParameter>TaskType</SQLParameter>
+	<SQLParameter>OfficerUnitIds</SQLParameter>
 	<SQLParameter>UnitCode</SQLParameter>
 	<SQLParameter>ReportableOnly</SQLParameter>
 	<SQLParameter>DispatchOnly</SQLParameter>
@@ -95,7 +107,8 @@
 	<XSLTParameter>StartTimeG</XSLTParameter>
 	<XSLTParameter>EndTimeG</XSLTParameter>
 	<XSLTParameter>AreaLevel5</XSLTParameter>
-	<XSLTParameter>AreaLevel4</XSLTParameter>
+	<XSLTParameter>AreaLevel3</XSLTParameter>
+	<XSLTParameter>OfficerUnitIds</XSLTParameter>
 	<XSLTParameter>UnitCode</XSLTParameter>
 	<XSLTParameter>ReportableOnly</XSLTParameter>
 	<XSLTParameter>DispatchOnly</XSLTParameter>
@@ -105,8 +118,10 @@
 	<XSLTParameter>IncludeMapping</XSLTParameter>
 
 
-	<ReportHeader><![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p>"]]></ReportHeader>
-	<ReportFooter><![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p><p align='center'>"e"Printed by:""&nbsp;&nbsp;[@AGBL=USERNUM]&nbsp;&nbsp;&nbsp;"e"Date:""&nbsp;&nbsp;[DATE] [TIME]&nbsp;&nbsp;&nbsp;"e"Computer:""&nbsp;&nbsp;[@AGBL=COMPUTERNAME]&nbsp;&nbsp;&nbsp;"e"Page"" [PAGENUM] of [PAGETOTAL]</p>"]]></ReportFooter>
+	<ReportHeader>
+		<![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p>"]]></ReportHeader>
+	<ReportFooter>
+		<![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p><p align='center'>"e"Printed by:""&nbsp;&nbsp;[@AGBL=USERNUM]&nbsp;&nbsp;&nbsp;"e"Date:""&nbsp;&nbsp;[DATE] [TIME]&nbsp;&nbsp;&nbsp;"e"Computer:""&nbsp;&nbsp;[@AGBL=COMPUTERNAME]&nbsp;&nbsp;&nbsp;"e"Page"" [PAGENUM] of [PAGETOTAL]</p>"]]></ReportFooter>
 	<ReportHeaderTop></ReportHeaderTop>
 	<ReportFooterBottom></ReportFooterBottom>
 	<ReportDetailMarginTop></ReportDetailMarginTop>
@@ -115,8 +130,10 @@
 	<ReportDetailMarginBottom></ReportDetailMarginBottom>
 	<DefaultProtectiveMarking></DefaultProtectiveMarking>
 	<OutputType>html</OutputType>
-	<SQLSelectXSLT>
-		<![CDATA[
+	<SQLSelectXSLT><![CDATA[
+
+
+
 			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 				<xsl:output method="text" omit-xml-declaration="yes" />
 				<xsl:param name="ACCDomain" />
@@ -124,7 +141,8 @@
 				<xsl:param name="StartTime" />
 				<xsl:param name="EndTime" />
 				<xsl:param name="AreaLevel5" />
-				<xsl:param name="AreaLevel4" />
+				<xsl:param name="AreaLevel3" />
+				<xsl:param name="OfficerUnitIds" />
 				<xsl:param name="UnitCode" />
 				<xsl:param name="ReportableOnly" />
 				<xsl:param name="DispatchOnly" />
@@ -133,8 +151,27 @@
 				<xsl:param name="IncludeMapping" />
 				<xsl:param name="OccurrenceTypeRId" />
 				<xsl:param name="OccurrenceClassification" />
+				<xsl:param name="ClearanceStatus" />
+				<xsl:param name="TaskStatus" />
+				<xsl:param name="TaskType" />
 
 				<xsl:template match="/">
+
+
+
+					<xsl:variable name="PersonIds">
+						<xsl:call-template name="GetEntityIds">
+							<xsl:with-param name="Ids" select="$OfficerUnitIds" />
+							<xsl:with-param name="EntityNumber">1500</xsl:with-param>
+						</xsl:call-template>
+					</xsl:variable>
+
+					<xsl:variable name="OrgUnitIds">
+						<xsl:call-template name="GetEntityIds">
+							<xsl:with-param name="Ids" select="$OfficerUnitIds" />
+							<xsl:with-param name="EntityNumber">1410</xsl:with-param>
+						</xsl:call-template>
+					</xsl:variable>
 
 					<xsl:variable name="OccWhereClause">
 						WHERE OCC.ACCDomain = '<xsl:value-of select="$ACCDomain" />'
@@ -146,16 +183,61 @@
 						<xsl:if test="$TimeRange = 'L30D'"> AND OCC.ReportedTimeTZV2I &gt; 'nowNoOffset-30d'</xsl:if>
 						<xsl:if test="$TimeRange = 'RNG'"> AND OCC.ReportedTimeTZV2I = '[<xsl:value-of select="$StartTime" />, <xsl:value-of select="$EndTime" />]'</xsl:if>
 
+						<xsl:if test="$PersonIds !='' or $OrgUnitIds != ''">
+							AND(
+							<xsl:call-template name="ComposeWith">
+								<xsl:with-param name = "Separator"> OR </xsl:with-param>
+								<xsl:with-param name = "Strings">
+									<String>
+										<xsl:if test="$PersonIds != ''">
+											EXISTS(
+												SELECT Id FROM GOccInvGPerson offIv
+												WHERE LId = OCC.Id
+													AND offIv.RId IN (<xsl:value-of select="$PersonIds" />)
+													AND NOT EXISTS( SELECT Id FROM GOccInvGPerson
+														WHERE LId = OCC.Id
+															AND Id &lt;&gt; offIv.Id
+															AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
+													)
+											)
+
+										</xsl:if>
+									</String>
+									<String>
+										<xsl:if test="$OrgUnitIds != ''">
+											EXISTS(
+												SELECT Id FROM GOccInvGPerson offIv
+													WHERE LId = OCC.Id
+													AND NOT EXISTS(SELECT Id FROM GOccInvGPerson
+														WHERE LId = OCC.Id
+															AND Id &lt;&gt; offIv.Id
+															AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
+													)
+													AND EXISTS(
+														SELECT Id FROM GPersonOrgMemberGPerson
+														WHERE IsEffectiveAssignment = 1
+															AND RId = offIv.RId
+															AND LId IN (<xsl:value-of select =
+																                            "$OrgUnitIds" />)
+													)
+											)
+										</xsl:if>
+									</String>
+								</xsl:with-param>
+							</xsl:call-template>
+							)
+						</xsl:if>
+
 						<xsl:if test="$UnitCode">
 							AND (
 								EXISTS (
 									SELECT ID FROM GOccInvGPerson WHERE EXISTS (
-										SELECT Id FROM OrgPoliceUnit
+										SELECT Id FROM Person
 										WHERE <xsl:call-template name="MultiValueField">
 												<xsl:with-param name="FormField"><xsl:value-of select="$UnitCode" /></xsl:with-param>
 												<xsl:with-param name="DBField">EmployeeNumber</xsl:with-param>
 											</xsl:call-template>
-											AND AutoLink('GOccInvGPerson','OrgPoliceUnit')=1
+											AND AutoLink('GOccInvGPerson','Person')=1
 									) AND AutoLink('Goccurrence', 'GOccInvGPerson')=1
 								)
 							)
@@ -168,7 +250,7 @@
 							</xsl:call-template>
 						</xsl:if>
 
-						<xsl:if test="$AreaLevel4">
+						<xsl:if test="$AreaLevel3">
 							<xsl:choose>
 								<xsl:when test="$UnitCode">
 									AND EXISTS (SELECT GOccIvPA.ID
@@ -178,8 +260,8 @@
 												SELECT PhysicalAddress.Id
 												FROM PhysicalAddress
 												WHERE <xsl:call-template name="MultiValueField">
-														<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel4" /></xsl:with-param>
-														<xsl:with-param name="DBField">PhysicalAddress.ESAreaLevel4</xsl:with-param>
+														<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel3" /></xsl:with-param>
+														<xsl:with-param name="DBField">PhysicalAddress.ESAreaLevel3</xsl:with-param>
 													</xsl:call-template>
 													AND AutoLink('GOccIvPA', 'PhysicalAddress')=1
 											)
@@ -188,28 +270,30 @@
 								</xsl:when>
 								<xsl:otherwise>
 									AND <xsl:call-template name="MultiValueField">
-										<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel4" /></xsl:with-param>
-										<xsl:with-param name="DBField">OCC.ESAreaLevel4</xsl:with-param>
+										<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel3" /></xsl:with-param>
+										<xsl:with-param name="DBField">OCC.ESAreaLevel3</xsl:with-param>
 									</xsl:call-template>
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:if>
+
 						<xsl:if test="$ReportableOnly = '1'">
 							AND o2.Reportable = 1
 						</xsl:if>
+
 						<xsl:if test="$DispatchOnly = '1'">
 							AND o2.dispatchocctypeg IS NOT NULL
 						</xsl:if>
 
-						<xsl:if test = "$OccurrenceTypeRId">
+						<xsl:if test = "$OccurrenceTypeRId != ''">
 							AND o2.OccurrenceStdOccTypeRId =
 							 <xsl:call-template name = "StuffSQL">
 									<xsl:with-param name = "ToStuff"
 							                select = "$OccurrenceTypeRId"/>
-									</xsl:call-template>
+							</xsl:call-template>
 						</xsl:if>
 
-						<xsl:if test = "$OccurrenceClassification">
+						<xsl:if test = "$OccurrenceClassification != ''">
 							AND
 							<xsl:call-template name = "CreateConditionFromSet">
 								<xsl:with-param name = "FieldName">o2.Classification
@@ -219,6 +303,37 @@
 								<xsl:with-param name = "IsSetField">1</xsl:with-param>
 							</xsl:call-template>
 					</xsl:if>
+
+					<xsl:if test="$ClearanceStatus != ''">
+							AND
+								<xsl:call-template name="CreateConditionFromSet">
+									<xsl:with-param name="FieldName">Occurrence.UCRClearanceStatus</xsl:with-param>
+									<xsl:with-param name="FieldValue" select="$ClearanceStatus" />
+								</xsl:call-template>
+					</xsl:if>
+
+					<xsl:if test="$TaskStatus != '' or $TaskType">
+						AND EXISTS (
+							SELECT GTask.Id
+							FROM TaskSubjectGOccurrence
+							LEFT JOIN GTask
+							WHERE TaskSubjectGOccurrence.RId = OCC.Id
+							<xsl:text> AND </xsl:text>
+							<xsl:call-template name="CreateConditionFromSet">
+								<xsl:with-param name = "FieldName">GTask.Status</xsl:with-param>
+								<xsl:with-param name = "FieldValue" select="$TaskStatus" />
+							</xsl:call-template>
+
+							<xsl:text> AND </xsl:text>
+							<xsl:call-template name="CreateConditionFromSet">
+								<xsl:with-param name = "FieldName">GTask.Type1</xsl:with-param>
+								<xsl:with-param name = "FieldValue" select="$TaskType" />
+							</xsl:call-template>
+								)
+					</xsl:if>
+
+
+
 					</xsl:variable>
 
 					<xsl:variable name="SCWhereClause">
@@ -235,12 +350,12 @@
 							AND (
 								EXISTS (
 									SELECT ID FROM GOccInvGPerson WHERE EXISTS (
-										SELECT Id FROM OrgPoliceUnit
+										SELECT Id FROM Person
 										WHERE <xsl:call-template name="MultiValueField">
 												<xsl:with-param name="FormField"><xsl:value-of select="$UnitCode" /></xsl:with-param>
 												<xsl:with-param name="DBField">EmployeeNumber</xsl:with-param>
 											</xsl:call-template>
-											AND AutoLink('GOccInvGPerson','OrgPoliceUnit')=1
+											AND AutoLink('GOccInvGPerson','Person')=1
 									) AND AutoLink('Goccurrence', 'GOccInvGPerson')=1
 								)
 							)
@@ -253,7 +368,7 @@
 							</xsl:call-template>
 						</xsl:if>
 
-						<xsl:if test="$AreaLevel4">
+						<xsl:if test="$AreaLevel3">
 							<xsl:choose>
 								<xsl:when test="$UnitCode">
 									AND EXISTS (SELECT GOccIvPA.ID
@@ -263,8 +378,8 @@
 												SELECT PhysicalAddress.Id
 												FROM PhysicalAddress
 												WHERE <xsl:call-template name="MultiValueField">
-														<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel4" /></xsl:with-param>
-														<xsl:with-param name="DBField">PhysicalAddress.ESAreaLevel4</xsl:with-param>
+														<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel3" /></xsl:with-param>
+														<xsl:with-param name="DBField">PhysicalAddress.ESAreaLevel3</xsl:with-param>
 													</xsl:call-template>
 													AND AutoLink('GOccIvPA', 'PhysicalAddress')=1
 											)
@@ -273,8 +388,8 @@
 								</xsl:when>
 								<xsl:otherwise>
 									AND <xsl:call-template name="MultiValueField">
-										<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel4" /></xsl:with-param>
-										<xsl:with-param name="DBField">OCC.ESAreaLevel4</xsl:with-param>
+										<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel3" /></xsl:with-param>
+										<xsl:with-param name="DBField">OCC.ESAreaLevel3</xsl:with-param>
 									</xsl:call-template>
 								</xsl:otherwise>
 							</xsl:choose>
@@ -297,38 +412,64 @@
 						)
 					</xsl:variable>
 
-					SELECT OCC.id AS OccId, OCC.OccurrenceFileNo AS OccNo, OCC.reportedtimetzv2g AS ReportedTime, o2.dispatchocctypeg AS DispType, OCC.OccurrenceType AS OccType, o2.ClassificationG AS OccClass, OCC.UCRClearanceStatusG AS Status, OCC.SummaryOneLine as OccSummary, Occ.ESAreaLevel4 as DutyLoc
+				<!--Incidents-->
+                    SELECT OCC.id AS OccId, OCC.OccurrenceFileNo AS OccNo, OCC.reportedtimetzv2g AS ReportedTime, o2.dispatchocctypeg AS DispType,
+                     OCC.OccurrenceType AS OccType, o2.ClassificationG AS OccClass, OCC.UCRClearanceStatusG AS Status, OCC.SummaryOneLine as OccSummary,
+                     Occ.ESAreaLevel3 as DutyLoc, GTask.Id AS TaskId, GTask.TaskNumber, GTask.StatusG AS TaskStatus, GTask.Type1G AS TaskType, GTask.TaskAssignedToRId_L AS TaskAssigned
 					FROM GOccurrence OCC
+						LEFT JOIN (TaskSubjectGOccurrence
+							LEFT JOIN GTask
+							) ON TaskSubjectGOccurrence.RId = OCC.Id
 						LEFT JOIN Occurrence o2
 					<xsl:value-of select="$OccWhereClause" />
-					ORDER BY OCC.reportedtime ASC, OCC.ID ASC
+					AND HierarchicalResult = 1
+					ORDER BY OCC.reportedtimetzv2g ASC, OCC.ID ASC
 
-					SELECT OCC.id AS OccDOFId, offi.label AS DOF_Officer
+				<!--Incidents that include All Tasks-->
+					SELECT OCC.Id AS OccTaskId, GTask.Id AS TaskId, GTask.TaskNumber, GTask.StatusG AS TaskStatus, GTask.Type1G AS TaskType, GTask.TaskAssignedToRId_L AS TaskAssigned
 					FROM GOccurrence OCC
+						LEFT JOIN (TaskSubjectGOccurrence
+							LEFT JOIN GTask) ON TaskSubjectGOccurrence.RId = Occ.Id
 						LEFT JOIN Occurrence o2
-						LEFT JOIN (GOccInvGPerson offIv LEFT JOIN GPerson offi)
 					<xsl:value-of select="$OccWhereClause" />
-						AND offIv.Classification LIKE '%DOF%'
-						AND NOT EXISTS (
-						  SELECT Id FROM OrgPoliceUnit opu WHERE opu.Assignable = 1 AND AutoLink('offi', 'OrgPoliceUnit') = 1
-						)
-					ORDER BY OCC.ID ASC, offIv.cretime
 
-					SELECT OCC.id AS OccRPOId, offi.label AS RPO_Officer
+					AND HierarchicalResult = 1
+
+
+
+					SELECT OCC.id AS OccRPOId, officer.label AS RPO_Officer, OrgPoliceUnit.Id__0, OrgPoliceUnit__LabelEmpl__0
 					FROM GOccurrence OCC
 						LEFT JOIN Occurrence o2
-						LEFT JOIN (GOccInvGPerson offIv LEFT JOIN GPerson offi)
+						LEFT JOIN (GOccInvGPerson offIv
+							LEFT JOIN (GPerson offi
+								LEFT JOIN (Person Officer
+									LEFT JOIN (GPersonOrgMemberGPerson
+										LEFT JOIN OrgPoliceUnit ON OrgPoliceUnit.Id = GPersonOrgMemberGPerson.LId
+										) ON GPersonOrgMemberGPerson.RId = Officer.Id
+										AND GPersonOrgMemberGPerson.IsEffectiveAssignment = 1
+									)
+								)
+							)
 					<xsl:value-of select="$OccWhereClause" />
 						AND offIv.Classification LIKE '%RPO%'
 						AND NOT EXISTS (
 						  SELECT Id FROM OrgPoliceUnit opu WHERE opu.Assignable = 1 AND AutoLink('offi', 'OrgPoliceUnit') = 1
 						)
-					ORDER BY OCC.ID ASC, offIv.cretime
+					ORDER BY OCC.ID ASC, offIv.CreTimeTZV2I
 
 					SELECT OCC.id AS OccINVId, offi.label AS INV_Officer
 					FROM GOccurrence OCC
 						LEFT JOIN Occurrence o2
-						LEFT JOIN (GOccInvGPerson offIv LEFT JOIN GPerson offi)
+						LEFT JOIN (GOccInvGPerson offIv
+							LEFT JOIN (GPerson offi
+								LEFT JOIN (Person Officer
+									LEFT JOIN (GPersonOrgMemberGPerson
+										LEFT JOIN OrgPoliceUnit ON OrgPoliceUnit.Id = GPersonOrgMemberGPerson.LId
+										) ON GPersonOrgMemberGPerson.RId = Officer.Id
+										AND GPersonOrgMemberGPerson.IsEffectiveAssignment = 1
+									)
+								)
+							)
 					<xsl:value-of select="$OccWhereClause" />
 						AND offIv.Classification LIKE '%INV%'
 						AND NOT EXISTS (
@@ -346,17 +487,6 @@
 						AND opu.Assignable = 1
 					ORDER BY OCC.ID ASC, offIv.cretime, offi.cretime
 
-
-					SELECT OCC.id AS OccDOFId, offi.label AS DOF_Officer
-					FROM GOccurrence OCC
-						LEFT JOIN Occurrence o2
-						LEFT JOIN (GOccInvGPerson offIv LEFT JOIN GPerson offi)
-					<xsl:value-of select="$OccWhereClause" />
-						AND offIv.Classification LIKE '%DOF%'
-						AND NOT EXISTS (
-						  SELECT Id FROM OrgPoliceUnit opu WHERE opu.Assignable = 1 AND AutoLink('offi', 'OrgPoliceUnit') = 1
-						)
-					ORDER BY OCC.ID ASC, offIv.cretime
 
 					-- Highlight Bolo Occurrences
 					<xsl:if test="$HighlightBolo = 1">
@@ -390,7 +520,7 @@
 
 					<xsl:if test="$IncludeMapping = '1'">
 						-- Get Mapping Address Information
-						--SELECT o.id, o.OccurrenceFileNo AS OccurrenceFileNo, o.ReportedTimeTZV2G AS ReportedTime, o.ESAreaLevel4 AS DutyLoc, o.ESAreaLevel5 AS Area, o.ESAreaLevel1 AS ESZ, o.ESAreaLevel3 AS Beat, pa.StreetNameG AS StrNoSuffix, pa.CivicSiteStreetNumberG AS StrNum, pa.StreetTypeG AS StrType, pa.StreetDirection AS StrDir, pa.MunicipalityNameG AS Muni, ui.MostSeriousViolationMerged, ui.SecondViolationMerged, ui.ThirdViolationMerged, ui.FourthViolationMerged, pa.XCoordinateG as X, pa.YCoordinateG AS Y, oip.NLXCoordinate AS NLX, oip.NLYCoordinate AS NLY, '' AS LambertX, '' AS LambertY, oip.NLAddressG AS NLStrNoSuffix, oip.NLCivicSiteStreetNumberG AS NLStrNum, oip.NLStreetTypeG AS NLStrType, oip.NLStreetDirection AS NLStrDir, oip.NLMunicipalityNameG AS NLMuni, oip.NLCommonName AS NLCommonName, pa.ManuallyVerified, pa.CompassKey
+						--SELECT o.id, o.OccurrenceFileNo AS OccurrenceFileNo, o.ReportedTimeTZV2G AS ReportedTime, o.ESAreaLevel3 AS DutyLoc, o.ESAreaLevel5 AS Area, o.ESAreaLevel1 AS ESZ, o.ESAreaLevel5 AS Beat, pa.StreetNameG AS StrNoSuffix, pa.CivicSiteStreetNumberG AS StrNum, pa.StreetTypeG AS StrType, pa.StreetDirection AS StrDir, pa.MunicipalityNameG AS Muni, ui.MostSeriousViolationMerged, ui.SecondViolationMerged, ui.ThirdViolationMerged, ui.FourthViolationMerged, pa.XCoordinateG as X, pa.YCoordinateG AS Y, oip.NLXCoordinate AS NLX, oip.NLYCoordinate AS NLY, '' AS LambertX, '' AS LambertY, oip.NLAddressG AS NLStrNoSuffix, oip.NLCivicSiteStreetNumberG AS NLStrNum, oip.NLStreetTypeG AS NLStrType, oip.NLStreetDirection AS NLStrDir, oip.NLMunicipalityNameG AS NLMuni, oip.NLCommonName AS NLCommonName, pa.ManuallyVerified, pa.CompassKey
 						SELECT o.id AS mapOccID, o.OccurrenceFileNo AS mapOccurrenceFileNo, o.ReportedTimeTZV2G AS mapReportedTime, pa.StreetNameG AS mapStrNoSuffix, pa.CivicSiteStreetNumberG AS mapStrNum, pa.StreetTypeG AS mapStrType, pa.StreetDirection AS mapStrDir, pa.MunicipalityNameG AS mapMuni, ui.MostSeriousViolationMerged AS mapMostSerious, pa.XCoordinateG as mapX, pa.YCoordinateG AS mapY, pa.ManuallyVerified AS mapManuallyVerified, pa.CompassKey AS mapCompassKey
 						FROM Occurrence o LEFT JOIN UCRIncident ui LEFT JOIN (GOccIvPA oip LEFT JOIN PhysicalAddress pa)
 						WHERE oip.Classification LIKE '%OLC%'
@@ -538,9 +668,82 @@
 
 				</xsl:template>
 
+					<xsl:template name="GetEntityIds">
+					<xsl:param name="Ids" />
+					<xsl:param name="EntityNumber" />
+					<xsl:param name="FirstInList">1</xsl:param>
+
+					<xsl:variable name="TrimmedIds" select="translate(normalize-space(translate($Ids, '&#xD;&#xA;', ';;')), ' ', '')" />
+
+					<xsl:if test="string-length($TrimmedIds) &gt; 0">
+						<xsl:variable name="sep" select="';'" />
+						<xsl:choose>
+							<xsl:when test="contains($TrimmedIds, $sep)">
+								<xsl:variable name="id1" select="substring-before($TrimmedIds, $sep)" />
+								<xsl:variable name="remainingIds" select="substring-after($TrimmedIds, $sep)" />
+								<!--
+									The ID is of the form 'XXXXXYYYYYZZZZZZZZZZZZZZZ' (including quotes), where XXXXX is the
+									entity number, and is of variable length.  We start at the 2nd character (because of the quote),
+									and determine how many more characters to read based on the total length of the string.
+									We subtract 2 for the quotes, and 20 for YYYYYZZZZZZZZZZZZZZZ, leaving us with the position of
+									the last character of XXXXX.  So the call to substring() below converts 'XXXXXYYYYYZZZZZZZZZZZZZZZ'
+									into XXXXX.
+
+									This prevents us from accidentally identifying an Id for entity 15000 as a Person Id.
+								-->
+								<xsl:variable name="EntityNumberForThisId" select="substring($id1, 1, string-length($id1) - 20)" />
+
+								<xsl:if test="$EntityNumberForThisId = $EntityNumber">
+									<xsl:if test="$FirstInList != 1"><xsl:text>,</xsl:text></xsl:if>
+									<xsl:call-template name="StuffSQL">
+										<xsl:with-param name="ToStuff" select="normalize-space($id1)" />
+									</xsl:call-template>
+								</xsl:if>
+								<xsl:if test="string-length($remainingIds) &gt; 0">
+									<!-- Make the recursive call -->
+									<xsl:call-template name="GetEntityIds">
+										<xsl:with-param name="Ids" select="$remainingIds" />
+										<xsl:with-param name="EntityNumber" select="$EntityNumber" />
+										<xsl:with-param name="FirstInList">
+											<xsl:choose>
+												<xsl:when test="$EntityNumberForThisId = $EntityNumber or $FirstInList = '0'">0</xsl:when>
+												<xsl:otherwise>1</xsl:otherwise>
+											</xsl:choose>
+										</xsl:with-param>
+									</xsl:call-template>
+								</xsl:if>
+							</xsl:when>
+							<xsl:otherwise>
+								<!-- There is only one Id so output it. -->
+								<xsl:variable name="EntityNumberForThisId" select="substring($TrimmedIds, 1, string-length($TrimmedIds) - 20)" />
+								<xsl:if test="$EntityNumberForThisId = $EntityNumber">
+									<xsl:if test="$FirstInList != 1"><xsl:text>,</xsl:text></xsl:if>
+									<xsl:call-template name="StuffSQL">
+										<xsl:with-param name="ToStuff" select="$TrimmedIds" />
+									</xsl:call-template>
+								</xsl:if>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:if>
+				</xsl:template>
+
+				<xsl:template name="ComposeWith" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+					<xsl:param name="Strings" />
+					<xsl:param name="Separator">
+						<xsl:text> / </xsl:text>
+					</xsl:param>
+					<xsl:for-each select="msxsl:node-set($Strings)/String">
+						<xsl:if test="string-length(text()) &gt; 0 and count(preceding-sibling::String[string-length(.) &gt; 0]) &gt; 0">
+							<xsl:value-of select="$Separator" />
+						</xsl:if>
+						<xsl:value-of select="./text()" />
+					</xsl:for-each>
+				</xsl:template>
 			</xsl:stylesheet>
-		]]>
-	</SQLSelectXSLT>
+
+
+
+	]]></SQLSelectXSLT>
 	<ReportXSL>
 		<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:nicheFunctions="urn:nicheFunctions" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
@@ -549,7 +752,8 @@
 				<xsl:param name="StartTimeG" />
 				<xsl:param name="EndTimeG" />
 				<xsl:param name="AreaLevel5" />
-				<xsl:param name="AreaLevel4" />
+				<xsl:param name="AreaLevel3" />
+				<xsl:param name="OfficerUnitIds" />
 				<xsl:param name="UnitCode" />
 				<xsl:param name="ReportableOnly" />
 				<xsl:param name="DispatchOnly" />
@@ -680,8 +884,8 @@
 							<!-- Insert the info box -->
 							<xsl:call-template name="InfoBox">
 								<xsl:with-param name="SpecDesc1"><xsl:value-of select="$strTimeFrame" /></xsl:with-param>
-								<xsl:with-param name="SpecDesc2"><xsl:if test="$AreaLevel5">Area: <xsl:value-of select="$AreaLevel5" /></xsl:if></xsl:with-param>
-								<xsl:with-param name="SpecDesc3"><xsl:if test="$AreaLevel4">Duty Location: <xsl:value-of select="$AreaLevel4" /></xsl:if></xsl:with-param>
+								<xsl:with-param name="SpecDesc2"><xsl:if test="$AreaLevel5">Sector: <xsl:value-of select="$AreaLevel5" /></xsl:if></xsl:with-param>
+								<xsl:with-param name="SpecDesc3"><xsl:if test="$AreaLevel3">Duty Location: <xsl:value-of select="$AreaLevel3" /></xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc4"><xsl:if test="$UnitCode">Unit Code: <xsl:value-of select="$UnitCode" /></xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc5"><xsl:if test="$ReportableOnly = '1'">Only show reportables</xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc6"><xsl:if test="$DispatchOnly = '1'">Only show dispatched calls</xsl:if></xsl:with-param>
@@ -708,7 +912,10 @@
 											<th style="font-size: 10px;">Incident Type</th>
 											<th style="font-size: 10px;">Incident Classification</th>
 											<th style="font-size: 10px;">Status</th>
+											<th style="font-size: 10px;">Task Type</th>
+											<th style="font-size: 10px;">Task Status</th>
 											<th style="font-size: 10px;">Rpt/Disp Officer</th>
+											<th style="font-size: 10px;">Assigned To</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -757,6 +964,7 @@
 														<xsl:otherwise><xsl:value-of select="OccClass"/></xsl:otherwise>
 													</xsl:choose>
 												</td>
+
 												<td style="font-size: 10px;">
 													<xsl:value-of select="Status"/>
 													<xsl:choose>
@@ -767,6 +975,17 @@
 															<br /><xsl:text>*No UCR*</xsl:text>
 														</xsl:when>
 													</xsl:choose>
+												</td>
+												<xsl:variable name= "Task_Id" select = "DATASET/ROW[TaskId]" />
+												<td style="font-size: 10px;">
+													<xsl:for-each select="$Task_Id">
+														<xsl:value-of select="TaskType" />
+													</xsl:for-each>
+												</td>
+												<td style="font-size: 10px;">
+													<xsl:for-each select="$Task_Id">
+														<xsl:value-of select="TaskStatus" />
+													</xsl:for-each>
 												</td>
 												<td style="font-size: 10px;">
 													<xsl:choose>
@@ -782,6 +1001,14 @@
 														<xsl:otherwise>
 															<span style="font-size: 10px;"><xsl:value-of select="/DATASETLIST/DATASET/ROW[OccDRUId = $O_Id]/DRU_Officer"/></span>
 														</xsl:otherwise>
+													</xsl:choose>
+												</td>
+												<td style="font-size: 10px;">
+													<xsl:choose>
+														<xsl:when test="/DATASETLIST/DATASET/ROW[SCOccId = $O_Id]">
+															<xsl:value-of select="/DATASETLIST/DATASET/ROW[SCOccId = $O_Id]/SCOccClass"/>
+														</xsl:when>
+														<xsl:otherwise><xsl:value-of select="OccClass"/></xsl:otherwise>
 													</xsl:choose>
 												</td>
 											</tr>
@@ -832,7 +1059,7 @@
 										</input>
 										<input type="text" name="layerName">
 											<xsl:attribute name="value">
-												<xsl:text>Daily Summary for </xsl:text><xsl:value-of select="$AreaLevel4" /><xsl:text>-</xsl:text><xsl:value-of select="$AreaLevel5" /><xsl:text>-</xsl:text><xsl:value-of select="$strTimeFrame" />
+												<xsl:text>Daily Summary for </xsl:text><xsl:value-of select="$AreaLevel3" /><xsl:text>-</xsl:text><xsl:value-of select="$AreaLevel5" /><xsl:text>-</xsl:text><xsl:value-of select="$strTimeFrame" />
 											</xsl:attribute>
 										</input>
 									</form>
@@ -1141,20 +1368,20 @@
 
 			declare AreaLevel5 edit
 			{
-				label="Area:";
+				label="Sector:";
 				tag="AllowMultiValues=1;EntityName=PhysicalAddress;FieldName=ESAreaLevel5";
 			};
 
-			declare AreaLevel4 edit
+			declare AreaLevel3 edit
 			{
 				label="Duty Location:";
-				tag="AllowMultiValues=1;EntityName=PhysicalAddress;FieldName=ESAreaLevel4";
+				tag="AllowMultiValues=1;EntityName=PhysicalAddress;FieldName=ESAreaLevel3";
 			};
 
 			declare UnitCode edit
 			{
 				label="Unit Code:";
-				tag="AllowMultiValues=1;EntityName=OrgPoliceUnit;FieldName=EmployeeNumber";
+				tag="AllowMultiValues=1;EntityName=Person;FieldName=EmployeeNumber";
 			};
 
 			declare ReportableOnly checkbox
@@ -1167,6 +1394,15 @@
 			{
 				label = "Only Show Dispatch Calls:";
 				default = "0";
+			};
+			declare OfficerUnitRId_L edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
+				label = "Officer/unit:";
+			};
+			declare OfficerUnitRId edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId";
 			};
 
 			declare OccurrenceTypeRId_L edit
@@ -1201,7 +1437,7 @@
 			declare IncludeMapping checkbox
 			{
 				label = "Include Mapping Options:";
-				default = "1";
+				default = "0";
 			};
 
 			declare ddlb_accdomain choicelist {label="Domain:";};
@@ -1256,11 +1492,11 @@
 				break;
 
 				field StartTime {visible = expression "if (isNull(TimeRange), 0, if (TimeRange = 'RNG', 1, 0))";};
-				field AreaLevel4 {visible = expression "if(f_GetProperty('PhysicalAddress.ESAreaLevel4.Visible', '', '') <> '0', 1, 0)"; mandatory="true"; };
+				field AreaLevel3 {visible = expression "if(f_GetProperty('PhysicalAddress.ESAreaLevel3.Visible', '', '') <> '0', 1, 0)"; mandatory="true"; };
 				break;
 
 				field EndTime{visible = expression "if (isNull(TimeRange), 0, if (TimeRange = 'RNG', 1, 0))";};
-				field UnitCode {visible = expression "if(f_GetProperty('OrgPoliceUnit.EmployeeNumber.Visible', '', '') <> '0', 1, 0)";};
+				field UnitCode {visible = expression "if(f_GetProperty('Person.EmployeeNumber.Visible', '', '') <> '0', 1, 0)";};
 				break;
 
 				griddef
@@ -1296,9 +1532,20 @@
 				griddef
 				{
 					columns = 2;
-					labelwidth = 450;
-					fieldwidth = 450;
-					leftmargin = 200;
+					labelwidth = 300;
+					fieldwidth = 1000;
+					leftmargin = 100;
+				};
+				field OfficerUnitRId_L;
+				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 500;
+					fieldwidth = 400;
+					leftmargin = 100;
 				};
 				field OccurrenceTypeRId_L;
 				field OccurrenceTypeRId { visible = false; property CreateControlOnDW = "1"; };
@@ -1307,9 +1554,9 @@
 				griddef
 				{
 					columns = 2;
-					labelwidth = 450;
-					fieldwidth = 450;
-					leftmargin = 200;
+					labelwidth = 400;
+					fieldwidth = 400;
+					leftmargin = 100;
 				};
 
 				text WarningDates // only visible when StartTime > EndTime
@@ -1381,6 +1628,7 @@
 					visible = false;
 				};
 
+				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
 			};
 
 			group Parameter_Group "ParameterGroup"

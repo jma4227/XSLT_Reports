@@ -1,0 +1,284 @@
+
+declare FieldStatus edit
+			{
+				size = 1000;
+				default = "GGGGGGGGG";
+			};
+			declare TimeRange choicelist
+			{
+				choices=
+				{
+					"L12"{"Last 12 hours";}
+					"L24"{"Last 24 hours";}
+					"L3D"{"Last 3 days";}
+					"L4D"{"Last 4 days";}
+					"L7D"{"Last 7 days";}
+					"L30D"{"Last 30 days";}
+					"RNG"{"Specify";}
+				};
+				label = "Time Range:";
+				default="L24";
+			};
+
+			declare StartTime edit
+			{
+				datatype = datetime;
+				label = "From:";
+				tag="EntityName=Occurrence;FieldName=ReportedTimeTZV2S";
+			};
+
+			declare EndTime edit
+			{
+				datatype = datetime;
+				label = "To:";
+				tag="EntityName=Occurrence;FieldName=ReportedTimeTZV2S";
+			};
+
+			declare AreaLevel5 edit
+			{
+				label="Sector:";
+				tag="AllowMultiValues=1;EntityName=PhysicalAddress;FieldName=ESAreaLevel5";
+			};
+
+			declare AreaLevel3 edit
+			{
+				label="Duty Location:";
+				tag="AllowMultiValues=1;EntityName=PhysicalAddress;FieldName=ESAreaLevel3";
+			};
+
+			declare UnitCode edit
+			{
+				label="Unit Code:";
+				tag="AllowMultiValues=1;EntityName=Person;FieldName=EmployeeNumber";
+			};
+
+			declare ReportableOnly checkbox
+			{
+				label = "Only Show Reportables:";
+				default = "0";
+			};
+
+			declare DispatchOnly checkbox
+			{
+				label = "Only Show Dispatch Calls:";
+				default = "0";
+			};
+
+			declare OccurrenceTypeRId_L edit
+			{
+				tag = "EntityName=Occurrence;FieldName=OccurrenceStdOccTypeRId_L"; label = "Incident type:";
+			};
+			declare OccurrenceTypeRId edit
+			{
+			    tag = "EntityName=Occurrence;FieldName=OccurrenceStdOccTypeRId";
+			};
+			declare OccurrenceClassification set
+			{
+				 tag = "EntityName=Occurrence;FieldName=ClassificationG"; label = "Incident classification";
+			};
+			declare AdditionalInfo edit
+			{
+				label = "Notes: ";
+			};
+
+			declare HighlightBolo checkbox
+			{
+				label = "Highlight BOLO occurrences:";
+				default = "1";
+			};
+
+			declare HighlightMissingUCR checkbox
+			{
+				label = "Highlight if missing UCR codes:";
+				default = "0";
+			};
+
+			declare IncludeMapping checkbox
+			{
+				label = "Include Mapping Options:";
+				default = "1";
+			};
+
+			declare ddlb_accdomain choicelist {label="Domain:";};
+			declare ddlb_scope choicelist {label="Scope:";};
+
+
+			datawindowdef ParameterWindow "ParameterWindow"
+			{
+				//total width = 2432
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 450;
+					fieldwidth = 550;
+					leftmargin = 0;
+				};
+
+				// The report title.  This will span both columns.
+				text Title
+				{
+					label = "Daily Summary Report Details";
+					fontstyle = "Arial Black";
+					fontsize = 12;
+					fonteffect = italic!;
+					location = page;
+					align = center;
+					height = 92;
+				};
+
+				break(40);
+
+				text Desc
+				{
+					label = "This report shows all occurrences and their summaries for the selected parameters";
+					align = center;
+					textcolor = rgb(0,0,255); //blue
+				};
+				break(10);
+				text Desc2
+				{
+					label = "Un-check 'Include Mapping Options' if report is running slow";
+					align = center;
+					textcolor = rgb(0,0,255); //blue
+				};
+
+
+				break(40);
+
+				field TimeRange;
+				field AreaLevel5 {visible = expression "if(f_GetProperty('PhysicalAddress.ESAreaLevel5.Visible', '', '') <> '0', 1, 0)";};
+				break;
+
+				field StartTime {visible = expression "if (isNull(TimeRange), 0, if (TimeRange = 'RNG', 1, 0))";};
+				field AreaLevel3 {visible = expression "if(f_GetProperty('PhysicalAddress.ESAreaLevel3.Visible', '', '') <> '0', 1, 0)"; mandatory="true"; };
+				break;
+
+				field EndTime{visible = expression "if (isNull(TimeRange), 0, if (TimeRange = 'RNG', 1, 0))";};
+				field UnitCode {visible = expression "if(f_GetProperty('Person.EmployeeNumber.Visible', '', '') <> '0', 1, 0)";};
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 250;
+					fieldwidth = 750;
+					leftmargin = 550;
+				};
+
+				field ReportableOnly {colspan=1;};
+				field HighlightBolo;
+				break;
+
+				field DispatchOnly {colspan=1;};
+				field HighlightMissingUCR;
+				break;
+
+				field IncludeMapping {colspan=1;};
+				skipcol;
+				break;
+
+				griddef
+				{
+					columns = 1;
+					labelwidth = 150;
+					fieldwidth = 800;
+					leftmargin = 100;
+				};
+				field AdditionalInfo {colspan=2;};
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 400;
+					fieldwidth = 400;
+					leftmargin = 100;
+				};
+				field OccurrenceTypeRId_L;
+				field OccurrenceTypeRId { visible = false; property CreateControlOnDW = "1"; };
+				field OccurrenceClassification;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 450;
+					fieldwidth = 450;
+					leftmargin = 200;
+				};
+
+				text WarningDates // only visible when StartTime > EndTime
+				{
+					label="The starting date in the date range must come before the ending date.";
+					align = center;
+					height = 120;
+					location = columns(1);
+					visible = expression "if (f_nonull(StartTime) = '' or f_nonull(EndTime) = '', 0, if(TimeRange = 'RNG' and f_getdatetimecomparablecfromg(StartTime) > f_getdatetimecomparablecfromg(EndTime), 1, 0))";
+					textcolor=rgb(255,0,0); //red
+				};
+				skipcol;
+
+				break;
+
+				griddef
+				{
+					columns = 4;
+					labelwidth = 260;
+					fieldwidth = 200;
+					leftmargin = 50;
+				};
+
+				field ddlb_accdomain {colspan=2;};
+				field ddlb_scope {colspan=2;};
+
+
+				// Parameters for the XSLT report
+
+				// Used by the DW to validate the data
+				computedfield valid
+				{
+					visible = false;
+					expression =
+						"(TimeRange = 'L12' or TimeRange = 'L24' or TimeRange = 'L3D' or TimeRange = 'L4D' or TimeRange = 'L7D' or TimeRange = 'L30D' or "
+							"(TimeRange = 'RNG' and (f_nonull(StartTime) <>'' and f_nonull(EndTime) <> '' "
+								"and f_getdatetimecomparablecfromg(StartTime) <= f_getdatetimecomparablecfromg(EndTime)))) ";
+				};
+
+				// Used to display an error message to the user
+				computedfield invalidfields
+				{
+					visible = false;
+					expression =
+						"if (TimeRange = 'RNG' and f_nonull(StartTime) = '', "
+							"'~t' + f_TranslateString('str:startdate') + '~n', '') + "
+						"if (TimeRange = 'RNG' and f_nonull(EndTime) = '', "
+							"'~t' + f_TranslateString('str:enddate') + '~n', '') + "
+						"if (f_getdatetimecomparablecfromg(StartTime) > f_getdatetimecomparablecfromg(EndTime), "
+							"'~t' + f_TranslateString('str:daterangewarning') + '~n', '') ";
+				};
+
+				computedfield StartTimeG
+				{
+					visible = false;
+					expression = "f_GetDateTimeGFromC(f_GetDateTimeCFromS(StartTime))";
+				};
+
+				computedfield EndTimeG
+				{
+					visible = false;
+					expression = "f_GetDateTimeGFromC(f_GetDateTimeCFromS(EndTime))";
+				};
+
+				computedfield ACCDomain	{ visible = false; expression = "ddlb_accdomain + ddlb_scope"; };
+
+				field FieldStatus
+				{
+					visible = false;
+				};
+
+			};
+
+			group Parameter_Group "ParameterGroup"
+			{
+				ParameterWindow
+			};
