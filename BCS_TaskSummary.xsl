@@ -156,7 +156,7 @@
 								GTask__TaskApprovalApprovalTimeTZV2G,
 								GTask__Remarks,
 
-								Occurrence__Id,
+								Occurrence__Id AS OCCId,
 								Occurrence__LabelShort,
 								Occurrence__UCRClearanceStatusG,
 
@@ -596,6 +596,7 @@
 
 						<!-- Insert the style class declarations -->
 						<xsl:call-template name="StyleClasses" />
+						<xsl:variable name="TotalCount"> <xsl:value-of select="count(/DATASETLIST/DATASET/ROW[OccId])"/> </xsl:variable>
 
 						<xsl:element name="BODY">
 							<!-- Insert the title-->
@@ -744,7 +745,7 @@
 								</xsl:for-each>
 
 							</TABLE>
-
+							<div class="ReportHeader2" style="text-align: center; margin-top: 20px;">Total Number of Occurrences: <xsl:value-of select="$TotalCount" /></div>
 						</xsl:element>
 					</xsl:element>
 				</xsl:template>
@@ -1103,34 +1104,19 @@
 				tag= "EntityName=GTask;FieldName=StatusG";
 			};
 
-			declare OfficerUnitCL choicelist {
-				label = "Task Assigned To:";
-				choices =
-				{
-					"OFC"{e"Officer";}
-					"UNT"{e"Unit";}
-					"U" {"";}
-			    };
-			    default = "U";
-			};
-			declare OfficerRId_L edit
-			{
-				label="Officer:";
-				tag="EntityName=Flag;FieldName=FlagAssocOfficerRId_L;UseSearchSelector=1";
-			};
+
 			declare OfficerRId edit
 			{
 				tag="EntityName=Flag;FieldName=FlagAssocOfficerRId";
 			};
-			declare OfficerUnitRId_L edit
+				declare OfficerUnitRId_L edit
 			{
-				label="Unit: ";
-				tag="EntityName=Flag;FieldName=FlagAssocUnitRId_L;UseSearchSelector=1";
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
+				label = "Officer/unit:";
 			};
-
 			declare OfficerUnitRId edit
 			{
-				tag="EntityName=Flag;FieldName=FlagAssocUnitRId";
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId";
 			};
 
 			declare ddlb_accdomain choicelist {label=e"Domain:"f"Domaine:";};
@@ -1244,24 +1230,16 @@
 				field FlagTypeCL {colspan=2; };
 				field FlagActive;
 
-				griddef
+
+					griddef
 				{
-					columns = 1;
+					columns = 2;
 					labelwidth = 300;
 					fieldwidth = 1000;
 					leftmargin = 100;
 				};
-				field OfficerUnitCL;
-				break;
-				griddef
-				{
-					columns = 2;
-					labelwidth = 300;
-					fieldwidth = 500;
-					leftmargin = 100;
-				};
-				field OfficerRId_L {visible = expression "if (isNull(OfficerUnitCL), 0, if (OfficerUnitCL = 'OFC', 1, 0 ))";};
-				field OfficerUnitRId_L {visible = expression "if ( isNull(OfficerUnitCL), 0, if (OfficerUnitCL = 'UNT', 1, 0) )"; };
+				field OfficerUnitRId_L;
+				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
 				break;
 
 
@@ -1379,7 +1357,7 @@
 							"'~t' + f_TranslateString('str:flagtype') + '~n', '')";
 				};
 
-				computedfield OfficerUnitIds { visible = false; expression = "if ( OfficerUnitCL = 'UNT', f_ReplaceAll(OfficerUnitRId, '~n', ';'), f_ReplaceAll(OfficerRId, '~n', ';') ) ";};
+				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
 
 
 				computedField FlagType { visible = false; expression = "if (len(FlagTypeCL) > 0, md_GetDBValueFromSetByName('GOccurrenceFlag', 'Type1G', f_NoNull(FlagTypeCL)), '')";};

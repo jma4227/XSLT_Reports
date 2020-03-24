@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="Windows-1252"?>
 <root>
 	<VersionInfo>
@@ -9,28 +8,28 @@
 		<NicheBuildName>BexarCounty</NicheBuildName>
 		<BuildTime>1/31/2020 3:22 PM</BuildTime>
 	</VersionInfo>
-	
+
 	!-- Information to be used when loading the report -->
 	<!-- Is this report for an entire domain, rather than an instance of data -->
 	<IsDomainReport>1</IsDomainReport>
-	
+
 	<!-- Should this show up in the list of reports for an entity in the print menu -->
 	<IsPrintTemplate>1</IsPrintTemplate>
-	
+
 	<!-- Suggested report name in the print menu -->
 	<ReportName>Incident Statistics</ReportName>
-	
+
 	<!-- Can be enclosed in CDATA.  A general description of what the report does -->
 	<Documentation></Documentation>
-	
+
 	<ReportPaperOrientation>landscape</ReportPaperOrientation>
-	
+
 	<ReportHeader>
 		<![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p>"]]></ReportHeader>
-	
+
 	<ReportFooter>
 		<![CDATA[e"""<p align='center'><b>[@PARAM=PROTECTIVEMARKING]</b></p><p align='center'>"e"Printed by:""&nbsp;&nbsp;[@AGBL=USERNUM]&nbsp;&nbsp;&nbsp;"e"Date:""&nbsp;&nbsp;[DATE] [TIME]&nbsp;&nbsp;&nbsp;"e"Computer:""&nbsp;&nbsp;[@AGBL=COMPUTERNAME]&nbsp;&nbsp;&nbsp;"e"Page"" [PAGENUM] of [PAGETOTAL]</p>"]]></ReportFooter>
-	
+
 	<ReportHeaderTop></ReportHeaderTop>
 	<ReportFooterBottom></ReportFooterBottom>
 	<ReportDetailMarginTop></ReportDetailMarginTop>
@@ -39,7 +38,7 @@
 	<ReportDetailMarginBottom></ReportDetailMarginBottom>
 	<DefaultProtectiveMarking></DefaultProtectiveMarking>
 	<OutputType>html</OutputType>
-	
+
 	<SQLParameter>StartTime</SQLParameter>
 	<SQLParameter>EndTime</SQLParameter>
 	<SQLParameter>ESAreaLevel3</SQLParameter>
@@ -54,8 +53,9 @@
 	<SQLParameter>Charges</SQLParameter>
 	<SQLParameter>ACCDomain</SQLParameter>
 	<SQLParameter>UseReportServer</SQLParameter>
-	
-	
+
+
+
 	<SQLSelectXSLT><![CDATA[
 
 		<xsl:stylesheet version = "1.0"
@@ -382,7 +382,7 @@
 		</xsl:stylesheet>
 
 	]]></SQLSelectXSLT>
-	
+
 	<Report>
 		<FileType>HTML</FileType>
 		<FileExtension>htm</FileExtension>
@@ -681,7 +681,7 @@
 		]]></XSLT>
 	</Report>
 	<!--
-	
+
 		<Report>
 			<FileType>Excel</FileType>
 			<FileExtension>csv</FileExtension>
@@ -692,7 +692,7 @@
 			<AllowPagedPreview>1</AllowPagedPreview>
 			<AllowEmail>1</AllowEmail>
 			<XSLT><![CDATA[
-	
+
 				<?xml version="1.0" encoding ="Windows-1252"?>
 				<xsl:stylesheet version = "1.0"
 								xmlns:xsl = "http://www.w3.org/1999/XSL/Transform"
@@ -703,7 +703,7 @@
 							omit-xml-declaration = "yes"/>
 				<xsl:template match = "/">
 					<Data>
-	
+
 					<xsl:template name = "ConvertHTMLTableToCSV">
 						<xsl:with-param name = "HTMLTable">
 							<TABLE>
@@ -753,7 +753,7 @@
 					</xsl:template>
 					</Data>
 				</xsl:template>
-	
+
 					<xsl:template name = "ConvertHTMLTableToCSV">
 							<xsl:param name = "HTMLTable"/>
 							<Data>
@@ -778,8 +778,8 @@
 								</xsl:for-each>
 							</Data>
 						</xsl:template>
-	
-	
+
+
 				<xsl:template name = "StuffCSV">
 					<xsl:param name = "ToStuff"/>
 					<xsl:param name = "HyperlinkId"/>
@@ -821,186 +821,186 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:template>
-	
-	
+
+
 						<xsl:template name = "PrintNewline">
 							<xsl:text xml:space = "preserve"></xsl:text>
 						</xsl:template>
 				</xsl:stylesheet>
-	
+
 			]]></XSLT>
 		</Report>
 	-->
-	
+
 	<USLReportParameters>
 		<DSL>
 			<Metadata>
 				<ChoiceList Name = "cl_bool">
 					<Choice DBValue = "0"
-							GUIValue = "0"/>
+					        GUIValue = "0"/>
 					<Choice DBValue = "1"
-							GUIValue = "1"/>
+					        GUIValue = "1"/>
 				</ChoiceList>
 				<ChoiceList Name = "cl_accdomain">
 					<Choice DBValue = "Current"
-							GUIValue = "Domain"/>
+					        GUIValue = "Domain"/>
 					<Choice DBValue = "Current+"
-							GUIValue = "Domain and subdomains"/>
-				
+					        GUIValue = "Domain and subdomains"/>
+
 				</ChoiceList>
 				<Entity Name = "Parameters">
 					<Field Name = "StartTime"/>
 					<Field Name = "EndTime"/>
 					<Field Name = "StartTimeG"
-						   BehaveLike = "GPersonArrest.StartTimeTZV2G"/>
+					       BehaveLike = "GPersonArrest.StartTimeTZV2G"/>
 					<Field Name = "EndTimeG"
-						   BehaveLike = "GPersonArrest.StartTimeTZV2G"/>
-					
+					       BehaveLike = "GPersonArrest.StartTimeTZV2G"/>
+
 					<Field Name = "ESAREALEVEL6G"
-						   BehaveLike = "PhysicalAddress.ESAreaLevel6G"/>
+					       BehaveLike = "PhysicalAddress.ESAreaLevel6G"/>
 					<Field Name = "ESAREALEVEL5G"
-						   BehaveLike = "PhysicalAddress.ESAreaLevel5G"/>
-					
+					       BehaveLike = "PhysicalAddress.ESAreaLevel5G"/>
+
 					<Field Name = "ESAREALEVEL3G"
-						   BehaveLike = "PhysicalAddress.ESAreaLevel3G"/>
-					
-					
+					       BehaveLike = "PhysicalAddress.ESAreaLevel3G"/>
+
+
 					<Field Name = "OfficerRId"/>
 					<Field Name = "OfficerRId_L">
 						<Selector ColumnHelpFields = "OfficerRId=Id;OfficerRId_L=Label"
-								  ColumnHelp = "SpecificationKey=d_gpersonemploylist;Title=Officer selector;Text1=1. Enter officer's badge number or name.;Text2=. Select officer from list.;Condition=ACCDomain=='Current-' AND Indexed==1 AND IsEmployee==1"/>
+						          ColumnHelp = "SpecificationKey=d_gpersonemploylist;Title=Officer selector;Text1=1. Enter officer's badge number or name.;Text2=. Select officer from list.;Condition=ACCDomain=='Current-' AND Indexed==1 AND IsEmployee==1"/>
 					</Field>
 					<SetField Name = "OfficerClassification"
-							  ChoiceListName = "cl_PersonClassification"
-							  ChoiceListSource = "NML"/>
+					          ChoiceListName = "cl_PersonClassification"
+					          ChoiceListSource = "NML"/>
 					<SetField Name = "OccurrenceStatusInternal"
-							  ChoiceListName = "cl_UCRIncidentClearanceStatus"
-							  ChoiceListSource = "NML"/>
-					
-					
+					          ChoiceListName = "cl_UCRIncidentClearanceStatus"
+					          ChoiceListSource = "NML"/>
+
+
 					<Field Name = "OccurrenceTypeRId_L">
 						<Selector ColumnHelpFields = "OccurrenceTypeRId=Id;OccurrenceTypeRId_L=Label"
-								  ColumnHelp = "SpecificationKey=d_StandardOccurrenceTypeLabel;Title=Standard Incident Type Selector;Text1=1. Enter all or part of an Incident Type.;Text2=2. Select Incident Type from list.;Condition=ACCDomain=='Current-' AND MakeInterval(EffectiveFromTimeTZV2I, EffectiveToTimeTZV2I, '[]', 'NullIsInfinite')=='now';DateRestrictedCondition=ACCDomain=='Current-' AND ((EffectiveToTimeTZV2I IS NULL OR EffectiveToTimeTZV2I &gt; '{0}') AND (EffectiveFromTimeTZV2I IS NULL OR EffectiveFromTimeTZV2I &lt; '{0}') AND AnyOfSetHasProperty(Properties, 'cl_StandardOccurrenceTypeProperties', 'clvIsOffenseNoticeOcc', '1')==1)"/>
+						          ColumnHelp = "SpecificationKey=d_StandardOccurrenceTypeLabel;Title=Standard Incident Type Selector;Text1=1. Enter all or part of an Incident Type.;Text2=2. Select Incident Type from list.;Condition=ACCDomain=='Current-' AND MakeInterval(EffectiveFromTimeTZV2I, EffectiveToTimeTZV2I, '[]', 'NullIsInfinite')=='now';DateRestrictedCondition=ACCDomain=='Current-' AND ((EffectiveToTimeTZV2I IS NULL OR EffectiveToTimeTZV2I &gt; '{0}') AND (EffectiveFromTimeTZV2I IS NULL OR EffectiveFromTimeTZV2I &lt; '{0}') AND AnyOfSetHasProperty(Properties, 'cl_StandardOccurrenceTypeProperties', 'clvIsOffenseNoticeOcc', '1')==1)"/>
 					</Field>
 					<Field Name = "OccurrenceTypeRId"
-						   BehaveLike = "Occurrence.OccurrenceStdOccTypeRId"/>
-					
-					
+					       BehaveLike = "Occurrence.OccurrenceStdOccTypeRId"/>
+
+
 					<SetField Name = "OccurrenceClassification"
-							  ChoiceListName = "cl_OccurrenceClassification"
-							  ChoiceListSource = "NML"/>
+					          ChoiceListName = "cl_OccurrenceClassification"
+					          ChoiceListSource = "NML"/>
 					<!--<SetField Name = "TaskType"
 					          ChoiceListName = "cl_TaskType"
 					          ChoiceListSource = "NML"/>-->
 					<Field Name = "AccDomainG"/>
 					<BoolField Name = "UseReportServer"
-							   ChoiceListName = "cl_bool"/>
+					           ChoiceListName = "cl_bool"/>
 				</Entity>
 			</Metadata>
 			<Entity Name = "Parameters"
-					DSLBased = "True">
+			        DSLBased = "True">
 				<OnFieldChange Name = "StartTimeG"
-							   Action = "CopyDateGFieldToDateCFieldOnUpdate">
+				               Action = "CopyDateGFieldToDateCFieldOnUpdate">
 					<ActionParameter Name = "SetFieldName"
-									 Value = "StartTime"/>
+					                 Value = "StartTime"/>
 				</OnFieldChange>
 				<OnFieldChange Name = "EndTimeG"
-							   Action = "CopyDateGFieldToDateCFieldOnUpdate">
+				               Action = "CopyDateGFieldToDateCFieldOnUpdate">
 					<ActionParameter Name = "SetFieldName"
-									 Value = "EndTime"/>
+					                 Value = "EndTime"/>
 				</OnFieldChange>
 				<Field Name = "StartTime"/>
 				<Field Name = "EndTime"/>
 				<Field Name = "StartTimeG"/>
 				<Field Name = "EndTimeG"/>
-				
+
 				<!--GUI fields for Area Parameters-->
 				<Field Name = "ESAREALEVEL6G"
-					   ExportName = "ESAreaLevel6"
-					   ExportType = "DisplayValue"/>
+				       ExportName = "ESAreaLevel6"
+				       ExportType = "DisplayValue"/>
 				<Field Name = "ESAREALEVEL5G"
-					   ExportName = "ESAreaLevel5"
-					   ExportType = "DisplayValue"/>
+				       ExportName = "ESAreaLevel5"
+				       ExportType = "DisplayValue"/>
 				<Field Name = "ESAREALEVEL3G"
-					   ExportName = "ESAreaLevel3"
-					   ExportType = "DisplayValue"/>
-				
+				       ExportName = "ESAreaLevel3"
+				       ExportType = "DisplayValue"/>
+
 				<!--GUI fields for Officer search parameters-->
 				<Field Name = "OfficerRId"
-					   ExportName = "OfficerRId"
-					   ExportType = "StorableValue"/>
+				       ExportName = "OfficerRId"
+				       ExportType = "StorableValue"/>
 				<Field Name = "OfficerRId_L"
-					   ExportName = "OfficerRId_L"
-					   ExportType = "DisplayValue"/>
-				
+				       ExportName = "OfficerRId_L"
+				       ExportType = "DisplayValue"/>
+
 				<!--GUI fields for Officer Classification search paramters-->
 				<Field Name = "OfficerClassificationG"
-					   ExportName = "OfficerClassification"
-					   ExportType = "StorableValue"/>
+				       ExportName = "OfficerClassification"
+				       ExportType = "StorableValue"/>
 				<Field Name = "OccurrenceStatusInternalG"
-					   ExportName = "OccurrenceStatus"
-					   ExportType = "StorableValue"/>
-				
+				       ExportName = "OccurrenceStatus"
+				       ExportType = "StorableValue"/>
+
 				<!--GUI fields for Incident Type search parameters-->
 				<Field Name = "OccurrenceTypeRId"
-					   ExportName = "OccurrenceTypeRId"
-					   ExportType = "StorableValue"/>
+				       ExportName = "OccurrenceTypeRId"
+				       ExportType = "StorableValue"/>
 				<Field Name = "OccurrenceTypeRId_L"
-					   ExportName = "OccurrenceTypeRId_L"
-					   ExportType = "DisplayValue"/>
-				
+				       ExportName = "OccurrenceTypeRId_L"
+				       ExportType = "DisplayValue"/>
+
 				<Field Name = "OccurrenceClassificationG"
-					   ExportName = "OccurrenceClassification"
-					   ExportType = "StorableValue"/>
+				       ExportName = "OccurrenceClassification"
+				       ExportType = "StorableValue"/>
 				<!--<Field Name = "TaskTypeG"-->
 				<!--       ExportName = "TaskType"-->
 				<!--       ExportType = "StorableValue"/>-->
-				
+
 				<Field Name = "AccDomainG"
-					   ExportName = "ACCDomain"
-					   ExportType = "DisplayValue"/>
+				       ExportName = "ACCDomain"
+				       ExportType = "DisplayValue"/>
 				<Field Name = "UseReportServerG"
-					   ExportName = "UseReportServer"
-					   ExportType = "StorableValue"/>
-			
+				       ExportName = "UseReportServer"
+				       ExportType = "StorableValue"/>
+
 			</Entity>
 		</DSL>
-		
+
 		<Data>
 			<Node Name = "Parameters"
-				  DSLBased = "true">
+			      DSLBased = "true">
 				<Cell Name = "StartTime"
-					  Value = ""/>
+				      Value = ""/>
 				<Cell Name = "EndTime"
-					  Value = ""/>
+				      Value = ""/>
 				<Cell Name = "StartTimeG"
-					  Value = ""/>
+				      Value = ""/>
 				<Cell Name = "EndTimeG"
-					  Value = ""/>
-				
+				      Value = ""/>
+
 				<Cell Name = "ESAREALEVEL6G"/>
 				<Cell Name = "ESAREALEVEL5G"/>
 				<Cell Name = "ESAREALEVEL3G"/>
-				
+
 				<Cell Name = "OfficerRId"/>
 				<Cell Name = "OfficerRId_L"/>
-				
+
 				<Cell Name = "OfficerClassificationG"
-					  Value = ""/>
+				      Value = ""/>
 				<Cell Name = "OccurrenceStatusInternalG"/>
-				
+
 				<Cell Name = "OccurrenceTypeRId"/>
 				<Cell Name = "OccurrenceTypeRId_L"/>
 				<Cell Name = "OccurrenceClassificationG"/>
 				<!--<Cell Name = "TaskTypeG"/>-->
 				<Cell Name = "AccDomainG"
-					  Value = ""/>
+				      Value = ""/>
 				<Cell Name = "UseReportServerG"
-					  Value = "0"/>
-			
+				      Value = "0"/>
+
 			</Node>
 		</Data>
-		
+
 		<USL>
 			<![CDATA[
 				view AnalysisOfCaseLoad
