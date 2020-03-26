@@ -301,12 +301,6 @@
 													<xsl:with-param name="FieldValue" select="$TaskStatus" />
 												</xsl:call-template>)
 											</xsl:if>
-													AND NOT EXISTS (GTask.Id FROM TaskSubjectGOccurrence
-																		LEFT JOIN (GTask Task
-																			LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
-																			AND GTask.Id &lt;&gt; TaskInvolvement.Id
-																			AND CreTimeTZV2I &gt; TaskInvolvement.CreTimeTZv2I
-																		)
 												)
 
 											</xsl:if>
@@ -1565,7 +1559,7 @@
 			};
 			declare OfficerUnitRId_L edit
 			{
-				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L;UseSearchSelector=1";
 				label = "Officer/unit: ";
 			};
 			declare OfficerUnitRId edit
@@ -1574,7 +1568,7 @@
 			};
 				declare TaskAssignedToRId_L edit
 			{
-				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer2RId_L";
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer2RId_L;UseSearchSelector=1";
 				label = "Officer/Unit:  ";
 			};
 			declare TaskAssignedToRId edit
@@ -1619,6 +1613,7 @@
 			{
 				label = "Task type:";
 				tag = "EntityName=GTask;FieldName=Type1G";
+				SelectLimit = 1;
 			};
 			declare TaskStatusG set
 			{
@@ -1830,7 +1825,7 @@
 				};
 				computedfield TaskType { visible = false; expression = "if (len(TaskTypeG) > 0, md_GetDBValueFromSetByName('GTask', 'Type1G', f_NoNull(TaskTypeG)), '')";};
 				computedfield TaskStatus { visible = false; expression = "if (len(TaskStatusG) > 0, md_GetDBValueFromSetByName('GTask', 'StatusG', f_NoNull(TaskStatusG)), '')";};
-				computedfield OfficerUnitIds { visible = false; expression = "if(TaskAssigned = '1' ,f_ReplaceAll(OfficerUnitRId, '~n', ';') )"; };
+				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
 				computedfield TaskAssignedTo { visible = false; expression = "f_ReplaceAll(TaskAssignedToRId, '~n', ';')"; };
 			};
 
