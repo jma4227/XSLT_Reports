@@ -1,8 +1,16 @@
 <root>
 	<!--$Id: DailySummaryReport.xslt, v 2.01 2020/03/11 BCSO James Ma Exp $
-		Version 2.02.01 Additions 2020/03/18 BCSO James Ma EXP $
+		TODO
+		  Task type can be independent search parameter, but Status is dependent on Type
+		  Create a datawindow to search by unit individually or by unit.
+		Version 2.01.04 Additions 2020/03/26 BCSO James Ma EXP $
+			- Added SQL Parameter for Searching by  Assigned Tasks by Officer/Unit.
+			- Added Datawindow Checkbox for
+
+		Version 2.01.03 Additions 2020/03/18 BCSO James Ma EXP $
 			- Fixed search by Task Type and Task Status to only select the chosen parameter and
 			not all incidents.
+
 
 		Version 2.01.02 Additions 2020/03/18 BCSO James Ma EXP $
 			- Add Search Parameter for Officer/Unit
@@ -103,7 +111,7 @@
 	<SQLParameter>HighlightBolo</SQLParameter>
 	<SQLParameter>HighlightMissingUCR</SQLParameter>
 	<SQLParameter>IncludeMapping</SQLParameter>
-	<SQLParameter>ShowTasks</SQLParameter>
+	<SQLParameter>TaskAssignedTo</SQLParameter>
 
 
 	<XSLTParameter>TimeRange</XSLTParameter>
@@ -119,6 +127,9 @@
 	<XSLTParameter>HighlightBolo</XSLTParameter>
 	<XSLTParameter>HighlightMissingUCR</XSLTParameter>
 	<XSLTParameter>IncludeMapping</XSLTParameter>
+	<XSLTParameter>TaskAssignedTo</XSLTParameter>
+	<XSLTParameter>TaskTypeG</XSLTParameter>
+	<XSLTParameter>TaskStatusG</XSLTParameter>
 
 
 	<ReportHeader>
@@ -157,7 +168,7 @@
 				<xsl:param name="ClearanceStatus" />
 				<xsl:param name="TaskStatus" />
 				<xsl:param name="TaskType" />
-				<xsl:param name="ShowTasks" />
+				<xsl:param name="TaskAssignedTo" />
 
 				<xsl:template match="/">
 
@@ -177,6 +188,22 @@
 						</xsl:call-template>
 					</xsl:variable>
 
+
+
+						<xsl:variable name="TaskPersonIds">
+							<xsl:call-template name="GetEntityIds">
+								<xsl:with-param name="Ids" select="$TaskAssignedTo" />
+								<xsl:with-param name="EntityNumber">1500</xsl:with-param>
+							</xsl:call-template>
+						</xsl:variable>
+
+						<xsl:variable name="TaskOrgUnitIds">
+							<xsl:call-template name="GetEntityIds">
+								<xsl:with-param name="Ids" select="$TaskAssignedTo" />
+								<xsl:with-param name="EntityNumber">1410</xsl:with-param>
+							</xsl:call-template>
+						</xsl:variable>
+
 					<xsl:variable name="OccWhereClause">
 						WHERE OCC.ACCDomain = '<xsl:value-of select="$ACCDomain" />'
 						<xsl:if test="$TimeRange = 'L12'"> AND OCC.ReportedTimeTZV2I &gt; 'nowNoOffset-12h'</xsl:if>
@@ -187,65 +214,143 @@
 						<xsl:if test="$TimeRange = 'L30D'"> AND OCC.ReportedTimeTZV2I &gt; 'nowNoOffset-30d'</xsl:if>
 						<xsl:if test="$TimeRange = 'RNG'"> AND OCC.ReportedTimeTZV2I = '[<xsl:value-of select="$StartTime" />, <xsl:value-of select="$EndTime" />]'</xsl:if>
 
-						<xsl:if test="$PersonIds !='' or $OrgUnitIds != ''">
-							AND(
-							<xsl:call-template name="ComposeWith">
-								<xsl:with-param name = "Separator"> OR </xsl:with-param>
-								<xsl:with-param name = "Strings">
-									<String>
-										<xsl:if test="$PersonIds != ''">
-											EXISTS(
-												SELECT Id FROM GOccInvGPerson offIv
-												WHERE LId = OCC.Id
-													AND offIv.RId IN (<xsl:value-of select="$PersonIds" />)
-													AND NOT EXISTS( SELECT Id FROM GOccInvGPerson
-														WHERE LId = OCC.Id
-															AND Id &lt;&gt; offIv.Id
-															AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
-													)
-											)
-
-										</xsl:if>
-									</String>
-									<String>
-										<xsl:if test="$OrgUnitIds != ''">
-											EXISTS(
-												SELECT Id FROM GOccInvGPerson offIv
-													WHERE LId = OCC.Id
-													AND NOT EXISTS(SELECT Id FROM GOccInvGPerson
-														WHERE LId = OCC.Id
-															AND Id &lt;&gt; offIv.Id
-															AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
-													)
-													AND EXISTS(
-														SELECT Id FROM GPersonOrgMemberGPerson
-														WHERE IsEffectiveAssignment = 1
-															AND RId = offIv.RId
-															AND LId IN (<xsl:value-of select =
-																                            "$OrgUnitIds" />)
-													)
-											)
-										</xsl:if>
-									</String>
-								</xsl:with-param>
-							</xsl:call-template>
-							)
-						</xsl:if>
-
-						<xsl:if test="$UnitCode">
+							<xsl:if test="$UnitCode">
 							AND (
 								EXISTS (
 									SELECT ID FROM GOccInvGPerson WHERE EXISTS (
-										SELECT Id FROM Person
+										SELECT Id FROM OrgPoliceUnit
 										WHERE <xsl:call-template name="MultiValueField">
 												<xsl:with-param name="FormField"><xsl:value-of select="$UnitCode" /></xsl:with-param>
 												<xsl:with-param name="DBField">EmployeeNumber</xsl:with-param>
 											</xsl:call-template>
-											AND AutoLink('GOccInvGPerson','Person')=1
+											AND AutoLink('GOccInvGPerson','OrgPoliceUnit')=1
 									) AND AutoLink('Goccurrence', 'GOccInvGPerson')=1
 								)
 							)
 						</xsl:if>
+
+							<xsl:if test="$PersonIds !='' or $OrgUnitIds != ''">
+								AND(
+								<xsl:call-template name="ComposeWith">
+									<xsl:with-param name = "Separator"> OR </xsl:with-param>
+									<xsl:with-param name = "Strings">
+										<String>
+											<xsl:if test="$PersonIds != ''">
+												EXISTS(
+													SELECT Id FROM GOccInvGPerson offIv
+													WHERE LId = OCC.Id
+														AND offIv.RId IN (<xsl:value-of select="$PersonIds" />)
+														AND NOT EXISTS( SELECT Id FROM GOccInvGPerson
+															WHERE LId = OCC.Id
+																AND Id &lt;&gt; offIv.Id
+																AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
+														)
+												)
+
+											</xsl:if>
+										</String>
+										<String>
+											<xsl:if test="$OrgUnitIds != ''">
+												EXISTS(
+													SELECT Id FROM GOccInvGPerson offIv
+														WHERE LId = OCC.Id
+														AND NOT EXISTS(SELECT Id FROM GOccInvGPerson
+															WHERE LId = OCC.Id
+																AND Id &lt;&gt; offIv.Id
+																AND CreTimeTZV2I &gt; offIv.CreTimeTZV2I
+														)
+														AND EXISTS(
+															SELECT Id FROM GPersonOrgMemberGPerson
+															WHERE IsEffectiveAssignment = 1
+																AND RId = offIv.RId
+																AND LId IN (<xsl:value-of select =
+																	                            "$OrgUnitIds" />)
+														)
+												)
+											</xsl:if>
+										</String>
+									</xsl:with-param>
+								</xsl:call-template>
+								)
+							</xsl:if>
+
+
+
+							<xsl:if test="$TaskPersonIds !='' or $TaskOrgUnitIds != ''">
+								AND(
+								<xsl:call-template name="ComposeWith">
+									<xsl:with-param name = "Separator"> OR </xsl:with-param>
+									<xsl:with-param name = "Strings">
+										<String>
+											<xsl:if test="$TaskPersonIds != ''">
+												EXISTS(
+													SELECT GTask.Id FROM TaskSubjectGOccurrence
+														LEFT JOIN (GTask Task
+															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
+													WHERE TaskSubjectGOccurrence.RId = Occ.Id
+														AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskPersonIds" />)
+												<xsl:if test="$TaskType != ''">
+												AND (<xsl:call-template name="CreateConditionFromSet">
+													<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+													<xsl:with-param name="FieldValue" select="$TaskType" />
+												</xsl:call-template>)
+												</xsl:if>
+												<xsl:if test="$TaskStatus != ''">
+												AND (<xsl:call-template name="CreateConditionFromSet">
+													<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+													<xsl:with-param name="FieldValue" select="$TaskStatus" />
+												</xsl:call-template>)
+											</xsl:if>
+													AND NOT EXISTS (GTask.Id FROM TaskSubjectGOccurrence
+																		LEFT JOIN (GTask Task
+																			LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
+																			AND GTask.Id &lt;&gt; TaskInvolvement.Id
+																			AND CreTimeTZV2I &gt; TaskInvolvement.CreTimeTZv2I
+																		)
+												)
+
+											</xsl:if>
+										</String>
+										<String>
+											<xsl:if test="$TaskOrgUnitIds != ''">
+												EXISTS(
+													SELECT GTask.Id FROM TaskSubjectGOccurrence
+														LEFT JOIN (GTask Task
+															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
+														WHERE TaskSubjectGOccurrence.RId = Occ.Id
+														<!--Checks the cases assigned to Unit (ie. General Investigations, Violent Crimes)-->
+
+														<!--AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskOrgUnitIds" />)-->
+														<!--Searches Tasks assigned to Individuals assigned to selected Unit -->
+														<xsl:if test="$TaskType != ''">
+														AND (<xsl:call-template name="CreateConditionFromSet">
+															<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+															<xsl:with-param name="FieldValue" select="$TaskType" />
+														</xsl:call-template>)
+														</xsl:if>
+														<xsl:if test="$TaskStatus != ''">
+														AND (<xsl:call-template name="CreateConditionFromSet">
+															<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+															<xsl:with-param name="FieldValue" select="$TaskStatus" />
+														</xsl:call-template>)
+														</xsl:if>
+														<!--Searches all assigned officers to the selected Unit-->
+														AND EXISTS(
+															SELECT Id FROM GPersonOrgMemberGPerson
+															WHERE IsEffectiveAssignment = 1
+																AND RId = TaskInvolvement.RId
+																AND LId IN (<xsl:value-of select =
+																                            "$TaskOrgUnitIds" />)
+														)
+													)
+											</xsl:if>
+										</String>
+									</xsl:with-param>
+								</xsl:call-template>
+								)
+							</xsl:if>
+
+
 
 						<xsl:if test="$AreaLevel5">
 							AND <xsl:call-template name="MultiValueField">
@@ -461,20 +566,32 @@
 					AND HierarchicalResult = 1
 					ORDER BY OCC.reportedtimetzv2g ASC, OCC.ID ASC
 
-					<!--SELECT OCC.Id AS OccTaskId, Task.Id, Task.TaskAssignedToRId_L-->
-					<!--FROM GOccurrence OCC-->
-					<!--	LEFT JOIN (TaskSubjectGOccurrence-->
-					<!--		LEFT JOIN (GTask Task-->
-					<!--			LEFT JOIN (TaskAssignedTo-->
-					<!--				LEFT JOIN (Person Officer-->
-					<!--					-->
-					<!--					)-->
-					<!--				)-->
-					<!--		  ) ON Task.Id = TaskSubjectGOccurrence.LId-->
 
-					<!--	<xsl:value-of select="$OccWhereClause" />-->
-					<!--AND HierarchicalResult = 1-->
-
+					SELECT  Task.Id AS Task_Id, Task.TaskAssignedToRId_L AS TaskAssigned, OrgPoliceUnit.Id__0 AS Unit
+					FROM TaskSubjectGOccurrence
+						LEFT JOIN (GTask Task
+								LEFT JOIN (TaskAssignedTo
+										LEFT JOIN (Person Officer
+										LEFT JOIN (GPersonOrgMemberGPerson
+										LEFT JOIN OrgPoliceUnit ON OrgPoliceUnit.Id = GPersonOrgMemberGPerson.LId)
+										ON GPersonOrgMemberGPerson.RId = Officer.Id
+										AND GPersonOrgMemberGPerson.IsEffectiveAssignment = 1) ON Officer.Id = TaskAssignedTo.RId
+								) ON TaskAssignedTo.LId = Task.Id
+							)ON Task.Id = TaskSubjectGOccurrence.LId
+								<xsl:if test="string-length($TaskType) &gt; 0">
+								AND (<xsl:call-template name="CreateConditionFromSet">
+									<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+									<xsl:with-param name="FieldValue" select="$TaskType" />
+								</xsl:call-template>)
+								</xsl:if>
+									<xsl:if test="string-length($TaskStatus) &gt; 0">
+								AND (<xsl:call-template name="CreateConditionFromSet">
+									<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+									<xsl:with-param name="FieldValue" select="$TaskStatus" />
+								</xsl:call-template>)
+								</xsl:if>
+						LEFT JOIN GOccurrence OCC
+					<xsl:value-of select="$OccWhereClause" />
 
 					SELECT OCC.id AS OccRPOId, officer.label AS RPO_Officer, OrgPoliceUnit.Id__0, OrgPoliceUnit__LabelEmpl__0
 					FROM GOccurrence OCC
@@ -802,6 +919,9 @@
 				<xsl:param name="IncludeMapping" />
 				<xsl:param name="OccurrenceTypeRId" />
 				<xsl:param name="OccurrenceClassification" />
+				<xsl:param name="TaskAssignedTo" />
+				<xsl:param name="TaskTypeG" />
+				<xsl:param name="TaskStatusG" />
 
 				<xsl:template match="/">
 					<HTML>
@@ -928,6 +1048,8 @@
 								<xsl:with-param name="SpecDesc4"><xsl:if test="$UnitCode">Unit Code: <xsl:value-of select="$UnitCode" /></xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc5"><xsl:if test="$ReportableOnly = '1'">Only show reportables</xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc6"><xsl:if test="$DispatchOnly = '1'">Only show dispatched calls</xsl:if></xsl:with-param>
+								<xsl:with-param name="SpecDesc7">Searched By: <xsl:choose>
+								<xsl:when test="$TaskTypeG != '' and $TaskStatusG != '' "><xsl:value-of select="$TaskStatusG" />, <xsl:value-of select="$TaskTypeG" /> </xsl:when> </xsl:choose></xsl:with-param>
 							</xsl:call-template>
 
 							<!-- Report body -->
@@ -1015,16 +1137,19 @@
 														</xsl:when>
 													</xsl:choose>
 												</td>
-												<xsl:variable name= "Task_Id" select = "DATASET/ROW[TaskId]" />
+												<xsl:variable name= "T_Id" select = "DATASET/ROW[TaskId]" />
 												<td style="font-size: 10px;">
-													<xsl:for-each select="$Task_Id">
+													<xsl:if test = "$TaskTypeG != '' ">
+													<xsl:for-each select="$T_Id">
 														<xsl:value-of select="TaskType" />
 													</xsl:for-each>
+													</xsl:if>
 												</td>
 												<td style="font-size: 10px;">
-													<xsl:for-each select="$Task_Id">
+													<xsl:if test="$TaskStatusG != ''">
+													<xsl:for-each select="$T_Id">
 														<xsl:value-of select="TaskStatus" />
-													</xsl:for-each>
+													</xsl:for-each></xsl:if>
 												</td>
 												<td style="font-size: 10px;">
 													<xsl:choose>
@@ -1043,7 +1168,7 @@
 													</xsl:choose>
 												</td>
 											<td style="font-size: 10px;">
-													<xsl:for-each select="$Task_Id">
+													<xsl:for-each select="$T_Id">
 														<xsl:value-of select="TaskAssignedTo" />
 													</xsl:for-each>
 												</td>
@@ -1308,6 +1433,7 @@
 					<xsl:param name="SpecDesc4" />
 					<xsl:param name="SpecDesc5" />
 					<xsl:param name="SpecDesc6" />
+					<xsl:param name="SpecDesc7" />
 					<div style="border-style:solid;border-width:1px;padding:0.25cm" >
 						<table border="0"><tr><td width="80px">
 							<div id="logo1" class="doprint"><xsl:call-template name="loadImageLogoBW" /></div>
@@ -1327,6 +1453,7 @@
 										<xsl:if test="$SpecDesc4"><xsl:value-of select="$SpecDesc4" /><br /></xsl:if>
 										<xsl:if test="$SpecDesc5"><xsl:value-of select="$SpecDesc5" /><br /></xsl:if>
 										<xsl:if test="$SpecDesc6"><xsl:value-of select="$SpecDesc6" /></xsl:if>
+										<xsl:if test="$SpecDesc6"><xsl:value-of select="$SpecDesc7" /></xsl:if>
 									</td>
 								</tr>
 								<tr>
@@ -1387,6 +1514,11 @@
 				label = "Time Range:";
 				default="L24";
 			};
+			declare TaskAssigned checkbox
+			{
+				label = "Search by Task Assigned";
+				default = "0";
+			};
 
 			declare StartTime edit
 			{
@@ -1434,13 +1566,21 @@
 			declare OfficerUnitRId_L edit
 			{
 				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
-				label = "Officer/unit:";
+				label = "Officer/unit: ";
 			};
 			declare OfficerUnitRId edit
 			{
 				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId";
 			};
-
+				declare TaskAssignedToRId_L edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer2RId_L";
+				label = "Officer/Unit:  ";
+			};
+			declare TaskAssignedToRId edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer2RId";
+			};
 			declare OccurrenceTypeRId_L edit
 			{
 				tag = "EntityName=Occurrence;FieldName=OccurrenceStdOccTypeRId_L"; label = "Incident type:";
@@ -1474,6 +1614,16 @@
 			{
 				label = "Include Mapping Options:";
 				default = "0";
+			};
+			declare TaskTypeG set
+			{
+				label = "Task type:";
+				tag = "EntityName=GTask;FieldName=Type1G";
+			};
+			declare TaskStatusG set
+			{
+				label = "Task status:";
+				tag= "EntityName=GTask;FieldName=StatusG";
 			};
 
 			declare ddlb_accdomain choicelist {label="Domain:";};
@@ -1552,8 +1702,9 @@
 				break;
 
 				field IncludeMapping {colspan=1;};
-				skipcol;
+				field TaskAssigned;
 				break;
+
 
 				griddef
 				{
@@ -1572,8 +1723,19 @@
 					fieldwidth = 1000;
 					leftmargin = 100;
 				};
-				field OfficerUnitRId_L;
+				field OfficerUnitRId_L {visible = expression "if (isNull(TaskAssigned), 1, if (TaskAssigned = '0', 1, 0 ))";};
 				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 300;
+					fieldwidth = 1000;
+					leftmargin = 100;
+				};
+				field TaskAssignedToRId_L {visible = expression "if (isNull(TaskAssigned), 0, if (TaskAssigned = '1', 1, 0 ))";};
+				field TaskAssignedToRId { visible = false; property CreateControlOnDW ="1"; };
 				break;
 
 				griddef
@@ -1586,6 +1748,9 @@
 				field OccurrenceTypeRId_L;
 				field OccurrenceTypeRId { visible = false; property CreateControlOnDW = "1"; };
 				field OccurrenceClassification;
+				field TaskTypeG;
+				field TaskStatusG;
+				break;
 
 				griddef
 				{
@@ -1663,8 +1828,10 @@
 				{
 					visible = false;
 				};
-
-				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
+				computedfield TaskType { visible = false; expression = "if (len(TaskTypeG) > 0, md_GetDBValueFromSetByName('GTask', 'Type1G', f_NoNull(TaskTypeG)), '')";};
+				computedfield TaskStatus { visible = false; expression = "if (len(TaskStatusG) > 0, md_GetDBValueFromSetByName('GTask', 'StatusG', f_NoNull(TaskStatusG)), '')";};
+				computedfield OfficerUnitIds { visible = false; expression = "if(TaskAssigned = '1' ,f_ReplaceAll(OfficerUnitRId, '~n', ';') )"; };
+				computedfield TaskAssignedTo { visible = false; expression = "f_ReplaceAll(TaskAssignedToRId, '~n', ';')"; };
 			};
 
 			group Parameter_Group "ParameterGroup"

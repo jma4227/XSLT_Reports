@@ -1,5 +1,4 @@
-
-declare FieldStatus edit
+	declare FieldStatus edit
 			{
 				size = 1000;
 				default = "GGGGGGGGG";
@@ -63,7 +62,24 @@ declare FieldStatus edit
 				label = "Only Show Dispatch Calls:";
 				default = "0";
 			};
-
+			declare OfficerUnitRId_L edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
+				label = "Officer/unit:";
+			};
+			declare OfficerUnitRId edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId";
+			};
+				declare TaskAssignedToRId_L edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L";
+				label = "Task Assigned to Officer/Unit: ";
+			};
+			declare TaskAssignedToRId edit
+			{
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId";
+			};
 			declare OccurrenceTypeRId_L edit
 			{
 				tag = "EntityName=Occurrence;FieldName=OccurrenceStdOccTypeRId_L"; label = "Incident type:";
@@ -96,7 +112,7 @@ declare FieldStatus edit
 			declare IncludeMapping checkbox
 			{
 				label = "Include Mapping Options:";
-				default = "1";
+				default = "0";
 			};
 
 			declare ddlb_accdomain choicelist {label="Domain:";};
@@ -191,7 +207,29 @@ declare FieldStatus edit
 				griddef
 				{
 					columns = 2;
-					labelwidth = 400;
+					labelwidth = 300;
+					fieldwidth = 1000;
+					leftmargin = 100;
+				};
+				field OfficerUnitRId_L;
+				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 300;
+					fieldwidth = 1000;
+					leftmargin = 100;
+				};
+				field TaskAssignedToRId_L;
+				field TaskAssignedToRId { visible = false; property CreateControlOnDW ="1"; };
+				break;
+
+				griddef
+				{
+					columns = 2;
+					labelwidth = 500;
 					fieldwidth = 400;
 					leftmargin = 100;
 				};
@@ -202,9 +240,9 @@ declare FieldStatus edit
 				griddef
 				{
 					columns = 2;
-					labelwidth = 450;
-					fieldwidth = 450;
-					leftmargin = 200;
+					labelwidth = 400;
+					fieldwidth = 400;
+					leftmargin = 100;
 				};
 
 				text WarningDates // only visible when StartTime > EndTime
@@ -276,6 +314,8 @@ declare FieldStatus edit
 					visible = false;
 				};
 
+				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
+				computedfield TaskAssignedTo { visible = false; expression = "f_ReplaceAll(TaskAssignedToRId, '~n', ';')"; };
 			};
 
 			group Parameter_Group "ParameterGroup"
