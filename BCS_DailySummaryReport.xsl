@@ -5,7 +5,8 @@
 		  Create a datawindow to search by unit individually or by unit.
 		Version 2.01.04 Additions 2020/03/26 BCSO James Ma EXP $
 			- Added SQL Parameter for Searching by  Assigned Tasks by Officer/Unit.
-			- Added Datawindow Checkbox for
+			- Added Datawindow Checkbox to search assigned tasks by unit
+			- Assigned to cell is linked with Unit/task assigned
 
 		Version 2.01.03 Additions 2020/03/18 BCSO James Ma EXP $
 			- Fixed search by Task Type and Task Status to only select the chosen parameter and
@@ -130,6 +131,7 @@
 	<XSLTParameter>TaskAssignedTo</XSLTParameter>
 	<XSLTParameter>TaskTypeG</XSLTParameter>
 	<XSLTParameter>TaskStatusG</XSLTParameter>
+	<XSLTParameter>OccurrenceTypeRId</XSLTParameter>
 
 
 	<ReportHeader>
@@ -387,14 +389,10 @@
 						<xsl:if test="$DispatchOnly = '1'">
 							AND o2.dispatchocctypeg IS NOT NULL
 						</xsl:if>
-
-						<xsl:if test = "$OccurrenceTypeRId != ''">
-							AND o2.OccurrenceStdOccTypeRId =
-							 <xsl:call-template name = "StuffSQL">
-									<xsl:with-param name = "ToStuff"
-							                select = "$OccurrenceTypeRId"/>
-							</xsl:call-template>
+							<xsl:if test="$OccurrenceTypeRId">
+							AND o2.OccurrenceStdOccTypeRId = <xsl:call-template name="StuffSQL"><xsl:with-param name="ToStuff" select="$OccurrenceTypeRId" /></xsl:call-template>
 						</xsl:if>
+
 
 						<xsl:if test = "$OccurrenceClassification != ''">
 							AND
@@ -535,9 +533,9 @@
 
 				<!--Incidents-->
                     SELECT OCC.id AS OccId, OCC.OccurrenceFileNo AS OccNo, OCC.reportedtimetzv2g AS ReportedTime, o2.dispatchocctypeg AS DispType,
-                     OCC.OccurrenceType AS OccType, o2.ClassificationG AS OccClass, OCC.UCRClearanceStatusG AS Status, OCC.SummaryOneLine as OccSummary,
+                     OCC.OccurrenceType AS OccType, o2.ClassificationG AS OccClass, OCC.UCRClearanceStatusG AS Status, OCC.SummaryOneLine as OccSummary, o2.OccurrenceStdOccTypeRId,
                      Occ.ESAreaLevel3 as DutyLoc,
-                      Task.Id AS TaskId, Task.TaskNumber AS TaskNo, Task.StatusG AS TaskStatus, Task.Type1G AS TaskType, Task.TaskAssignedToRId_L AS TaskAssignedTo, Task.TaskAssignedToRId
+                      Task.Id__0 AS TaskId, Task.TaskNumber__0 AS TaskNo, Task.StatusG__0 AS TaskStatus, Task.Type1G__0 AS TaskType
 					FROM GOccurrence OCC
 						<!-- Tasks (subject of) -->
 							LEFT JOIN (TaskSubjectGOccurrence
@@ -557,11 +555,10 @@
 								</xsl:if>
 						LEFT JOIN Occurrence o2
 					<xsl:value-of select="$OccWhereClause" />
-					AND HierarchicalResult = 1
 					ORDER BY OCC.reportedtimetzv2g ASC, OCC.ID ASC
 
 
-					SELECT  Task.Id AS Task_Id, Task.TaskAssignedToRId_L AS TaskAssigned, OrgPoliceUnit.Id__0 AS Unit
+					SELECT OCC.Id AS OccTaskId, Task.Id AS Task_Id, Task.TaskAssignedToRId_L AS TaskAssigned, OrgPoliceUnit.Id__0 AS Unit
 					FROM TaskSubjectGOccurrence
 						LEFT JOIN (GTask Task
 								LEFT JOIN (TaskAssignedTo
@@ -572,19 +569,8 @@
 										AND GPersonOrgMemberGPerson.IsEffectiveAssignment = 1) ON Officer.Id = TaskAssignedTo.RId
 								) ON TaskAssignedTo.LId = Task.Id
 							)ON Task.Id = TaskSubjectGOccurrence.LId
-								<xsl:if test="string-length($TaskType) &gt; 0">
-								AND (<xsl:call-template name="CreateConditionFromSet">
-									<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
-									<xsl:with-param name="FieldValue" select="$TaskType" />
-								</xsl:call-template>)
-								</xsl:if>
-									<xsl:if test="string-length($TaskStatus) &gt; 0">
-								AND (<xsl:call-template name="CreateConditionFromSet">
-									<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
-									<xsl:with-param name="FieldValue" select="$TaskStatus" />
-								</xsl:call-template>)
-								</xsl:if>
-						LEFT JOIN GOccurrence OCC
+						LEFT JOIN (GOccurrence OCC
+							LEFT JOIN Occurrence o2)
 					<xsl:value-of select="$OccWhereClause" />
 
 					SELECT OCC.id AS OccRPOId, officer.label AS RPO_Officer, OrgPoliceUnit.Id__0, OrgPoliceUnit__LabelEmpl__0
@@ -938,13 +924,13 @@
 							var summaryList = new Array(<xsl:value-of select="$TotalCount" />);
 							var occList = new Array(<xsl:value-of select="$TotalCount" />);
 
-							function fnFormatDetails ( nTr )
+								function fnFormatDetails ( nTr )
 							{
 								var aData = oTable.fnGetData( nTr );
 								var sOut = "";
 								var i;
 								for (i in occList) {
-									if (occList[i] == aData[1].substring(64, 74)) { sOut = '<span style="font-size:10px;">' + summaryList[i] + '</span>'; break; }
+									if (occList[i] == aData[1].substring(64, 76)) { sOut = '<tr style="font-size: 10px;"><td>'+summaryList[i]+'</td></tr>'; break; }
 								}
 								return sOut;
 							}
@@ -965,7 +951,7 @@
 
 								var nCloneTh = document.createElement( 'th' );
 								var nCloneTd = document.createElement( 'td' );
-								nCloneTd.innerHTML = '<img src="C:\Users\jm33149\Pictures\iconfinder_double-arrow-down_383153.png" alt="" />';
+								nCloneTd.innerHTML = '<img src="C:\Users\jm33149\Desktop\BCS_XSLT\icons\doubledownarrow.gif" alt="" />';
 								nCloneTd.className = "noprint";
 								nCloneTh.className = "noprint";
 								nCloneTd.setAttribute('style', 'text-align: center; width: 20px;');
@@ -996,20 +982,23 @@
 										null, null, null, null, null, null, null
 									],
 									"aaSorting": [[3, 'asc']],
-									"bPaginate": false
+									"bPaginate": false,
+									"bsortClasses": false
 								});
 
 								$('td img', oTable.fnGetNodes() ).each( function () {
 									$(this).click( function () {
 										var nTr = this.parentNode.parentNode;
+
 										if ( this.src.match('doubleuparrow') )
 										{
-											this.src = "http://oppweb.sgc.gov.on.ca/opp/rmsinfopath/Niche/images/doubledownarrow.gif";
+											this.src = "C:\Users\jm33149\Desktop\BCS_XSLT\icons\doubledownarrow.gif";
 											oTable.fnClose( nTr );
+
 										}
 										else
 										{
-											this.src = "http://oppweb.sgc.gov.on.ca/opp/rmsinfopath/Niche/images/doubleuparrow.gif";
+											this.src = "C:\Users\jm33149\Desktop\BCS_XSLT\icons\doubleuparrow.gif";
 											oTable.fnOpen( nTr, fnFormatDetails(nTr), 'details' );
 										}
 									} );
@@ -1059,9 +1048,9 @@
 								<table id="dailySummary" class="display" border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
 									<thead>
 										<tr>
-											<th style="font-size: 10px;">Occurrence</th>
+											<th style="font-size: 10px;">Incident</th>
 											<xsl:if test="$UnitCode"><!-- Kept here just incase need to move Duty Loc back --></xsl:if>
-											<th style="font-size: 10px;">Duty</th>
+											<th style="font-size: 10px;">District/RA</th>
 											<th style="font-size: 10px;">Reported Time</th>
 											<th style="font-size: 10px;">Dispatch Type</th>
 											<th style="font-size: 10px;">Incident Type</th>
@@ -1077,6 +1066,7 @@
 										<xsl:for-each select="/DATASETLIST/DATASET/ROW[OccId]">
 											<!-- Get Occurrence Id-->
 											<xsl:variable name="O_Id"><xsl:value-of select="OccId" /></xsl:variable>
+
 											<tr>
 												<xsl:choose>
 													<xsl:when test="$HighlightBolo = 1 and count(/DATASETLIST/DATASET/ROW[BoloOccId = $O_Id]) > 0">
@@ -1133,17 +1123,14 @@
 												</td>
 												<xsl:variable name= "T_Id" select = "DATASET/ROW[TaskId]" />
 												<td style="font-size: 10px;">
-													<xsl:if test = "$TaskTypeG != '' ">
-													<xsl:for-each select="$T_Id">
-														<xsl:value-of select="TaskType" />
-													</xsl:for-each>
-													</xsl:if>
+														<xsl:if test="$TaskTypeG != ''">
+															<xsl:value-of select="TaskType" />
+														</xsl:if>
 												</td>
 												<td style="font-size: 10px;">
-													<xsl:if test="$TaskStatusG != ''">
-													<xsl:for-each select="$T_Id">
-														<xsl:value-of select="TaskStatus" />
-													</xsl:for-each></xsl:if>
+														<xsl:if test="$TaskStatusG != ''">
+															<xsl:value-of select="TaskStatus" />
+														</xsl:if>
 												</td>
 												<td style="font-size: 10px;">
 													<xsl:choose>
@@ -1162,16 +1149,13 @@
 													</xsl:choose>
 												</td>
 											<td style="font-size: 10px;">
-													<xsl:for-each select="$T_Id">
-														<xsl:value-of select="TaskAssignedTo" />
-													</xsl:for-each>
-												</td>
+														<span style="font-size: 10px;"><xsl:value-of select="/DATASETLIST/DATASET/ROW[OccTaskId = $O_Id]/TaskAssigned"/></span>												</td>
 											</tr>
 										</xsl:for-each>
 									</tbody>
 								</table>
 							</div>
-							<div class="ReportHeader2" style="text-align: center; margin-top: 20px;">Total Number of Occurrences: <xsl:value-of select="$TotalCount" /></div>
+							<div class="ReportHeader2" style="text-align: center; margin-top: 20px;">Total Number of Incidents: <xsl:value-of select="$TotalCount" /></div>
 
 							<xsl:if test="$IncludeMapping = '1'">
 								<div style="text-align: center; font-size: 10pt; margin-top: 10px;">
@@ -1376,6 +1360,9 @@
 							img {
 								border-style: none;
 							}
+							th, td {
+								padding: 2px 2px;
+							}
 						</xsl:text>
 					</xsl:element>
 				</xsl:template>
@@ -1387,7 +1374,7 @@
 
 				<xsl:template name="loadCSSFiles">
 					<style type="text/css" title="currentStyle">
-						@import "C:\Users\jm33149\OneDrive\NicheRMS\XSLT_Reports\Niche_XSLT\JavaScript\dataTables\css\datatable.css";
+						<link rel="stylesheet" type="text/css" href="C:\Users\jm33149\Desktop\BCS_XSLT\JavaScript\dataTables\css\datatable.css"/>
 					</style>
 				</xsl:template>
 
@@ -1395,13 +1382,13 @@
 					<img src="http://oppweb.sgc.gov.on.ca/opp/rmsinfopath/Niche/images/logo_bw.jpg" height="60px" width="75px" alt="OPP Logo" />
 				</xsl:template>
 				<xsl:template name="loadImageLogoColour">
-					<img src="C:\Users\jm33149\Pictures\patch.jpg" height="60px" width="65px" alt="OPP Logo" />
+					<img src="C:\Users\jm33149\Desktop\BCS_XSLT\icons\badge_patch.png" height="60px" width="65px" alt="OPP Logo" />
 				</xsl:template>
 				<xsl:template name="loadImageDoubleDownArrow">
-					<img src="C:\Users\jm33149\Pictures\iconfinder_double-arrow-down_383153.png" height="16px" width="16px" alt="" />
+					<img src="C:\Users\jm33149\Desktop\BCS_XSLT\icons\doubledownarrow.gif" height="16px" width="16px" alt="" />
 				</xsl:template>
 				<xsl:template name="loadImageDoubleUpArrow">
-					<img src="C:\Users\jm33149\Pictures\iconfinder_double-arrow-down_383153.png" height="16px" width="16px" alt="" />
+					<img src="C:\Users\jm33149\Desktop\BCS_XSLT\icons\doubleuparrow.gif" height="16px" width="16px" alt="" />
 				</xsl:template>
 
 
@@ -1510,7 +1497,7 @@
 			};
 			declare TaskAssigned checkbox
 			{
-				label = "Search by Task Assigned";
+				label = "Search ";
 				default = "0";
 			};
 
@@ -1559,8 +1546,8 @@
 			};
 			declare OfficerUnitRId_L edit
 			{
-				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L;UseSearchSelector=1";
-				label = "Officer/unit: ";
+				tag = "EntityName=GPersonArrest;FieldName=GPCCustOfficer1RId_L;";
+				label = "Unit: ";
 			};
 			declare OfficerUnitRId edit
 			{
@@ -1583,10 +1570,11 @@
 			{
 			    tag = "EntityName=Occurrence;FieldName=OccurrenceStdOccTypeRId";
 			};
-			declare OccurrenceClassification set
+			declare OccurrenceClassificationG set
 			{
 				 tag = "EntityName=Occurrence;FieldName=ClassificationG"; label = "Incident classification";
 			};
+			declare ClearanceStatusG set{ tag = "EntityName=Occurrence;FieldName=UCRClearanceStatusG"; label = "Incident status:"; };
 			declare AdditionalInfo edit
 			{
 				label = "Notes: ";
@@ -1677,7 +1665,7 @@
 				break;
 
 				field EndTime{visible = expression "if (isNull(TimeRange), 0, if (TimeRange = 'RNG', 1, 0))";};
-				field UnitCode {visible = expression "if(f_GetProperty('Person.EmployeeNumber.Visible', '', '') <> '0', 1, 0)";};
+				field UnitCode {visible = false; };
 				break;
 
 				griddef
@@ -1718,8 +1706,8 @@
 					fieldwidth = 1000;
 					leftmargin = 100;
 				};
-				field OfficerUnitRId_L {visible = expression "if (isNull(TaskAssigned), 1, if (TaskAssigned = '0', 1, 0 ))";};
-				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
+				field TaskAssignedToRId_L {visible = expression "if (isNull(TaskAssigned), 1, if (TaskAssigned = '0', 1, 0 ))";};
+				field TaskAssignedToRId { visible = false; property CreateControlOnDW ="1"; };
 				break;
 
 				griddef
@@ -1729,10 +1717,9 @@
 					fieldwidth = 1000;
 					leftmargin = 100;
 				};
-				field TaskAssignedToRId_L {visible = expression "if (isNull(TaskAssigned), 0, if (TaskAssigned = '1', 1, 0 ))";};
-				field TaskAssignedToRId { visible = false; property CreateControlOnDW ="1"; };
+				field OfficerUnitRId_L {visible = expression "if (isNull(TaskAssigned), 0, if (TaskAssigned = '1', 1, 0 ))";};
+				field OfficerUnitRId { visible = false; property CreateControlOnDW ="1"; };
 				break;
-
 				griddef
 				{
 					columns = 2;
@@ -1742,7 +1729,13 @@
 				};
 				field OccurrenceTypeRId_L;
 				field OccurrenceTypeRId { visible = false; property CreateControlOnDW = "1"; };
-				field OccurrenceClassification;
+				field OccurrenceClassificationG;
+				break;
+				field ClearanceStatusG;
+				skipcol;
+
+				break;
+
 				field TaskTypeG;
 				field TaskStatusG;
 				break;
@@ -1827,6 +1820,16 @@
 				computedfield TaskStatus { visible = false; expression = "if (len(TaskStatusG) > 0, md_GetDBValueFromSetByName('GTask', 'StatusG', f_NoNull(TaskStatusG)), '')";};
 				computedfield OfficerUnitIds { visible = false; expression = "f_ReplaceAll(OfficerUnitRId, '~n', ';')"; };
 				computedfield TaskAssignedTo { visible = false; expression = "f_ReplaceAll(TaskAssignedToRId, '~n', ';')"; };
+				computedfield ClearanceStatus
+				{
+					visible = false;
+					expression ="if (len(ClearanceStatusG) > 0, md_GetDBValueFromSetByName('Occurrence', 'UCRClearanceStatusG', f_NoNull(ClearanceStatusG)), '')";
+				};
+				computedfield OccurrenceClassification
+				{
+					visible = false;
+					expression ="if (len(OccurrenceClassificationG) > 0, md_GetDBValueFromSetByName('Occurrence', 'ClassificationG', f_NoNull(ClassificationG)), '')";
+				};
 			};
 
 			group Parameter_Group "ParameterGroup"
