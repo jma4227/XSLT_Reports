@@ -3,6 +3,18 @@
 		TODO
 		  Task type can be independent search parameter, but Status is dependent on Type
 		  Create a datawindow to search by unit individually or by unit.
+
+		  Version 2.01.05 Additions 2020/03/31 BCSO James Ma EXP $
+		    - Add statistics box at top of page. This statistics box can be either officer or by
+		    Assigned Unit.
+
+		    - Fix Search parameter for $TaskAssignedTo $TaskType & TaskStatus. SQL parameters
+		    needed a choose statement to properly execute search parameters.
+
+		    - Add correction to datatables JS by adding extra 'null' in aoColumns options. it is
+		    added because of the 'clone' th and td variables that are in the datatables functions
+
+
 		Version 2.01.04 Additions 2020/03/26 BCSO James Ma EXP $
 			- Added SQL Parameter for Searching by  Assigned Tasks by Officer/Unit.
 			- Added Datawindow Checkbox to search assigned tasks by unit
@@ -277,77 +289,6 @@
 							</xsl:if>
 
 
-
-							<xsl:if test="$TaskPersonIds !='' or $TaskOrgUnitIds != ''">
-								AND(
-								<xsl:call-template name="ComposeWith">
-									<xsl:with-param name = "Separator"> OR </xsl:with-param>
-									<xsl:with-param name = "Strings">
-										<String>
-											<xsl:if test="$TaskPersonIds != ''">
-												EXISTS(
-													SELECT GTask.Id FROM TaskSubjectGOccurrence
-														LEFT JOIN (GTask Task
-															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
-													WHERE TaskSubjectGOccurrence.RId = Occ.Id
-														AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskPersonIds" />)
-												<xsl:if test="$TaskType != ''">
-												AND (<xsl:call-template name="CreateConditionFromSet">
-													<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
-													<xsl:with-param name="FieldValue" select="$TaskType" />
-												</xsl:call-template>)
-												</xsl:if>
-												<xsl:if test="$TaskStatus != ''">
-												AND (<xsl:call-template name="CreateConditionFromSet">
-													<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
-													<xsl:with-param name="FieldValue" select="$TaskStatus" />
-												</xsl:call-template>)
-											</xsl:if>
-												)
-
-											</xsl:if>
-										</String>
-										<String>
-											<xsl:if test="$TaskOrgUnitIds != ''">
-												EXISTS(
-													SELECT GTask.Id FROM TaskSubjectGOccurrence
-														LEFT JOIN (GTask Task
-															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
-														WHERE TaskSubjectGOccurrence.RId = Occ.Id
-														<!--Checks the cases assigned to Unit (ie. General Investigations, Violent Crimes)-->
-
-														<!--AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskOrgUnitIds" />)-->
-														<!--Searches Tasks assigned to Individuals assigned to selected Unit -->
-														<xsl:if test="$TaskType != ''">
-														AND (<xsl:call-template name="CreateConditionFromSet">
-															<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
-															<xsl:with-param name="FieldValue" select="$TaskType" />
-														</xsl:call-template>)
-														</xsl:if>
-														<xsl:if test="$TaskStatus != ''">
-														AND (<xsl:call-template name="CreateConditionFromSet">
-															<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
-															<xsl:with-param name="FieldValue" select="$TaskStatus" />
-														</xsl:call-template>)
-														</xsl:if>
-														<!--Searches all assigned officers to the selected Unit-->
-														AND EXISTS(
-															SELECT Id FROM GPersonOrgMemberGPerson
-															WHERE IsEffectiveAssignment = 1
-																AND RId = TaskInvolvement.RId
-																AND LId IN (<xsl:value-of select =
-																                            "$TaskOrgUnitIds" />)
-														)
-													)
-											</xsl:if>
-										</String>
-									</xsl:with-param>
-								</xsl:call-template>
-								)
-							</xsl:if>
-
-
-
 						<xsl:if test="$AreaLevel5">
 							AND <xsl:call-template name="MultiValueField">
 								<xsl:with-param name="FormField"><xsl:value-of select="$AreaLevel5" /></xsl:with-param>
@@ -413,45 +354,125 @@
 								</xsl:call-template>
 					</xsl:if>
 
-					<xsl:if test="$TaskType != '' or $TaskStatus != ''">
-					AND (
-						<xsl:call-template name="ComposeWith">
-							<xsl:with-param name="Separator"> AND </xsl:with-param>
-							<xsl:with-param name="Strings">
-								<String>
-									EXISTS (
-										SELECT TaskSubjectGOccurrence.Id
-											FROM TaskSubjectGOccurrence
-												LEFT JOIN GTask Task
-											WHERE TaskSubjectGOccurrence.RId = OCC.Id
-											<xsl:if test="$TaskType != ''">
-												AND (<xsl:call-template name="CreateConditionFromSet">
-													<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
-													<xsl:with-param name="FieldValue" select="$TaskType" />
-												</xsl:call-template>)
+					<!--<xsl:if test="$TaskType != '' or $TaskStatus != ''">-->
+					<!--AND (-->
+					<!--	<xsl:call-template name="ComposeWith">-->
+					<!--		<xsl:with-param name="Separator"> OR </xsl:with-param>-->
+					<!--		<xsl:with-param name="Strings">-->
+					<!--			<String>-->
+					<!--			<xsl:if test="$TaskType != ''">-->
+					<!--				EXISTS (-->
+					<!--					SELECT Task.Id-->
+					<!--						FROM TaskSubjectGOccurrence-->
+					<!--							LEFT JOIN GTask Task-->
+					<!--						WHERE TaskSubjectGOccurrence.RId = OCC.Id-->
+					<!--							AND (<xsl:call-template name="CreateConditionFromSet">-->
+					<!--								<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>-->
+					<!--								<xsl:with-param name="FieldValue" select="$TaskType" />-->
+					<!--							</xsl:call-template>)-->
+					<!--								<xsl:if test="$TaskStatus != ''">-->
+					<!--					AND (<xsl:call-template name="CreateConditionFromSet">-->
+					<!--						<xsl:with-param name="FieldName">Task.Status</xsl:with-param>-->
+					<!--						<xsl:with-param name="FieldValue" select="$TaskStatus" />-->
+					<!--					</xsl:call-template>)-->
+					<!--					</xsl:if>-->
+					<!--					)-->
+					<!--						</xsl:if>-->
+					<!--			</String>-->
+					<!--			<String>-->
+					<!--				<xsl:if test="$TaskStatus != ''">-->
+					<!--				EXISTS (-->
+					<!--					SELECT Task.Id-->
+					<!--					FROM TaskSubjectGOccurrence-->
+					<!--						LEFT JOIN GTask Task-->
+					<!--					WHERE TaskSubjectGOccurrence.RId = OCC.Id-->
+					<!--					AND (<xsl:call-template name="CreateConditionFromSet">-->
+					<!--						<xsl:with-param name="FieldName">Task.Status</xsl:with-param>-->
+					<!--						<xsl:with-param name="FieldValue" select="$TaskStatus" />-->
+					<!--					</xsl:call-template>)-->
+					<!--				)-->
+					<!--				</xsl:if>-->
+					<!--			</String>-->
+					<!--		</xsl:with-param>-->
+					<!--	</xsl:call-template>-->
+					<!--	)-->
+					<!--	</xsl:if>-->
+
+							<xsl:if test="$TaskPersonIds !='' or $TaskOrgUnitIds != ''">
+								AND(
+								<xsl:call-template name="ComposeWith">
+									<xsl:with-param name = "Separator"> OR </xsl:with-param>
+									<xsl:with-param name = "Strings">
+										<String>
+											<xsl:if test="$TaskPersonIds != ''">
+												EXISTS(
+													SELECT GTask.Id FROM TaskSubjectGOccurrence
+														LEFT JOIN (GTask Task
+															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
+															WHERE TaskSubjectGOccurrence.RId = Occ.Id
+															AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskPersonIds" />)
+
+
+													<xsl:if test="$TaskType != ''">
+													AND EXISTS (
+														SELECT Task.Id
+														FROM GTask Task
+															LEFT JOIN TaskSubjectGOccurrence
+															WHERE TaskSubjectGOccurrence.RId = OCC.Id
+															AND (<xsl:call-template name="CreateConditionFromSet">
+															<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+															<xsl:with-param name="FieldValue" select="$TaskType" />
+															</xsl:call-template>)
+															<xsl:if test="$TaskStatus != ''">
+																AND (<xsl:call-template name="CreateConditionFromSet">
+																	<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+																	<xsl:with-param name="FieldValue" select="$TaskStatus" />
+																	</xsl:call-template>)
+															</xsl:if>
+																AND NOT (ChoiceHasProperty(GTask.Status, 'cl_TaskStatus', 'clvIsCancelled', '1') = 1)
+														)
+														</xsl:if>
+												)
 											</xsl:if>
-											)
-								</String>
-								<String>
-									EXISTS (
-										SELECT TaskSubjectGOccurrence.Id
-										FROM TaskSubjectGOccurrence
-											LEFT JOIN GTask Task
-										WHERE TaskSubjectGOccurrence.RId = OCC.Id
-										<xsl:if test="$TaskStatus != ''">
-										AND (<xsl:call-template name="CreateConditionFromSet">
-											<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
-											<xsl:with-param name="FieldValue" select="$TaskStatus" />
-										</xsl:call-template>)
-									</xsl:if>
-									)
-								</String>
-							</xsl:with-param>
-						</xsl:call-template>
-						)
-						</xsl:if>
+										</String>
+										<String>
+											<xsl:if test="$TaskOrgUnitIds != ''">
+												EXISTS(
+													SELECT GTask.Id FROM TaskSubjectGOccurrence
+														LEFT JOIN (GTask Task
+															LEFT JOIN TaskAssignedTo TaskInvolvement ON TaskInvolvement.LId = Task.Id)
+														WHERE TaskSubjectGOccurrence.RId = Occ.Id
+														<!--Checks the cases assigned to Unit (ie. General Investigations, Violent Crimes)-->
 
-
+														AND TaskInvolvement.RId IN (<xsl:value-of select="$TaskOrgUnitIds" />)
+														<!--Searches Tasks assigned to Individuals assigned to selected Unit -->
+														<xsl:if test="$TaskType != ''">
+														AND (<xsl:call-template name="CreateConditionFromSet">
+															<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+															<xsl:with-param name="FieldValue" select="$TaskType" />
+														</xsl:call-template>)
+														</xsl:if>
+														<xsl:if test="$TaskStatus != ''">
+														AND (<xsl:call-template name="CreateConditionFromSet">
+															<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+															<xsl:with-param name="FieldValue" select="$TaskStatus" />
+														</xsl:call-template>)
+														</xsl:if>
+														<!--Searches all assigned officers to the selected Unit-->
+														AND EXISTS(
+															SELECT Id FROM GPersonOrgMemberGPerson
+															WHERE IsEffectiveAssignment = 1
+																AND RId = TaskInvolvement.RId
+																AND LId IN (<xsl:value-of select =
+																                            "$TaskOrgUnitIds" />)
+														)
+													)
+											</xsl:if>
+										</String>
+									</xsl:with-param>
+								</xsl:call-template>
+								)
+							</xsl:if>
 
 					</xsl:variable>
 
@@ -535,11 +556,15 @@
                     SELECT OCC.id AS OccId, OCC.OccurrenceFileNo AS OccNo, OCC.reportedtimetzv2g AS ReportedTime, o2.dispatchocctypeg AS DispType,
                      OCC.OccurrenceType AS OccType, o2.ClassificationG AS OccClass, OCC.UCRClearanceStatusG AS Status, OCC.SummaryOneLine as OccSummary, o2.OccurrenceStdOccTypeRId,
                      Occ.ESAreaLevel3 as DutyLoc,
-                      Task.Id__0 AS TaskId, Task.TaskNumber__0 AS TaskNo, Task.StatusG__0 AS TaskStatus, Task.Type1G__0 AS TaskType
+                     <!--Task__Id, Task__TaskNumber, Task__StatusG, Task__Type1G, Task__TaskAssignedToRId_L-->
+                     <!-- Task__Id__0 AS Task__Id, Task__TaskNumber__0 AS Task__TaskNumber, Task__StatusG__0 AS Task__StatusG, Task__Type1G__0 AS Task__Type1G, Task__TaskAssignedToRId__0 AS Task__TaskAssignedToRId, Task__TaskAssignedToRId_L__0 AS Task__TaskAssignedToRId_L-->
+                      Task__Id, Task__TaskNumber, Task__StatusG, Task__Type1G,  Task__TaskAssignedToRId,  Task__TaskAssignedToRId_L
+
 					FROM GOccurrence OCC
 						<!-- Tasks (subject of) -->
 							LEFT JOIN (TaskSubjectGOccurrence
-								LEFT JOIN GTask Task
+								LEFT JOIN (GTask Task
+									LEFT JOIN TaskAssignedTo)
 							) ON Task.Id = TaskSubjectGOccurrence.LId
 								<xsl:if test="string-length($TaskType) &gt; 0">
 								AND (<xsl:call-template name="CreateConditionFromSet">
@@ -555,10 +580,12 @@
 								</xsl:if>
 						LEFT JOIN Occurrence o2
 					<xsl:value-of select="$OccWhereClause" />
+						AND HierarchicalResult = 1
 					ORDER BY OCC.reportedtimetzv2g ASC, OCC.ID ASC
 
 
-					SELECT OCC.Id AS OccTaskId, Task.Id AS Task_Id, Task.TaskAssignedToRId_L AS TaskAssigned, OrgPoliceUnit.Id__0 AS Unit
+
+					SELECT OCC__Id AS OccTask__Id, Task__Id AS TaskId, Task__TaskAssignedToRId_L AS TaskAssignedToRId_L, Task__TaskAssignedToRId AS TaskAssignedToRId,  OrgPoliceUnit__Id__0
 					FROM TaskSubjectGOccurrence
 						LEFT JOIN (GTask Task
 								LEFT JOIN (TaskAssignedTo
@@ -569,9 +596,22 @@
 										AND GPersonOrgMemberGPerson.IsEffectiveAssignment = 1) ON Officer.Id = TaskAssignedTo.RId
 								) ON TaskAssignedTo.LId = Task.Id
 							)ON Task.Id = TaskSubjectGOccurrence.LId
+								<xsl:if test="string-length($TaskType) &gt; 0">
+								AND (<xsl:call-template name="CreateConditionFromSet">
+									<xsl:with-param name="FieldName">Task.Type1</xsl:with-param>
+									<xsl:with-param name="FieldValue" select="$TaskType" />
+								</xsl:call-template>)
+								</xsl:if>
+									<xsl:if test="string-length($TaskStatus) &gt; 0">
+								AND (<xsl:call-template name="CreateConditionFromSet">
+									<xsl:with-param name="FieldName">Task.Status</xsl:with-param>
+									<xsl:with-param name="FieldValue" select="$TaskStatus" />
+								</xsl:call-template>)
+								</xsl:if>
 						LEFT JOIN (GOccurrence OCC
 							LEFT JOIN Occurrence o2)
 					<xsl:value-of select="$OccWhereClause" />
+						<!--AND HierarchicalResult = 1-->
 
 					SELECT OCC.id AS OccRPOId, officer.label AS RPO_Officer, OrgPoliceUnit.Id__0, OrgPoliceUnit__LabelEmpl__0
 					FROM GOccurrence OCC
@@ -668,6 +708,12 @@
 						)
 						ORDER BY o.ReportedTime, oip.id
 					</xsl:if>
+
+					SELECT
+						GUIValue,
+						DBValue
+						FROM ChoiceListReport
+						WHERE ChoiceList='cl_TaskStatus'
 
 					select SPValue as AgencyName from SystemParameterSettingForACC where SPKey='Label.AgencyName'
 					select SPValue as DivisionName from SystemParameterSettingForACC where SPKey='Label.DivisionName'
@@ -903,6 +949,7 @@
 				<xsl:param name="TaskTypeG" />
 				<xsl:param name="TaskStatusG" />
 
+				<xsl:key name="Officer" match= "/DATASETLIST/DATASET/ROW[OccId]/DATASET[@entity='TASK']/ROW/Task__TaskAssignedToRId" use = "." />
 				<xsl:template match="/">
 					<HTML>
 						<xsl:variable name="ReportTitle">Daily Summary Report</xsl:variable>
@@ -916,7 +963,7 @@
 
 						<!-- Insert the style class declarations -->
 						<xsl:call-template name="StyleClasses" />
-
+						<!--<xsl:variable name="TotalTask"> <xsl:value-of select="count(/DATASETLIST/DATASET[Task]/ROW/DATASET/ROW/[Task__Id])" /> </xsl:variable>-->
 						<xsl:variable name="TotalCount"> <xsl:value-of select="count(/DATASETLIST/DATASET/ROW[OccId])"/> </xsl:variable>
 
 						<script type="text/javascript" charset="utf-8">
@@ -979,7 +1026,7 @@
 								oTable = $('#dailySummary').dataTable( {
 									"aoColumns": [
 										{ "bSortable": false },
-										null, null, null, null, null, null, null
+										null, null, null, null, null, null, null,  null, null, null, null
 									],
 									"aaSorting": [[3, 'asc']],
 									"bPaginate": false,
@@ -1032,9 +1079,52 @@
 								<xsl:with-param name="SpecDesc5"><xsl:if test="$ReportableOnly = '1'">Only show reportables</xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc6"><xsl:if test="$DispatchOnly = '1'">Only show dispatched calls</xsl:if></xsl:with-param>
 								<xsl:with-param name="SpecDesc7">Searched By: <xsl:choose>
-								<xsl:when test="$TaskTypeG != '' and $TaskStatusG != '' "><xsl:value-of select="$TaskStatusG" />, <xsl:value-of select="$TaskTypeG" /> </xsl:when> </xsl:choose></xsl:with-param>
+								<xsl:when test="$TaskTypeG != '' and $TaskStatusG != '' "><xsl:value-of select="$TaskStatusG" />, <xsl:value-of select="$TaskTypeG" /> </xsl:when>
+								 <xsl:otherwise>
+								    <xsl:value-of select="$TaskTypeG" />
+								 </xsl:otherwise></xsl:choose></xsl:with-param>
 							</xsl:call-template>
+							<TABLE>
+										<CAPTION>Summary</CAPTION>
+										<TR>
+											<TH class = "header">Assigned to:</TH>
+											<TH class = "total">Total</TH>
+											<xsl:for-each select = "/DATASETLIST/DATASET/ROW[DBValue]">
+												<TH><xsl:value-of select = "GUIValue" /></TH>
+											</xsl:for-each>
 
+										</TR>
+
+											<xsl:for-each
+													select = "/DATASETLIST/DATASET/ROW[OccId]/DATASET[@entity='TASK']/ROW[Task__TaskNumber][generate-id(Task__TaskAssignedToRId) = generate-id(key('Officer', Task__TaskAssignedToRId)[1])]">
+													<xsl:variable name = "OfficerId" select = "Task__TaskAssignedToRId" />
+											<TR>
+												<TD>
+														<A href = "#{Task__TaskAssignedToRId}">
+															<xsl:value-of select = "Task__TaskAssignedToRId_L" />
+														</A>
+													</TD>
+												<TD class = "total count"><xsl:value-of
+															select = "count(/DATASETLIST/DATASET/ROW[OccId]/DATASET[@entity='TASK']/ROW[Task__TaskAssignedToRId = $OfficerId])" />
+													</TD>
+													<xsl:for-each select = "/DATASETLIST/DATASET/ROW[DBValue]">
+														<TD class = "count"><xsl:value-of
+																select = "count(/DATASETLIST/DATASET/ROW[OccId]/DATASET[@entity='TASK']/ROW[Task__TaskAssignedToRId = $OfficerId][Task__StatusG = current()/GUIValue])" /></TD>
+													</xsl:for-each>
+											</TR>
+											</xsl:for-each>
+
+										<TR>
+											<TD class = "totalrow">Total:</TD>
+											<TD class = "totalrow total count"><xsl:value-of
+													select = "count(/DATASETLIST/DATASET/ROW[OccId])" /></TD>
+											<xsl:for-each select = "/DATASETLIST/DATASET/ROW[DBValue]">
+												<TD class = "totalrow count"><xsl:value-of
+														select = "count(/DATASETLIST/DATASET/ROW[Task__StatusG = current()/GUIValue])" /></TD>
+											</xsl:for-each>
+										</TR>
+									</TABLE>
+									<BR />
 							<!-- Report body -->
 							<div class="noprint" style="text-align: center; font-weight: bold; font-size: 12px; font-style: italic; margin-top: 20px;">*** Remember to "Encrypt" when you Save or Email this report ***</div>
 
@@ -1065,7 +1155,7 @@
 									<tbody>
 										<xsl:for-each select="/DATASETLIST/DATASET/ROW[OccId]">
 											<!-- Get Occurrence Id-->
-											<xsl:variable name="O_Id"><xsl:value-of select="OccId" /></xsl:variable>
+												<xsl:variable name="O_Id"><xsl:value-of select="OccId" /></xsl:variable>
 
 											<tr>
 												<xsl:choose>
@@ -1123,14 +1213,14 @@
 												</td>
 												<xsl:variable name= "T_Id" select = "DATASET/ROW[TaskId]" />
 												<td style="font-size: 10px;">
-														<xsl:if test="$TaskTypeG != ''">
-															<xsl:value-of select="TaskType" />
-														</xsl:if>
+														<!--<xsl:if test="$TaskTypeG != ''">-->
+															<xsl:value-of select="Task__Type1G" />
+														<!--</xsl:if>-->
 												</td>
 												<td style="font-size: 10px;">
-														<xsl:if test="$TaskStatusG != ''">
-															<xsl:value-of select="TaskStatus" />
-														</xsl:if>
+														<!--<xsl:if test="$TaskStatusG != ''">-->
+															<xsl:value-of select="Task__StatusG" />
+														<!--</xsl:if>-->
 												</td>
 												<td style="font-size: 10px;">
 													<xsl:choose>
@@ -1148,8 +1238,11 @@
 														</xsl:otherwise>
 													</xsl:choose>
 												</td>
-											<td style="font-size: 10px;">
-														<span style="font-size: 10px;"><xsl:value-of select="/DATASETLIST/DATASET/ROW[OccTaskId = $O_Id]/TaskAssigned"/></span>												</td>
+												<td style="font-size: 10px;">
+
+														<!--<span style="font-size: 10px;"><xsl:value-of select="/DATASETLIST/DATASET[/ROW[OccTaskId = $O_Id]/TaskAssignedToRId_L"/></span>-->
+														<span style="font-size: 10px;"><xsl:value-of select="Task__TaskAssignedToRId_L" /></span>
+												</td>
 											</tr>
 										</xsl:for-each>
 									</tbody>
@@ -1206,7 +1299,7 @@
 								</div>
 							</xsl:if>
 
-							<div style="margin-top:10px; text-align: center; font-size: 8pt;">Designed by O.P.P. CAD/RMS Application Support Unit</div>
+							<div style="margin-top:10px; text-align: center; font-size: 8pt;">Re-Designed by B.C.S.O. Strategic Operations Division </div>
 						</xsl:element>
 					</HTML>
 				</xsl:template>
