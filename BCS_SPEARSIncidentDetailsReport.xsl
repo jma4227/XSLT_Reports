@@ -11,7 +11,7 @@
          -->
     <VersionInfo>
         <Filename>SPEARS_IncidentDetailsReport.xml</Filename>
-        <Revision>1.25</Revision>
+        <Revision>1.20.1</Revision>
         <NMLVersion>5.04.11.02.18</NMLVersion>
         <NicheBuildName>BexarCounty</NicheBuildName>
         <BuildTime>2018/07/21 22:08:08</BuildTime>
@@ -21,7 +21,8 @@
     <AllowedEntity>Occurrence</AllowedEntity>
     <IsDomainReport>0</IsDomainReport>
     <IsPrintTemplate>1</IsPrintTemplate>
-    <CFDSComponentGroupTemplateSelectEntity>CF occurrence details</CFDSComponentGroupTemplateSelectEntity>
+    <CFDSComponentGroupTemplateSelectEntity>CF occurrence details
+    </CFDSComponentGroupTemplateSelectEntity>
     <ReportName>SPEARS Incident Report</ReportName>
     <Documentation>
         <![CDATA[
@@ -36,8 +37,8 @@ Allowed entities:
     </Documentation><!-- List parameters to the SQL query here. -->
     <SQLParameter>ShowDescriptors</SQLParameter>
     <SQLParameter>ShowACL</SQLParameter>
-	<!-- List parameters to the XSLT report here. -->
-	<XSLTParameter>CreTimeG</XSLTParameter>
+    <!-- List parameters to the XSLT report here. -->
+    <XSLTParameter>CreTimeG</XSLTParameter>
     <XSLTParameter>ShowClassification</XSLTParameter>
     <XSLTParameter>ShowDOB</XSLTParameter>
     <XSLTParameter>ShowDL</XSLTParameter>
@@ -72,24 +73,24 @@ Allowed entities:
     <XSLTParameter>ShowExtDocOccReport</XSLTParameter>
     <XSLTParameter>ShowEnquiryLog</XSLTParameter>
     <XSLTParameter>ShowNames</XSLTParameter>
-	<!-- List parameters to the SQL here. -->
+    <!-- List parameters to the SQL here. -->
 
-	<!-- Report format parameters. -->
-	<ReportHeader></ReportHeader>
-	<!-- MLS in CDATA -->
-	<ReportFooter>
+    <!-- Report format parameters. -->
+    <ReportHeader></ReportHeader>
+    <!-- MLS in CDATA -->
+    <ReportFooter>
         <![CDATA[e"""<p style='float: left; text-align: left;'>Printed: [DATE] [TIME] by [@AGBL=USERNUM]</p><p style='float: right; text-align: right;'>Page: [PAGENUM] of [PAGETOTAL]</p>"]]>
     </ReportFooter><!-- MLS in CDATA -->
-	<!--<ReportHeaderTop></ReportHeaderTop>-->
-	<!-- Default is: printer.unprintableTop/100 -->
-	<ReportFooterBottom></ReportFooterBottom><!-- Default is: printer.unprintableBottom/100 -->
+    <!--<ReportHeaderTop></ReportHeaderTop>-->
+    <!-- Default is: printer.unprintableTop/100 -->
+    <ReportFooterBottom></ReportFooterBottom><!-- Default is: printer.unprintableBottom/100 -->
     <ReportDetailMarginTop></ReportDetailMarginTop><!-- Default is: printer.marginTop/100 -->
     <ReportDetailMarginLeft></ReportDetailMarginLeft><!-- Default is: printer.marginLeft/100 -->
     <ReportDetailMarginRight></ReportDetailMarginRight><!-- Default is: printer.marginRight/100 -->
     <ReportDetailMarginBottom></ReportDetailMarginBottom><!-- Default is: printer.marginBottom/100 -->
     <DefaultProtectiveMarking></DefaultProtectiveMarking><!-- MLS -->
-	<!-- SQLSelect must be enclosed in CDATA. -->
-	<SQLSelectXSLT><![CDATA[
+    <!-- SQLSelect must be enclosed in CDATA. -->
+    <SQLSelectXSLT><![CDATA[
 
 
         <xsl:stylesheet version = "1.0"
@@ -317,6 +318,7 @@ Allowed entities:
 									<xsl:if test = "$ShowACL != '1'"> ON PersonDesc.AccessControlList IS NULL </xsl:if>
 								)
 							</xsl:if>
+
 							LEFT JOIN GPIDUSSSN
 								<xsl:if test = "$ShowACL != '1'"> ON GPIDUSSSN.AccessControlList IS NULL </xsl:if>
 							LEFT JOIN GPersonVictim ON GPersonVictim.GPPEventGOccRId IN (<xsl:value-of select = "$PARAM_ID"/>)
@@ -3483,508 +3485,366 @@ Allowed entities:
 		]]>
     </DatawindowDef>
     <ParameterXAML>
-        <ResourceDictionary xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
+        <ResourceDictionary xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
                             xmlns:b = "clr-namespace:Niche;assembly=NC5Base"
                             xmlns:bx = "clr-namespace:Niche;assembly=NC5BaseXAML"
-                            xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-            <b:cl_cFieldBehaviorXSLTReport x:Key = "XSLTReportFieldBehavior"/>
-            <b:ds_cSpecificationInline x:Key = "DataSpecification">
+                            xmlns:c = "clr-namespace:Niche;assembly=NC5XFormControlLibrary"
+                            xmlns:u = "clr-namespace:Niche;assembly=UIUtilityCS"
+                            xmlns:ncs = "clr-namespace:Niche;assembly=NicheUtilityCS"
+        >
+            <b:cl_cFieldBehaviorXSLTReport x:Key = "XSLTReportFieldBehavior" />
+
+            <ncs:ds_cSpecificationInline x:Key = "DataSpecification">
                 <x:XData>
                     <DSL xmlns = "">
                         <Metadata>
+
                             <ChoiceList Name = "cl_bool">
                                 <Choice DBValue = "0"
-                                        GUIValue = "0"/>
+                                        GUIValue = "0" />
                                 <Choice DBValue = "1"
-                                        GUIValue = "1"/>
+                                        GUIValue = "1" />
                             </ChoiceList>
                             <Entity Name = "Parameters">
                                 <BoolField Name = "ShowOccurrences"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowPersons"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowAddresses"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowCommAddresses"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowVehicles"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowOfficers"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowProperty"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowMO"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGenOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowSupOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowFraudDocOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonArrest"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonVictim"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonDeath"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonMissing"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGVehicleSC"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonSC"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonIntox"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonStatement"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowGPersonPolExtDoc"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowNotesOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowMVCOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowExtDocOccReport"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowEnquiryLog"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowSSN"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowDescriptors"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowClassification"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowDOB"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowDL"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowAddress"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowPhone"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowEmail"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowACL"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                                 <BoolField Name = "ShowNames"
-                                           ChoiceListName = "cl_bool"/>
+                                           ChoiceListName = "cl_bool" />
                             </Entity>
                         </Metadata>
                         <Entity Name = "Parameters"
                                 DSLBased = "True">
                             <Field Name = "ShowOccurrencesG"
-                                   ExportName = "ShowOccurrences"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowPersonsG"
-                                   ExportName = "ShowPersons"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowAddressesG"
-                                   ExportName = "ShowAddresses"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowCommAddressesG"
-                                   ExportName = "ShowCommAddresses"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowVehiclesG"
-                                   ExportName = "ShowVehicles"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowOfficersG"
-                                   ExportName = "ShowOfficers"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowPropertyG"
-                                   ExportName = "ShowProperty"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowMOG"
-                                   ExportName = "ShowMO"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGenOccReportG"
-                                   ExportName = "ShowGenOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowSupOccReportG"
-                                   ExportName = "ShowSupOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowFraudDocOccReportG"
-                                   ExportName = "ShowFraudDocOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonArrestG"
-                                   ExportName = "ShowGPersonArrest"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonVictimG"
-                                   ExportName = "ShowGPersonVictim"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonDeathG"
-                                   ExportName = "ShowGPersonDeath"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonMissingG"
-                                   ExportName = "ShowGPersonMissing"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGVehicleSCG"
-                                   ExportName = "ShowGVehicleSC"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonSCG"
-                                   ExportName = "ShowGPersonSC"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonIntoxG"
-                                   ExportName = "ShowGPersonIntox"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonStatementG"
-                                   ExportName = "ShowGPersonStatement"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowGPersonPolExtDocG"
-                                   ExportName = "ShowGPersonPolExtDoc"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowNotesOccReportG"
-                                   ExportName = "ShowNotesOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowMVCOccReportG"
-                                   ExportName = "ShowMVCOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowExtDocOccReportG"
-                                   ExportName = "ShowExtDocOccReport"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowEnquiryLogG"
-                                   ExportName = "ShowEnquiryLog"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowSSNG"
-                                   ExportName = "ShowSSN"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowDescriptorsG"
-                                   ExportName = "ShowDescriptors"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowClassificationG"
-                                   ExportName = "ShowClassification"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowDOBG"
-                                   ExportName = "ShowDOB"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowDLG"
-                                   ExportName = "ShowDL"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowAddressG"
-                                   ExportName = "ShowAddress"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowPhoneG"
-                                   ExportName = "ShowPhone"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowEmailG"
-                                   ExportName = "ShowEmail"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowACLG"
-                                   ExportName = "ShowACL"
-                                   ExportType = "StorableValue"/>
+                            />
                             <Field Name = "ShowNamesG"
-                                   ExportName = "ShowNames"
-                                   ExportType = "StorableValue"/>
+                            />
                         </Entity>
                     </DSL>
                 </x:XData>
-            </b:ds_cSpecificationInline>
+            </ncs:ds_cSpecificationInline>
             <b:dp_cHierarchySpecification x:Key = "InitialHierarchy">
-                <x:XData><Data xmlns = "">
+                <x:XData>
+                    <Data xmlns = "">
                         <Node Name = "Parameters"
                               DSLBased = "true">
                             <Cell Name = "ShowOccurrencesG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowPersonsG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowAddressesG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowCommAddressesG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowVehiclesG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowOfficersG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowPropertyG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowMOG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGenOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowSupOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowFraudDocOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonArrestG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonVictimG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonDeathG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonMissingG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGVehicleSCG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonSCG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonIntoxG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonStatementG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowGPersonPolExtDocG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowNotesOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowMVCOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowExtDocOccReportG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowEnquiryLogG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowSSNG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowDescriptorsG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowClassificationG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowDOBG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowDLG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowAddressG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowPhoneG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowEmailG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowACLG"
-                                  Value = "1"/>
+                                  Value = "1" />
                             <Cell Name = "ShowNamesG"
-                                  Value = "1"/>
+                                  Value = "1" />
                         </Node>
                     </Data>
                 </x:XData>
             </b:dp_cHierarchySpecification>
             <DataTemplate x:Key = "UIDataTemplate">
-                <UserControl xmlns:x = "http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:n = "clr-namespace:Niche;assembly=NC5XFormControlLibrary"
-                             xmlns:b = "clr-namespace:Niche;assembly=NC5Base"
-                             xmlns:c = "clr-namespace:Niche;assembly=NC5XFormControlLibrary"
-                             xmlns:u = "clr-namespace:Niche;assembly=UIUtilityCS"
-                             xmlns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                             Background = "Transparent"
-                             SnapsToDevicePixels = "True"
-                             FontSize = "{c:me_cUILook DefaultFontSize}"
-                             c:cl_fFieldBehavior.FieldBehavior = "{StaticResource XSLTReportFieldBehavior}">
-                    <Grid DataContext = "{Binding Data.FirstNode}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width = "Auto"></ColumnDefinition>
-                            <ColumnDefinition Width = "Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row = "1">Show associated incidents:</TextBlock>
-                        <TextBlock Grid.Row = "2">Show involved persons:</TextBlock>
-                        <TextBlock Grid.Row = "3">Show involved addresses:</TextBlock>
-                        <TextBlock Grid.Row = "4">Show involved comm addresses:</TextBlock>
-                        <TextBlock Grid.Row = "5">Show involved vehicles:</TextBlock>
-                        <TextBlock Grid.Row = "6">Show involved officers/units:</TextBlock>
-                        <TextBlock Grid.Row = "7">Show involved property:</TextBlock>
-                        <TextBlock Grid.Row = "8">Show modus operandi:</TextBlock>
-                        <TextBlock Grid.Row = "9">Show general reports:</TextBlock>
-                        <TextBlock Grid.Row = "10">Show supplemental reports:</TextBlock>
-                        <TextBlock Grid.Row = "11">Show fraudulent document reports:</TextBlock>
-                        <TextBlock Grid.Row = "12">Show arrest reports:</TextBlock>
-                        <TextBlock Grid.Row = "13">Show victim reports:</TextBlock>
-                        <TextBlock Grid.Row = "14">Show homicide/sudden death reports:</TextBlock>
-                        <TextBlock Grid.Row = "15">Show missing person reports:</TextBlock>
-                        <TextBlock Grid.Row = "16">Show vehicle in motion reports:</TextBlock>
-                        <TextBlock Grid.Row = "17">Show driver contact reports:</TextBlock>
-                        <TextBlock Grid.Row = "18">Show intoxcation reports:</TextBlock>
-                        <TextBlock Grid.Row = "19">Show witness statements:</TextBlock>
-                        <TextBlock Grid.Row = "20">Show external person reports:</TextBlock>
-                        <TextBlock Grid.Row = "21">Show notes reports:</TextBlock>
-                        <TextBlock Grid.Row = "22">Show traffic crash reports:</TextBlock>
-                        <TextBlock Grid.Row = "23">Show external incident reports:</TextBlock>
-                        <TextBlock Grid.Row = "24">Show Action Entry log:</TextBlock>
-                        <TextBlock Grid.Row = "25">Show Classification:</TextBlock>
-                        <TextBlock Grid.Row = "26">Show DOB:</TextBlock>
-                        <TextBlock Grid.Row = "27">Show SSN:</TextBlock>
-                        <TextBlock Grid.Row = "28">Show DL:</TextBlock>
-                        <TextBlock Grid.Row = "29">Show Address:</TextBlock>
-                        <TextBlock Grid.Row = "30">Show Phone:</TextBlock>
-                        <TextBlock Grid.Row = "31">Show Email:</TextBlock>
-                        <TextBlock Grid.Row = "32">Show Suspect Descriptors:</TextBlock>
-                        <TextBlock Grid.Row = "33">Show ACLs:</TextBlock>
-                        <TextBlock Grid.Row = "34">Show Names:</TextBlock>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "1"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowOccurrencesG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "2"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowPersonsG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "3"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowAddressesG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "4"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowCommAddressesG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "5"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowVehiclesG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "6"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowOfficersG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "7"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowPropertyG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "8"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowMOG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "9"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGenOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "10"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowSupOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "11"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowFraudDocOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "12"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonArrestG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "13"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonVictimG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "14"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonDeathG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "15"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonMissingG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "16"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGVehicleSCG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "17"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonSCG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "18"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonIntoxG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "19"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonStatementG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "20"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowGPersonPolExtDocG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "21"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowNotesOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "22"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowMVCOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "23"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowExtDocOccReportG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "24"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowEnquiryLogG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "25"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowClassificationG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "26"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowDOBG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "27"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowSSNG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "28"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowDLG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "29"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowAddressG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "30"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowPhoneG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "31"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowEmailG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "32"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowDescriptorsG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "33"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowACLG}"/>
-                        <c:cl_cNMLFieldControl Grid.Column = "1"
-                                               Grid.Row = "34"
-                                               Margin = "10, 1, 0, 1"
-                                               DataValue = "{Binding ShowNamesG}"/>
-                    </Grid>
-                </UserControl>
+                <StackPanel DataContext = "{Binding Data.FirstNode}"
+                            c:cl_fFieldBehavior.FieldBehavior = "{StaticResource XSLTReportFieldBehavior}">
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowOccurrencesG}"
+                                               LabelText = "Associated Incidents" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowPersonsG}"
+                                               LabelText = "Involved Persons" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowAddressesG}"
+                                               LabelText = "Address" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowCommAddressesG}"
+                                               LabelText = "Involved Comm Addressrd" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowVehiclesG}"
+                                               LabelText = "Involved Vehicles" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowOfficersG}"
+                                               LabelText = "Involved Officer(s)" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowPropertyG}"
+                                               LabelText = "Involved Property" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowMOG}"
+                                               LabelText = "Modus Operandi" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGenOccReportG}"
+                                               LabelText = "General Report" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowSupOccReportG}"
+                                               LabelText = "Supplement Report" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowFraudDocOccReportG}"
+                                               LabelText = "Fraudulent Document" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonArrestG}"
+                                               LabelText = "Arrested Person(s)" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonVictimG}"
+                                               LabelText = "Victims" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonDeathG}"
+                                               LabelText = "Homicide/Sudden Death" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonMissingG}"
+                                               LabelText = "Missing Person" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGVehicleSCG}"
+                                               LabelText = "Vehicle in motion report" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonSCG}"
+                                               LabelText = "Driver Contact Report" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonIntoxG}"
+                                               LabelText = "Intoxication Report" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonStatementG}"
+                                               LabelText = "Witness Statement" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowGPersonPolExtDocG}"
+                                               LabelText = "External Person" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowNotesOccReportG}"
+                                               LabelText = "Notes" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowMVCOccReportG}"
+                                               LabelText = "Motor Vehicle Crash" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowExtDocOccReportG}"
+                                               LabelText = "External Document" />
+
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowEnquiryLogG}"
+                                               LabelText = "Action Entry" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowClassificationG}"
+                                               LabelText = "Classification" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowDOBG}"
+                                               LabelText = "Date of Birth" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowSSNG}"
+                                               LabelText = "Social Security" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowDLG}"
+                                               LabelText = "Drivers License" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowAddressG}"
+                                               LabelText = "Address" />
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowPhoneG}"
+                                               LabelText = "Telephone" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowEmailG}"
+                                               LabelText = "Email" />
+
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowDescriptorsG}"
+                                               LabelText = "Person Descriptors" />
+                    </u:uc_cFlowGrid>
+                    <u:uc_cFlowGrid Columns = "2">
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowACLG}"
+                                               LabelText = "ACL" />
+
+                        <c:cl_cNMLFieldControl DataValue = "{Binding ShowNamesG}"
+                                               LabelText = "Alias" />
+                    </u:uc_cFlowGrid>
+                </StackPanel>
+
             </DataTemplate>
-            <b:dp_cNamedActionDictionary x:Key = "NamedActions"/>
+            <b:dp_cNamedActionDictionary x:Key = "NamedActions" />
             <b:cl_cContentSpecification x:Key = "XSLTReportParameters"
                                         NamedActions = "{StaticResource NamedActions}"
                                         InitialHierarchySpecification = "{StaticResource InitialHierarchy}"
                                         Specification = "{StaticResource DataSpecification}"
-                                        UIDataTemplate = "{StaticResource UIDataTemplate}"/>
+                                        UIDataTemplate = "{StaticResource UIDataTemplate}" />
         </ResourceDictionary>
     </ParameterXAML>
 </root>
