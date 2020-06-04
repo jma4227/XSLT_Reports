@@ -596,7 +596,7 @@
 
 						<!-- Insert the style class declarations -->
 						<xsl:call-template name="StyleClasses" />
-						<xsl:variable name="TotalCount"> <xsl:value-of select="count(/DATASETLIST/DATASET/ROW[OccId])"/> </xsl:variable>
+						<xsl:variable name="TotalCount"> <xsl:value-of select="count(/DATASETLIST/DATASET/ROW[GTask__Id])"/> </xsl:variable>
 
 						<xsl:element name="BODY">
 							<!-- Insert the title-->
@@ -639,15 +639,10 @@
 											</xsl:for-each>
 										</TR>
 										<xsl:for-each
-												select = "/DATASETLIST/DATASET/ROW[GTask__TaskNumber][generate-id(GTask__TaskAssignedToRId) = generate-id(key('Officer', GTask__TaskAssignedToRId)[1])]">
-												<xsl:variable name = "OfficerId" select = "Officer__Id" />
+												select = "/DATASETLIST/DATASET/ROW[GTask__Id][generate-id(GTask__TaskAssignedToRId) = generate-id(key('Officer', GTask__TaskAssignedToRId)[1])]">
+												<xsl:variable name = "OfficerId" select = "GTask__TaskAssignedToRId_L" />
 
 											<TR>
-											<xsl:choose>
-												<xsl:when test="$OfficerUnitCL = 'UNT'"><xsl:call-template name="AssignedUnits" /></xsl:when>
-												<xsl:when test="$OfficerUnitCL = 'OFC'"><xsl:call-template name="AssignedOfficers" /></xsl:when>
-											</xsl:choose>
-
 												<TD class = "total count"><xsl:value-of
 														select = "count(/DATASETLIST/DATASET/ROW[GTask__TaskAssignedToRId = $OfficerId])" /></TD>
 												<xsl:for-each select = "/DATASETLIST/DATASET/ROW[DBValue]">
